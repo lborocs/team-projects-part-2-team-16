@@ -1,0 +1,114 @@
+.vali {
+  text-align: center;
+}
+
+.con1 {
+  margin-top: 0px;
+  width: 100%;
+  text-align: center;
+  /* display: flex;
+  justify-content: center; */
+}
+
+.con2 {
+  margin-top: 40px;
+  width: 75%;
+}
+
+.conLeft {
+  margin-left: 75px;
+}
+
+.conButton {
+  margin-top: -82px;
+}
+
+.Search {
+  position: absolute;
+  left: 50%;
+  border-radius: 3px;
+  -ms-transform: translate(-30%);
+  transform: translate(-70%);
+  max-width: 60%;
+  z-index: 10;
+}
+
+.createPost {
+  position: absolute;
+  border-radius: 3px;
+  left: 70%;
+  max-width: 21%;
+}
+
+.Main_dropdown {
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  border-radius: 3px;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.topic1 {
+  display: inline-block;
+  left: 50%;
+  border-radius: 5px;
+  border: 0px;
+  width: 75%;
+  height: 100px;
+  color: black;
+  background-color: white;
+  font-size: 35px;
+  margin-bottom: 20px;
+  padding-top:25px;
+  text-align: center;
+  box-shadow: 0px 0px 10px grey;
+}
+
+.topic1:hover {
+  background-color: #f7f7f7;
+}
+
+.topic1:active {
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.b-example-divider {
+  height: 3rem;
+  background-color: rgba(0, 0, 0, .1);
+  border: solid rgba(0, 0, 0, .15);
+  border-width: 1px 0;
+  box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+}
+
+.nav-link:hover {
+  color: #0275d8;
+  border-color: #0275d8;
+}
+
+.form-control-dark {
+  color: #fff;
+  background-color: var(--bs-dark);
+  border-color: var(--bs-gray);
+}
+
+.form-control-dark:focus {
+  color: #fff;
+  background-color: var(--bs-dark);
+  border-color: #fff;
+  box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
+}
+
+.bi {
+  vertical-align: -.125em;
+  fill: currentColor;
+}
+
+.text-small {
+  font-size: 85%;
+}
+
+.dropdown-toggle {
+  outline: 0;
+  z-index: 11;
+}

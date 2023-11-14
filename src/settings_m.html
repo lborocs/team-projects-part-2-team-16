@@ -1,0 +1,131 @@
+<html>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+	crossorigin="anonymous"></script>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Settings</title>
+	<link href="./headers.css" rel="stylesheet">
+</head>
+
+<body>
+	<script>
+		function settings() {
+			window.location.href = "./settings_m.html";
+		};
+		function logout() {
+			window.location.href = "./login.html";
+		};
+	</script>
+	<header class="p-3 mb-3 border-bottom">
+		<div class="container">
+			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+
+				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+					<li><a href="./dashboard_m.html" class="nav-link px-2 link-dark">Dashboard</a></li>
+					<li><a href="./view_topics_m.html" class="nav-link px-2 link-dark">Topics</a></li>
+					<li><a href="./create_task_m.html" class="nav-link px-2 link-dark">Assign Tasks</a></li>
+				</ul>
+
+				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.html">
+					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search">
+				</form>
+
+				<div class="dropdown text-end">
+					<a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
+						data-bs-toggle="dropdown" aria-expanded="false">
+						<img src="./icon.png" alt="mdo" width="32" height="32" class="rounded-circle">
+					</a>
+					<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+						<li><a class="dropdown-item" href="./create_topic_m.html">Create New Topic...</a></li>
+						<li><a class="dropdown-item" href="./manageEmp.html">Manage Employees</a></li>
+						<li><a class="dropdown-item" href="#" onclick="settings()">Settings</a></li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div class="bg-dark text-secondary px-4 py-5 text-center" style="margin:0px; padding:0px;">
+		<div class="py-5">
+			<h1 class="display-5 fw-bold text-white">Settings</h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="col-md-12" style="padding:0px 4px;">
+			<label for="p1" class="form-label">Password</label>
+			<input type="password" class="form-control" id="p1" value="" required="">
+		</div>
+		<div class="col-md-12" style="padding:0px 4px;">
+			<label for="p2" class="form-label">Confirm Password</label>
+			<input type="password" class="form-control" id="p2" placeholder="" value="" required="">
+		</div>
+		<div class="col-md-12" style="padding:0px 4px;">
+			<label for="icon" class="form-label">Icon Colour</label>
+			<select class="form-select" id="icon" required="">
+				<option value="">Grey</option>
+				<option>Blue</option>
+				<option>Green</option>
+				<option>Red</option>
+			</select>
+		</div>
+		<div class="row" style="padding:0px 4px; margin:0px;">
+			<label for="copy-invite" class="form-label">Invite Code</label>
+			<div class="col-md-8" style="padding:0px">
+				<input type="text" class="form-control" id="copy-invite" value="https://make-it-all.co.uk/WDFT-GHTY-SDFR-GHTF" readonly>
+			</div>
+			<div class="col-md-4" style="padding:0px">
+				<button class="btn btn-primary" id="copy-invite-button">Copy Link</button>
+				<button class="btn btn-secondary" id="copy-invite-button">Refresh Link</button>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6" style="padding:1% 2%;">
+				<button class="w-100 btn btn-primary btn-md" type="submit">Save Changes</button>
+			</div>
+			<div class="col-md-6" style="padding:1% 2%;">
+				<button class="w-100 btn btn-secondary btn-md" type="submit" onclick="window.location.href = './dashboard_m.html';">Cancel</button>
+			</div>
+		</div>
+	</div>
+	<script>
+		document.getElementById("copy-invite-button").addEventListener("click", function () {
+			var copyText = document.getElementById("copy-invite");
+			copyText.select();
+			copyText.setSelectionRange(0, 99999);
+			document.execCommand("copy");
+			alert("Copied.");
+		});
+	</script>
+	<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+		style="padding-left: 25px; padding-right: 25px;">
+		<p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
+
+		<a href="/"
+			class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+			<img src="./logo.png" alt="mdo" width="200" height="50">
+			</svg>
+		</a>
+
+		<div class="justify-content-end">
+			<p>Phone: 01509 888999</p>
+			<p>Email: king@make-it-all.co.uk</p>
+		</div>
+	</footer>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+</body>
+<html>

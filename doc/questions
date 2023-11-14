@@ -1,0 +1,95 @@
+List of questions we have so far 
+
+1) Client Admin Operations Manager:
+
+.Is it only admins or managers that can invite new employees to the system?
+      -"Every employee can do this."
+.Can any user create a topic?
+      -"We don't know how to best implement this, so we are open to suggestions."
+.How many employees does your company have, admins, managers and others?
+      -"These numbers are flexible, please do not hardcode anything."
+.Can the single admin account create other admin accounts?
+      -"For now, we don't need an admin account, just to be able to assign the admin role to managers, and team leaders so that they can do different things with the system."
+.Do you have a colour pallet that you would like us to use to match your company's image? Could you please show examples from www.colorhunt.co
+      -"We were hoping that you would provide us with different samples for colour themes and designs, matching the logo, but we definitely prefer lighter themes."
+.Which permission level of users (admin or manager or other)should access how well project tasks are allocated and progressing?
+      -"The way it works in our company is that a manager creates a project, assigns a team leader, and then the manager or the team leader, create tasks. 
+            These tasks get then allocated to employees and once an employee is allocated a task in a project they are part of the team, if they no longer have active tasks on the project, they are not part of the team.
+
+            Managers can do everything. Team leaders can only control aspects of their own project, they can't assign other team leaders, and they have no permissions outside the scope of their project.
+            For now, we don't need an admin account, just to be able to assign the admin role to managers, and team leaders so that they can do different things with the system."
+.Can a member of staff be a part of multiple teams at the same time? If yes, this would mean that a member of staff can have tasks set from at least two different teams concurrently.
+      -The way it works in our company is that a manager creates a project, and assigns the project a team leader, then the manager or team leader can create tasks and assign employees to those tasks, once an employee is assigned to a task they become a part of that team, if they no longer have active tasks on a project then they are not part of the team.
+      Typically, each employee works on one project at any given time. However, there might be instances where they get assigned to more than one project. 
+
+
+2) Client Project Manager:
+
+. Can a post be assigned to multiple topics?
+      -"We are open to suggestions how to best design this."
+. What requirements are there for posts (text, picture)?
+      -"It really depends on a specific topic/post, so this should be flexible."
+.Can other people reply or add to others posts (upvoting etc)?
+      -"We are open to suggestions how to best design this."
+.Is it okay for the admins to add emails to a green list which can register someone to invite them to the system, and then this enables the new user to create an account (and password) with said email? Any attempts to register with a non-verified email is blocked. The emails can have a timestamp so that invites expire.
+      -"What we want is that employees are invited to the system by another employee, they can open the registration link and then use their company email along with their information, such as first name and surname to register on the system.
+            Since you are the experts in this matter, we will follow your lead on how to implement this."
+.Do employees set themselves tasks, and can managers set tasks to other employees?
+      -"I think this question was already answered before by my colleague Alice."
+.Do tasks have time constraints?
+      -"Usually yes."
+.Should the manager's dashboard show the extent of individuals tasks, or simply the quantity of tasks set to each user?
+      -"We are open to suggestions how to best implement this."
+.Do you have a colour pallet that you would like us to use to match your company's image? Could you please show examples from www.colorhunt.com
+      -"We were hoping that you would provide us with different samples for colour themes and designs, but we definitely prefer lighter themes."
+.Which permission level of users (admin or manager or other) should access how well project tasks are allocated and progressing?
+      -"All the managers and a given team leader."
+.How would we have data on if projects are sufficiently resourced?
+      -"Please incorporate some placeholder numbers into the prototype."
+.Could you please describe how to measure how well a project is allocated?
+      -"I'm sorry, I don't understand the question."
+.By sufficiently resourced, do you refer to how many employees are assigned to each task and does this mean each task should be allocated to an employee?
+      -"We mainly focus on team size and man hours needed to complete the task/project. Yes, we want to allocate all the current tasks to the employees."
+.Who decides whether training is needed to complete the task?
+      -"This will be handled directly by managers or team leaders outside of the system."
+
+.As per request, we have found some light palettes we think would be suitable to the development.
+      Which of the following do you prefer?
+      Palette One: https://colorhunt.co/palette/27374d526d829db2bfdde6ed
+      Palette Two: https://colorhunt.co/palette/32364360647093defff7f7f7
+      Palette Three: https://colorhunt.co/palette/f6f6f6d6e4f01e56a0163172
+      Palette Four: https://colorhunt.co/palette/f7fbfcd6e6f2b9d7ea769fcd
+      -"It'd be good if you show us these options during the prototype presentation we have soon."
+
+.Are you happy with the attatched logins screen design?
+      FYI: The final product will only have one checkbox which will be used to remember login details. For now this can be used so that you can access both the managerial and employee versions of the prototype system. Thanks. *picture*
+      -"Again, it'd be good if you show us this design during the prototype presentation we have soon."
+
+.Do team leaders oversee multiple projects at one time?
+      -"Normally an employee is a team leader for only one project at a time but we don't see a need for any limitation because that scenario might occur in the future."
+
+.Do team leaders have their own tasks in their own projects?
+      "We aim to minimize situations where a team leader is also a team member in the same or another team, although we cannot entirely rule out the possibility of this occurring."
+
+3) Client Technical Specialist:
+
+.Would you classify this as a strong password (one upper, one lower, one special, one number, minimum 8 characters)?
+      -"Regarding password requirements, please adhere to industry standards."
+.What standards need to be in place to provide sufficient individual account security (so that no individual can be exploited). Some examples could be (preventing common passwords, no same username as password, and providing password advice before creation)?
+      -"Please adhere to industry standards. All communications and data storage must be secure and not vulnerable to any kind of attacks. 
+            You are the experts in this matter, so we are happy to follow your suggestions. "
+.Do you refer to any resources other than humans? E.g software.
+      -"I'm sorry, I don't understand the question."
+.Are you okay with us using bootstrap for development. On a managers board the dashboard shows albums of users in which you they click a user it displays individual detail.
+      -no response
+
+
+4) Our company technical advisors:
+
+.Are you okay with us using bootstrap for development. On a managers board the dashboard shows albums of users in which you they click a user it displays individual detail.34
+      -"There is no issue with your team using Bootstrap in the development of the system., so feel free to use this if you want to."
+
+5) Our companies senior manager:
+
+I have attempted to contact the projet manager for our client to discuss colour palette and if our current login spec is sufficient yet recieved no responce. Who is best for our team to contact in your opinion?
+      -no response
