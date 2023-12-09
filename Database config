@@ -1,0 +1,79 @@
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| ToDoItems         | item_ID        | int           | PK            |
+| ToDoItems         | user_ID        | int           |               |
+| ToDoItems         | title          | varchar(255)  |               |
+| ToDoItems         | due_date       | datetime      |               |
+| ToDoItems         | status         | tinyint(1)    |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| activeInviteCodes | code           | char(19)      | PK            |
+| activeInviteCodes | expires        | datetime      |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| posts             | post_ID        | int           | PK            |
+| posts             | user_ID        | int           |               |
+| posts             | topic_ID       | int           |               |
+| posts             | title          | varchar(255)  |               |
+| posts             | content        | varchar(1000) |               |
+| posts             | img_url        | varchar(255)  |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| project           | project_ID     | int           | PK            |
+| project           | team_leader    | int           |               |
+| project           | dueDate        | date          |               |
+| project           | project_title  | varchar(255)  |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| response          | response_ID    | int           | PK            |
+| response          | user_ID        | int           |               |
+| response          | post_ID        | int           |               |
+| response          | content        | varchar(1000) |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| tasks             | task_ID        | int           | PK            |
+| tasks             | user_ID        | int           |               |
+| tasks             | project_ID     | int           |               |
+| tasks             | title          | varchar(255)  |               |
+| tasks             | description    | varchar(1000) |               |
+| tasks             | due_date       | date          |               |
+| tasks             | est_hours      | int           |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| topics            | topic_ID       | int           | PK            |
+| topics            | title          | varchar(255)  |               |
++-------------------+----------------+---------------+---------------+
+
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| users             | user_ID        | int           | PK            |
+| users             | email          | varchar(255)  |               |
+| users             | encrypted_pass | varchar(255)  |               |
+| users             | icon           | varchar(15)   |               |
+| users             | forname        | varchar(255)  |               |
+| users             | surname        | varchar(255)  |               |
+| users             | role           | varchar(10)   |               |
++-------------------+----------------+---------------+---------------+
+
+
+
