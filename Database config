@@ -53,20 +53,20 @@
 | TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
 +-------------------+----------------+---------------+---------------+
 | topics            | topic_ID       | int           | PK            |
-| topics            | title          | varchar(255)  |               |
+| topics            | title          | varchar(255)  | unique        |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
 | TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
 +-------------------+----------------+---------------+---------------+
 | users             | user_ID        | int           | PK            |
-| users             | email          | varchar(255)  |               |
+| users             | email          | varchar(255)  | unique        |
 | users             | encrypted_pass | varchar(255)  |               |
 | users             | icon           | varchar(15)   |               |
 | users             | forname        | varchar(255)  |               |
 | users             | surname        | varchar(255)  |               |
 | users             | role           | varchar(10)   |               |
-| users             |activeInviteCode| char(19)      |               |
+| users             |activeInviteCode| char(19)      | unique        |
 +-------------------+----------------+---------------+---------------+
 
 
