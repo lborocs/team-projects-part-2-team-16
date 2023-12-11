@@ -11,13 +11,6 @@
 +-------------------+----------------+---------------+---------------+
 | TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
 +-------------------+----------------+---------------+---------------+
-| activeInviteCodes | code           | char(19)      | PK            |
-| activeInviteCodes | expires        | datetime      |               |
-+-------------------+----------------+---------------+---------------+
-
-+-------------------+----------------+---------------+---------------+
-| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
-+-------------------+----------------+---------------+---------------+
 | posts             | post_ID        | int           | PK            |
 | posts             | user_ID        | int           |               |
 | posts             | topic_ID       | int           |               |
@@ -73,6 +66,7 @@
 | users             | forname        | varchar(255)  |               |
 | users             | surname        | varchar(255)  |               |
 | users             | role           | varchar(10)   |               |
+| users             |activeInviteCode| char(19)      |               |
 +-------------------+----------------+---------------+---------------+
 
 
