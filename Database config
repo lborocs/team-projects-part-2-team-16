@@ -1,3 +1,9 @@
+use the following to access the database:
+<?php
+include "db_connection.php";
+$conn = mysqli_connect($servername, $username, $password, $db_name);
+?>
+
 +-------------------+----------------+---------------+---------------+
 | TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
 +-------------------+----------------+---------------+---------------+
