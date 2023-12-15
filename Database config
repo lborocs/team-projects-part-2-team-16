@@ -71,11 +71,16 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 | users             | email          | varchar(255)  | unique        |
 | users             | encrypted_pass | varchar(255)  |               |
 | users             | icon           | varchar(15)   |               |
-| users             | forname        | varchar(255)  |               |
+| users             | forename       | varchar(255)  |               |
 | users             | surname        | varchar(255)  |               |
 | users             | role           | varchar(10)   |               |
-| users             |activeInviteCode| char(19)      | unique        |
 +-------------------+----------------+---------------+---------------+
 
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| activeInviteCodes | code           | char(19)      | PK            |
+| activeInviteCodes | expires        | Date          |               |
++-------------------+----------------+---------------+---------------+
 
 
