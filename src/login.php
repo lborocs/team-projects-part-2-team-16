@@ -106,6 +106,8 @@
         $_SESSION["role"] = $data["role"];
         $_SESSION["icon"] = $data["icon"];
         $_SESSION["lightmode"] = $data["lightmode"];
+        $_SESSION["expiry"]  = mktime(0, 0, 0, date("m")  , date("d")+1, date("Y"));
+
         if($data["role"] == "Employee"){
           header('location:./navbar_e.php');
         }else if ($data["role"] == "TL"){

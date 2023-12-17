@@ -60,6 +60,9 @@
 
 <body>
 	<?php session_start();
+	if($_SESSION["expiry"] >= date('m-d-Y')){
+		echo "<script>window.location.href='./login.php'</script>";
+	}
 	if(!isset($_SESSION["user_ID"])){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
