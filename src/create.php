@@ -2,6 +2,7 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 	<head>
+    <link rel="icon" type="image/x-icon" href="./logo.ico">
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Create Account</title>
@@ -13,24 +14,117 @@
 	</script>
 	<body>
   <?php
+  error_reporting(E_ALL);
+  ini_set('display_errors', '1');
+  set_error_handler("handleErrors");
+  function handleErrors($errno, $errstr, $errfl, $errln){
+          $errstr = addslashes($errstr);
+          echo $errstr;
+          die();
+  }
+  //end of error handling
     function structure_input($data) {
       $data = trim($data);
       $data = stripslashes($data);
       $data = htmlspecialchars($data);
       return $data;
     }
-    $firstname = $surname = $email = $pass1 = $pass2 = $password = $password2 =$code = "";
+    $firstname = $surname = $email = $pass1 = $pass2 = $encryptedPassword = $code = $ErrorMessage = "";
+    $accountCreated = "none";
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      $valid = true;
       $firstname = structure_input($_POST["firstnameField"]);
       $surname = structure_input($_POST["surnameField"]);
-      $email = structure_input($_POST["emailField"]) . "@make-it-all.co.uk";
+      $email = structure_input($_POST["emailField"]);
       $pass1 = structure_input($_POST["password1field"]);
       $pass2 = structure_input($_POST["password2field"]);
-      if($pass1 == $pass2){
-        $password = hash('sha256', $pass1);
-        $password2 = hash('sha256', $pass2);
-      }
       $code = structure_input($_POST["codeField"]);
+      //email check
+      if(preg_match('/^(([A-Za-z0-9])|([A-Za-z0-9.-_]+[A-Za-z0-9])){1,20}$/',$email)){
+        $email = $email."@make-it-all.co.uk";
+      }else{
+        $valid = false;
+        $ErrorMessage = "Error: Email format incorrect.";
+      }
+      //password checks
+      if($pass1 == $pass2){
+        if(str_contains(strtolower($pass1),strtolower($firstname))){
+          $valid = false;
+          $ErrorMessage = "Password must not contain firstname or secondname.";
+        }else if(str_contains(strtolower($pass1),strtolower($surname))){
+          $valid = false;
+          $ErrorMessage = "Password must not contain firstname or secondname.";
+        }
+        //regex for password
+        $uppercaseCheck = '/[A-Z]/';
+        $lowercaseCheck = '/[a-z]/';
+        $digitCheck = '/\d/';
+        $specialCharCheck = '/[!@#$%^&*(),.?":{}|<>]/';
+        $isUppercase = preg_match($uppercaseCheck,$pass1);
+        $isLowercase = preg_match($lowercaseCheck,$pass1);
+        $isDigit = preg_match($digitCheck,$pass1);
+        $isSpecialChar = preg_match($specialCharCheck,$pass1);
+        $isLengthValid = strlen($pass1) >= 8;
+        if($isUppercase && $isLowercase && $isDigit && $isSpecialChar && $isLengthValid){
+          $encryptedPassword = hash('sha256', $pass1);
+        }else{
+          $valid = false;
+          $ErrorMessage = "Passwords format incorrect.";
+        }
+        //
+      }else{
+        $valid = false;
+        $ErrorMessage = "Passwords must match.";
+      }
+      if(!preg_match("/^(([A-Za-z])|([A-Za-z])+([A-Za-z ])+([A-Za-z])){1,20}$/",$firstname)){
+        $valid = false;
+        $ErrorMessage = "Error: Firstname Format Invalid";
+      }else if(!preg_match("/^(([A-Za-z])|([A-Za-z-])+([A-Za-z])){1,20}$/",$surname)){
+        $valid = false;
+        $ErrorMessage = "Error: Surname Format Invalid";
+      }else if(!preg_match("/^[A-Z]{4}-[A-Z]{4}-[A-Z]{4}-[A-Z]{4}$/",$code)){
+        $valid = false;
+        $ErrorMessage = "Error: Invite Code Format Invalid";
+      }
+      //Decide what action to take
+      if($valid){
+        include "db_connection.php";
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
+        if (!$conn) {
+          echo "Connection Error." ;
+          exit;
+        }
+        $sql = "SELECT expires
+                FROM   activeInviteCodes 
+                WHERE  code ='".$code."'";
+
+        $result = mysqli_query($conn,$sql);
+        if (!$result) {
+            echo "Connection Error.";
+            exit;
+        }
+      
+        if (mysqli_num_rows($result) == 0) {
+          $ErrorMessage = 'Code Invalid, please try again.';
+        }else{
+          mysqli_query($conn,"DELETE FROM activeInviteCodes WHERE code ='".$code."'");
+          $currentDate = date("Y-m-d");
+          $expiryDate = mysqli_fetch_assoc($result)["expires"];
+          if($currentDate <= $expiryDate){
+            $sql = "INSERT INTO users
+                VALUES (NULL,'".$email."','".$encryptedPassword."','grey','".$firstname."','".$surname."','Employee',0)";
+            $result = mysqli_query($conn,$sql);
+            if (!$result) {
+              echo "Connection Error.";
+              exit;
+            }
+            $accountCreated = "block";
+            $ErrorMessage = '';
+          }else{
+            $ErrorMessage = "Code used is outdated, please request a new one from a member of staff.";
+          }
+        }
+      }
     }
   ?>
 	  <div class="bg-dark text-secondary px-4 py-5 text-center" style="margin:0px; padding:0px;">
@@ -39,6 +133,10 @@
 			</div>
 		</div>
 	  <div style = "padding:2%;">
+      <div class="alert alert-success alert-dismissible fade show" role="alert" style = "display:<?php echo $accountCreated; ?>;">
+        Success! Account has been created. Welcome to make-it-all! <a href="./login.php" class="alert-link">Log in now.</a>. 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
       <div class="m-0 border-0">
         <form class="row g-3" method="post"  action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
           <div class="col-md-4">
@@ -75,32 +173,15 @@
           <div class="col-md-6">
             <label for="codeField" class="form-label">Invite Code</label>
             <input id = "codeField" name="codeField" oninput = "checkCode(this.value)" type="text" class="form-control" 
-            required="" <?php  echo 'value="'; if (isset($_GET['code'])){echo $_GET['code'];}; echo '"'; ?>>
+            required="" <?php  echo 'value="'; if (isset($_GET['code'])){echo $_GET['code'];};if (isset($_POST['codeField'])){echo $_POST['codeField'];}; echo '"'; if (isset($_GET['code'])|isset($_POST['codeField'])){echo' readonly';} ?>>
             <div id = "codeStatus" class=""></div>
+          </div>
+          <div class="col-md-12 align-content-center" style="width:100%;">
+            <p style = "color:red;"><?php echo $ErrorMessage; ?></p>
           </div>
           <div class="col-md-12 align-content-center" style="width:100%;">
             <button class="btn btn-primary" style="width:47%; margin:0% 1%" type="submit">Create Account</button>
             <button class="btn btn-secondary" style="width:47%; margin:0% 1%" type="button" onclick = "cancel()">Cancel</button>
-            <p><?php
-              echo "<h2>Your Input:</h2>";
-              echo $firstname;
-              echo "<br>";
-              echo $surname;
-              echo "<br>";
-              echo $email;
-              echo "<br>";
-              echo $pass1;
-              echo "<br>";
-              echo $pass2;
-              echo "<br>";
-              echo $password;
-              echo "<br>";
-              echo $password2;
-              echo "<br>";
-              echo $code;
-              
-              ?>
-            </p>
           </div>
           <script>
             function checkName(name,n) {
@@ -218,6 +299,11 @@
                 codeField.className = 'form-control is-invalid';
               }
             }
+            <?php
+              if (isset($_GET['code'])|isset($_POST['codeField'])){
+                echo 'checkCode(document.getElementById("codeField").value);';
+              }
+            ?>
           </script>
         </form>
       </div>

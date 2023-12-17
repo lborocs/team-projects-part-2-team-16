@@ -6,6 +6,7 @@
   integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 <head>
+  <link rel="icon" type="image/x-icon" href="./logo.ico">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
@@ -52,62 +53,70 @@
   <link href="./signin.css" rel="stylesheet">
 </head>
 <script>
-  <?php 
   function createAcc() {
     window.location.href = "./create.php";
     return false;
   }
-  ?>
+
   </script>
 </script>
 
 <body class="text-center">
 <?php
+  session_start();
+  session_unset();
+  session_destroy();
+  session_write_close();
+  setcookie(session_name(),'',0,'/');
+  session_regenerate_id(true);
   function structure_input($data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
   }
-  $EnteredPassword = $EnteredUsername = "";
+  $errorMessage = '';
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include "db_connection.php";
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
-    $HashedPassword = hash("sha-256",structure_input($_POST["password"]));
+    $HashedPassword = hash("sha256",structure_input($_POST["password"]));
     $EnteredUsername = structure_input($_POST["username"]);
 
+    include "db_connection.php";
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
     if (!$conn) {
-      echo "Unable to connect to DB: " . mysqli_error();
+      echo "Connection Error." ;
       exit;
     }
-    
-    if (!mysqli_select_db("mydbname")) {
-      echo "Unable to select mydbname: " . mysqli_error();
-      exit;
-    }
-    
-    $sql = "SELECT encrypted_password
+    $sql = "SELECT user_ID,role,icon,encrypted_pass,lightmode
             FROM   users
-            WHERE  username =". $EnteredUsername .";"
+            WHERE  email ='".$EnteredUsername."'";
 
-    $result = mysqli_query($sql);
+    $result = mysqli_query($conn,$sql);
 
     if (!$result) {
-        echo "<script><alert>Error, Please Try Again.</alert></script>";
+        echo "Connection Error.";
         exit;
     }
-    
+    $data = mysqli_fetch_assoc($result);
     if (mysqli_num_rows($result) == 0) {
-      echo "<script><alert>Details Incorrect, Please Try Again.</alert></script>";
-        exit;
-    }
-
-    while ($row = mysqli_fetch_assoc($result)) {
-      if ($row["encrypted_password"] == $HashedPassword){
-        echo "<script><alert>Logged In.</alert></script>";
+      $errorMessage = 'Details Incorrect, please try again.';
+    }else{
+      if ($data["encrypted_pass"] == $HashedPassword){
+        session_start();
+        $_SESSION["user_ID"] = $data["user_ID"];
+        $_SESSION["role"] = $data["role"];
+        $_SESSION["icon"] = $data["icon"];
+        $_SESSION["lightmode"] = $data["lightmode"];
+        if($data["role"] == "Employee"){
+          header('location:./navbar_e.php');
+        }else if ($data["role"] == "TL"){
+          header('location:./navbar_tl.php');
+        }else if($data["role"] == "Manager"){
+          header('location:./navbar_m.php');
+        }else{
+          $errorMessage = 'Details Incorrect, please try again.';
+        }
       }else{
-        echo "<script><alert>Details Incorrect, Please Try Again.</alert></script>";
-        exit;
+        $errorMessage = 'Details Incorrect, please try again.';
       }
     }
   }
@@ -120,19 +129,18 @@
 
       <div class="form-floating">
         <input type="text" name="username" class="form-control" id="username" placeholder="Username">
-        <label for="username">Username</label>
+        <label for="username">Email</label>
       </div>
       <div class="form-floating">
         <input type="password" class="form-control" id="password" name = "password" placeholder="Password">
         <label for="floatingPassword">Password</label>
       </div>
+      <div><h4 style = "color:red;"><?php echo  $errorMessage; ?></h4></div>
       <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in </button>
       <button class="w-100 btn btn-lg btn-secondary" type="button" onclick="createAcc()" style="margin:1% 0%">Create
         Account</button>
     </form>
   </main>
-
-
 
 </body>
 
