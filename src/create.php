@@ -155,7 +155,7 @@
               <input id = "emailField" name="emailField" type="text" class="form-control" 
               aria-describedby="inputGroupPrepend3" required="" oninput="checkEmailValid(this.value)">
               <span class="input-group-text" id="basic-addon2">@make-it-all.co.uk</span>
-                <div id = "emailStatus" class=""></div>
+              <div id = "emailStatus" class=""></div>
             </div>
           </div>
           <div class="col-md-3">

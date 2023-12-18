@@ -48,9 +48,9 @@
 </head>
 
 
-<body >
+<body style = "margin:0px; padding:0px;">
 <?php session_start();
-	if($_SESSION["expiry"] <= date('m-d-Y')){
+	if($_SESSION["expiry"] >= date('m-d-Y')){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
 	if(!isset($_SESSION["user_ID"])){
@@ -69,7 +69,7 @@
 			window.location.href = "./login.php";
 		};
 	</script>
-	<header class="p-3 mb-3 border-bottom <?php echo $colour;?>">
+	<header class="p-3 border-bottom <?php echo $colour;?>" style = "margin:0px; padding:0px;">
 		<div class="container <?php echo $colour;?>">
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start <?php echo $colour;?>">
 

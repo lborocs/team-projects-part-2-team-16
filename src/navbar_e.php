@@ -55,7 +55,7 @@
 
 <body>
 	<?php session_start();
-	if($_SESSION["expiry"] <= date('m-d-Y')){
+	if($_SESSION["expiry"] >= date('m-d-Y')){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
 	if(!isset($_SESSION["user_ID"])){
@@ -70,14 +70,11 @@
 		$colour = "";
 	}?>
 	<script>
-		function settings() {
-			window.location.href = "./settings_e.php";
-		};
 		function logout() {
 			window.location.href = "./login.php";
 		};
 	</script>
-	<header class="p-3 mb-3 border-bottom <?php echo $colour;?>">
+	<header class="p-3 border-bottom <?php echo $colour;?>">
 		<div class="container <?php echo $colour;?>">
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start <?php echo $colour;?>">
 
@@ -98,11 +95,11 @@
 					</a>
 					<ul class="dropdown-menu text-small <?php echo $colour;?>" aria-labelledby="dropdownUser1">
 						<li><a class="dropdown-item <?php echo $colour;?>" href="./create_topic_e.php">Create New Topic...</a></li>
-						<li><a class="dropdown-item <?php echo $colour;?>" href="#" onclick="settings()">Settings</a></li>
+						<li><a class="dropdown-item <?php echo $colour;?>" href="./settings.php">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider <?php echo $colour;?>">
 						</li>
-						<li><a class="dropdown-item <?php echo $colour;?>" href="./settings.php">Sign out</a></li>
+						<li><a class="dropdown-item <?php echo $colour;?>" href="./login.php">Sign out</a></li>
 					</ul>
 				</div>
 			</div>

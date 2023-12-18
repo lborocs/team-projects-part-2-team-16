@@ -106,7 +106,7 @@
         $_SESSION["role"] = $data["role"];
         $_SESSION["icon"] = $data["icon"];
         $_SESSION["lightmode"] = $data["lightmode"];
-        $_SESSION["expiry"]  = mktime(0, 0, 0, date("m")  , date("d")+1, date("Y"));
+        $_SESSION["expiry"]  = date("'m-d-Y')",mktime(0, 0, 0, date("m"), date("d")+1, date("Y")));
 
         if(isset($_SESSION["role"])){
           header('location:./dashboard.php');

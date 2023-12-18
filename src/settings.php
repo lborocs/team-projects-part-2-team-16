@@ -44,12 +44,19 @@
 			}
 		?>
 	</div>
-	<div class="bg-dark text-secondary px-4 py-5 text-center" style="margin:0px; padding:0px;">
+	<div class="<?php if($_SESSION["lightmode"] == 1){echo 'bg-secondary text-light';}else{echo 'bg-dark text-light';}?>  px-4 py-5 text-center" style="margin:0px; padding:0px;">
 		<div class="py-5">
-			<h1 class="display-5 fw-bold text-white">Settings</h1>
+			<h1 class="display-5 fw-bold">Settings</h1>
 		</div>
 	</div>
 	<div class="container <?php echo $colour;?>">
+		<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
+			<label for="websiteColour" class="form-label">Website Colour</label>
+			<div class="mb-3 form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="websiteColour" checked="<?php if ($_SESSION['lightmode' == 1])echo "yes";?>">
+            <label class="form-check-label" for="websiteColour">Dark Mode</label>
+          </div>
+		</div>
 		<div class="col-md-12" style="padding:0px 4px;">
 			<label for="p1" class="form-label">Password</label>
 			<input type="password" class="form-control" id="p1" value="" required="">
@@ -59,27 +66,22 @@
 			<input type="password" class="form-control" id="p2" placeholder="" value="" required="">
 		</div>
 		<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
-			<label for="colorscheme" class="form-label">Website Colour</label>
-			<select class="form-select" id="colorscheme" required="">
-				<option value="">Light Mode</option>
-				<option>Dark Mode</option>
-			</select>
-		</div>
-		<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
 			<label for="icon" class="form-label">Icon Colour</label>
 			<select class="form-select" id="icon" required="">
 				<option value="">Grey</option>
 				<option>Blue</option>
 				<option>Green</option>
 				<option>Red</option>
+				<option>Pink</option>
+				<option>Purple</option>
 			</select>
 		</div>
-		<div class="row <?php echo $colour;?>" style="padding:0px 4px; margin:0px;">
-			<label for="copy-invite" class="form-label">Invite Code</label>
-			<div class="col-md-8" style="padding:0px">
-				<input type="text" class="form-control" id="copy-invite" value="https://make-it-all.co.uk/WDFT-GHTY-SDFR-GHTF" readonly>
+		<div class="row <?php echo $colour;?> align-items-end" style="padding:0px 4px;">
+			<div class="col-md-8" style="">
+				<label for="copy-invite" class="form-label">Invite Link</label>
+				<input type="text" class="form-control" id="copy-invite" value="http://34.142.93.199/create.php/?code=<?php echo $code;?>" readonly>
 			</div>
-			<div class="col-md-4" style="padding:0px">
+			<div class="col-md-4" style="">
 				<button class="btn btn-primary" id="copy-invite-button">Copy Link</button>
 				<button class="btn btn-secondary" id="copy-invite-button">Refresh Link</button>
 			</div>
@@ -91,7 +93,7 @@
 				<button class="w-100 btn btn-primary btn-md" type="submit">Save Changes</button>
 			</div>
 			<div class="col-md-6" style="padding:1% 2%;">
-				<button class="w-100 btn btn-secondary btn-md" type="submit" onclick="window.location.href = './view_team_tl.php';">Cancel</button>
+				<button class="w-100 btn btn-secondary btn-md" type="submit" onclick="window.location.href = './dashboard.php';">Cancel</button>
 			</div>
 		</div>
 	</div>
