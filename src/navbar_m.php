@@ -7,7 +7,7 @@
 
 <head>
 	<?php 
-		$taskview = "link-dark";
+		$taskcreate = "link-dark";
 		$topicview = "link-dark";
 		$dashview = "border-bottom border-primary link-primary";
 	?>
@@ -82,7 +82,7 @@
 				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 					<li><a href="./dashboard_m.php" class="nav-link px-2 <?php echo $dashview;?>">Dashboard</a></li>
 					<li><a href="./view_topics_m.php" class="nav-link px-2 <?php echo $colour;echo $topicview;?>">Topics</a></li>
-					<li><a href="./create_task_m.php" class="nav-link px-2 <?php echo $colour;echo $taskview;?>">Assign Tasks</a></li>
+					<li><a href="./create_task_m.php" class="nav-link px-2 <?php echo $colour;echo $taskcreate;?>">Assign Tasks</a></li>
 				</ul>
 
 				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.php">
