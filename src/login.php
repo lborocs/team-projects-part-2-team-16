@@ -108,12 +108,8 @@
         $_SESSION["lightmode"] = $data["lightmode"];
         $_SESSION["expiry"]  = mktime(0, 0, 0, date("m")  , date("d")+1, date("Y"));
 
-        if($data["role"] == "Employee"){
-          header('location:./navbar_e.php');
-        }else if ($data["role"] == "TL"){
-          header('location:./navbar_tl.php');
-        }else if($data["role"] == "Manager"){
-          header('location:./navbar_m.php');
+        if(isset($_SESSION["role"])){
+          header('location:./dashboard.php');
         }else{
           $errorMessage = 'Details Incorrect, please try again.';
         }
