@@ -72,7 +72,7 @@
 	}?>
 	<script>
 		function logout() {
-			window.location.href = "./login.html";
+			window.location.href = "./login.php";
 		};
 	</script>
 	<header class="p-3 mb-3 border-bottom <?php echo $colour;?>">
@@ -81,8 +81,8 @@
 
 				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 					<li><a href="./dashboard_m.php" class="nav-link px-2 <?php echo $dashview;?>">Dashboard</a></li>
-					<li><a href="./view_topics_m.php" class="nav-link px-2 <?php echo $colour;echo $topicview;?>">Topics</a></li>
-					<li><a href="./create_task_m.php" class="nav-link px-2 <?php echo $colour;echo $taskcreate;?>">Assign Tasks</a></li>
+					<li><a href="./view_topics.php" class="nav-link px-2 <?php echo $colour;echo $topicview;?>">Topics</a></li>
+					<li><a href="./create_task.php" class="nav-link px-2 <?php echo $colour;echo $taskcreate;?>">Assign Tasks</a></li>
 				</ul>
 
 				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.php">
@@ -95,9 +95,9 @@
 						<img src="./<?php echo $_SESSION["icon"];?>.png" alt="mdo" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small <?php echo $colour;?>" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item <?php echo $colour;?>" href="./create_topic_m.php">Create New Topic...</a></li>
+						<li><a class="dropdown-item <?php echo $colour;?>" href="./create_topic.php">Create New Topic...</a></li>
 						<li><a class="dropdown-item <?php echo $colour;?>" href="./manageEmp.php">Manage Employees</a></li>
-						<li><a class="dropdown-item <?php echo $colour;?>" href="./settings_m" onclick="settings()">Settings</a></li>
+						<li><a class="dropdown-item <?php echo $colour;?>" href="./settings.php">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider <?php echo $colour;?>">
 						</li>
