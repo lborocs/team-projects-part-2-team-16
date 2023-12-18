@@ -1,10 +1,13 @@
 <?php
+	include "db_connection.php";
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
 	session_start();
 	if($_SESSION["lightmode"] == 1){
 		$colour = "text-light bg-dark";
 	}else{
 		$colour = "";
-	}?>
+	}
+?>
 <html class = "<?php echo $colour;?>">
 
 <head>
@@ -27,7 +30,7 @@
 			if(!isset($_SESSION["role"])){
 				echo "<script>window.location.href='./login.php'</script>";
 			}else if($_SESSION["role"] == "Manager"){
-				$taskview = "link-dark";
+				$taskcreate = "link-dark";
 				$topicview = "link-dark";
 				$dashview = "link-dark";
 				include "./navbar_m.php";
@@ -53,7 +56,7 @@
 		<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
 			<label for="websiteColour" class="form-label">Website Colour</label>
 			<div class="mb-3 form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="websiteColour" checked="<?php if ($_SESSION['lightmode' == 1])echo "yes";?>">
+            <input class="form-check-input" type="checkbox" role="switch" id="websiteColour" <?php if ($_SESSION['lightmode' == 1]){echo "checked";}?>>
             <label class="form-check-label" for="websiteColour">Dark Mode</label>
           </div>
 		</div>
@@ -68,12 +71,13 @@
 		<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
 			<label for="icon" class="form-label">Icon Colour</label>
 			<select class="form-select" id="icon" required="">
-				<option value="">Grey</option>
-				<option>Blue</option>
-				<option>Green</option>
-				<option>Red</option>
-				<option>Pink</option>
-				<option>Purple</option>
+				<?php $colours = array("grey", "blue", "green", "red","pink","purple");
+				echo "<option value=''>".$_SESSION["icon"]."</option>";
+				foreach ($colours as $colour){
+					if($colour != $_SESSION["icon"]){
+						echo "<option>".$colour."</option>";
+					}
+				}?>
 			</select>
 		</div>
 		<div class="row <?php echo $colour;?> align-items-end" style="padding:0px 4px;">
