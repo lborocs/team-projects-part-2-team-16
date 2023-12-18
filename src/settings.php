@@ -56,7 +56,7 @@
 		<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
 			<label for="websiteColour" class="form-label">Website Colour</label>
 			<div class="mb-3 form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" id="websiteColour" <?php if ($_SESSION['lightmode' == 1]){echo "checked";}?>>
+            <input class="form-check-input" type="checkbox" role="switch" id="websiteColour" <?php if ($_SESSION["lightmode"] == 1){echo "checked";}?>>
             <label class="form-check-label" for="websiteColour">Dark Mode</label>
           </div>
 		</div>

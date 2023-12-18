@@ -3,7 +3,7 @@
 			if(!isset($_SESSION["role"])){
 				echo "<script>window.location.href='./login.php'</script>";
 			}else if($_SESSION["role"] == "Manager"){
-				$taskview = "link-dark";
+				$taskcreate = "link-dark";
 				$topicview = "link-dark";
 				$dashview = "border-bottom border-primary link-primary";
 				include "./navbar_m.php";

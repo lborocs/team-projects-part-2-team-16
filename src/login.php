@@ -133,7 +133,7 @@
         <input type="password" class="form-control" id="password" name = "password" placeholder="Password">
         <label for="floatingPassword">Password</label>
       </div>
-      <div><h4 style = "color:red;"><?php echo  $errorMessage; ?></h4></div>
+      <div><p style = "color:red;"><?php echo  $errorMessage; ?></p></div>
       <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in </button>
       <button class="w-100 btn btn-lg btn-secondary" type="button" onclick="createAcc()" style="margin:1% 0%">Create
         Account</button>
