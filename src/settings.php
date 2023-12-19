@@ -122,7 +122,7 @@
 				  echo "Connection Error." ;
 				  exit;
 				}	
-				$sql = "UPDATE users SET encrypted_pass ='".$encryptedPassword."'";
+				$sql = "UPDATE users SET encrypted_pass ='".$encryptedPassword."' WHERE user_ID='".$_SESSION['user_ID']."'";
 				mysqli_query($conn,$sql);
 				$saved = "block";
             	$ErrorMessage = '';	
