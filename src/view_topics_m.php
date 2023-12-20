@@ -62,6 +62,7 @@
 </head>
 
 <body>
+
 <?php
 include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -71,7 +72,7 @@ include "db_connection.php";
     ?>
     <script>
         function settings() {
-            window.location.href = "./settings_m.html";
+            window.location.href = "./settings_m.php";
         };
         function logout() {
             window.location.href = "./login.php";
@@ -111,135 +112,161 @@ include "db_connection.php";
         </div>
     </header>
 
+    <form action="view_topics_m.php" method="post">
     <div class="input-group mb-3 Search con2">
         <input type="text" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
             aria-expanded="false">Sort By</button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a id="Date" class="dropdown-item" href="#">Date Posted</a></li>
-            <li><a id="Post" class="dropdown-item" href="#">Posts</a></li>
-            <li><a id="View" class="dropdown-item" href="#">Views</a></li>
+            <li><button id="Date" name="ABC" class="dropdown-item" type="submit">Alphabetically</button></li>
+            <li><button id="Date" name="Date" class="dropdown-item" type="submit">Date Posted</button></li>
+            <li><button id="Post" name="Post" class="dropdown-item" type="submit">Posts</button></li>
+            <li><button id="View" name="View" class="dropdown-item" type="submit">Views</button></li>
         </ul>
+        
     </div>
+    </form>
 
     <button type="button" class="btn btn-primary input-group mb-3 createPost conButton"
         onclick="window.location.href='./create_topic_m.html';">Create Topic</button>
 
 
-    <div class=" con1">
+<div class="con1">
 
+<?php
+if (isset($_POST['ABC'])){
+    $PHPID = "ABC";
+}
+elseif (isset($_POST['Date'])){
+    $PHPID = "Date";
+}
+elseif(isset($_POST['Post'])){
+    $PHPID = "Post";
+}
+elseif(isset($_POST['View'])){
+    $PHPID = "View";
+}
+
+
+switch($PHPID){
+    case "ABC":
+        $sql = "SELECT title, views, posts  FROM topics ORDER BY title ASC";
+        $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
     
-   <?php
+        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+            onclick="window.location.href=\'./view_posts_m.html\';">
+            <div style="display: inline-block; width: 100%">
+                <p>' . $resultA["title"] . '</p>
+                <div style="float: right;height: 20px;position: relative;">
+                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
+                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br>';    
+        }
 
-    $sql = "SELECT title, views, posts  FROM topics ORDER BY title ASC";
-    $Result = mysqli_query($conn, $sql);
+        break;
+
+    case "Date":
+        $sql = "SELECT title, views, posts  FROM topics ORDER BY Date ASC";
+        $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
     
-    while($resultA = mysqli_fetch_array($Result)){
+        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+            onclick="AnotherView()">
+            <div style="display: inline-block; width: 100%">
+                <p>' . $resultA["title"] . '</p>
+                <div style="float: right;height: 20px;position: relative;">
+                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
+                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br>';    
+        }
 
-    echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-        onclick="window.location.href=\'./view_posts_m.html\';">
-        <div style="display: inline-block; width: 100%">
-            <p>' . $resultA["title"] . '</p>
-            <div style="float: right;height: 20px;position: relative;">
-                <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                    <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
-                    <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
-                </span>
-            </div>
-        </div>
-    </div>
-    <br>';
+        break;
 
-    }
+    case "Post":
+        $sql = "SELECT title, views, posts  FROM topics ORDER BY posts ASC";
+        $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
+    
+        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+            onclick="AnotherView()">
+            <div style="display: inline-block; width: 100%">
+                <p>' . $resultA["title"] . '</p>
+                <div style="float: right;height: 20px;position: relative;">
+                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
+                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br>';    
+        }
 
-    ?>
-    <!--
-       <div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">
+        break;
+
+    case "View";
+        $sql = "SELECT title, views, posts  FROM topics ORDER BY views ASC";
+        $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
+    
+        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+            onclick="AnotherView()">
             <div style="display: inline-block; width: 100%">
-                <p>Software Engineering</p>
+                <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
                     <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: 2
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: 13
+                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
+                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
                     </span>
                 </div>
             </div>
         </div>
-        <div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">
+        <br>';    
+        }
+
+        break;
+
+    default:
+        $sql = "SELECT title, views, posts  FROM topics ORDER BY title ASC";
+        $Result = mysqli_query($conn, $sql);
+    
+        while($resultA = mysqli_fetch_array($Result)){
+
+        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+            onclick="AnotherView()">
             <div style="display: inline-block; width: 100%">
-                <p>Software Issues</p>
+                <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
                     <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: 12
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px; margin-left: 15px;"> views:
-                        132
+                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
+                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
                     </span>
                 </div>
             </div>
         </div>
-        <div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">
-            <div style="display: inline-block; width: 100%">
-                <p>Printing</p>
-                <div style="float: right;height: 20px;position: relative;">
-                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: 5
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: 56
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">
-            <div style="display: inline-block; width: 100%">
-                <p>Training</p>
-                <div style="float: right;height: 20px;position: relative;">
-                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: 8
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px; margin-left: 15px;"> views:
-                        132
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">
-            <div style="display: inline-block; width: 100%">
-                <p>Health and Safty</p>
-                <div style="float: right;height: 20px;position: relative;">
-                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: 4
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px; margin-left: 15px;"> views: 43
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">
-            <div style="display: inline-block; width: 100%">
-                <p>Company Policies</p>
-                <div style="float: right;height: 20px;position: relative;">
-                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: 6
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: 90
-                    </span>
-                </div>
-            </div>
-        </div>
-         <button type="button" style="top: 570px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">Software Issues</button>
-        <button type="button" style="top: 645px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">Printing</button>
-        <button type="button" style="top: 720px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">Training</button>
-        <button type="button" style="top: 795px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">Health and Saftey</button>
-        <button type="button" style="top: 945px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">Company Policies</button>
-        <button type="button" style="top: 870px;" class="topic1 col-xl"
-            onclick="window.location.href='./view_posts_m.html';">General Queries</button> -->
+        <br>';
+
+    } 
+    
+}
+
+?>
+
     </div>
 
 
@@ -273,3 +300,5 @@ include "db_connection.php";
         crossorigin="anonymous"></script>
 
 </body>
+
+
