@@ -86,5 +86,13 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 | activeInviteCodes | code           | char(19)      | PK            |
 | activeInviteCodes | expires        | Date          |               |
 +-------------------+----------------+---------------+---------------+
-
-
+Need to add to database:
++-------------------+----------------+---------------+---------------+
+| TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
++-------------------+----------------+---------------+---------------+
+| replies            | reply_ID       | int           | PK           |
+| replies            | content        | varchar(1000) |              |
+| replies            | Post_ID        | int           |              |
+| replies            | Date           | Date          |              |
+| replies            | user_ID        | int           |               |
++-------------------+----------------+---------------+---------------+
