@@ -48,6 +48,7 @@
 </head>
 
 <body>
+
   <?php
 include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -57,10 +58,10 @@ include "db_connection.php";
     ?>
   <script>
 		function settings() {
-			window.location.href = "./settings_m.html";
+			window.location.href = "./settings_m.php";
 		};
 		function logout() {
-			window.location.href = "./login.html";
+			window.location.href = "./login.php";
 		};
 	</script>
 	<header class="p-3 mb-3 border-bottom">
@@ -68,12 +69,12 @@ include "db_connection.php";
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 
 				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-					<li><a href="./dashboard_m.html" class="nav-link px-2 link-dark">Dashboard</a></li>
-					<li><a href="./view_topics_m.html" class="nav-link px-2 link-dark">Topics</a></li>
-					<li><a href="./create_task_m.html" class="nav-link px-2 link-dark">Assign Tasks</a></li>
+					<li><a href="./dashboard_m.php" class="nav-link px-2 link-dark">Dashboard</a></li>
+					<li><a href="./view_topics_m.php" class="nav-link px-2 link-dark">Topics</a></li>
+					<li><a href="./create_task_m.php" class="nav-link px-2 link-dark">Assign Tasks</a></li>
 				</ul>
 
-				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.html">
+				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.php">
 					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search">
 				</form>
 
@@ -83,8 +84,8 @@ include "db_connection.php";
 						<img src="./icon.png" alt="mdo" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item" href="./create_topic_m.html">Create New Topic...</a></li>
-						<li><a class="dropdown-item" href="./manageEmp.html">Manage Employees</a></li>
+						<li><a class="dropdown-item" href="./create_topic_m.php">Create New Topic...</a></li>
+						<li><a class="dropdown-item" href="./manageEmp.php">Manage Employees</a></li>
 						<li><a class="dropdown-item" href="#" onclick="settings()">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider">
@@ -96,26 +97,48 @@ include "db_connection.php";
 		</div>
 	</header>
 
+  <form action="view_topics_m.php" method="post">
   <div class="input-group mb-3 Search con2">
     <input type="text" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
       aria-expanded="false">Sort By</button>
     <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="#">Alphabetically</a></li>
-      <li><a class="dropdown-item" href="#">Date Posted</a></li>
-      <li><a class="dropdown-item" href="#">Views</a></li>
+      <li><a class="dropdown-item" name="ABC" type="submit">Alphabetically</a></li>
+      <li><a class="dropdown-item" name="Date" type="submit">Date Posted</a></li>
+      <li><a class="dropdown-item" name="Post" type="submit">Views</a></li>
     </ul>
   </div>
-
+  </form>
   <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton"
-    onclick="window.location.href='./create_post_m.html';">Create Post</button>
+    onclick="window.location.href='./create_post_m.php';">Create Post</button>
 
   <div class="container con1">
   <div class="row mx-auto">
 
-  <?php
 
-$sql = "SELECT title, content, img_url  FROM posts ORDER BY title ASC";
+
+
+
+  <?php
+if (isset($_POST['ABC'])){
+    $PHPID = "ABC";
+}
+elseif (isset($_POST['Date'])){
+    $PHPID = "Date";
+}
+elseif(isset($_POST['Post'])){
+    $PHPID = "Post";
+}
+
+$Current_Topic = $_GET['Post_topic_ID'];
+$INT_ID = (int)$Current_Topic;
+
+$sql = "UPDATE topics SET views = views + 1 WHERE topic_ID = $INT_ID";
+
+switch($PHPID){
+    case "ABC":
+        
+$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
 $Result = mysqli_query($conn, $sql);
 
 while($resultA = mysqli_fetch_array($Result)){
@@ -127,18 +150,93 @@ echo '
       class="card_img" alt="...">
     <div class="card-body">
       <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-      <a class="stretched-link" href="./view_ind_post_m.html"></a>
+      <a class="stretched-link" href="./view_ind_post_m.php"></a>
       </div>
       </div>
 </div>';
 
 }
 
+        break;
+
+    case "Date":
+        
+$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY Date ASC";
+$Result = mysqli_query($conn, $sql);
+
+while($resultA = mysqli_fetch_array($Result)){
+
+echo '
+<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+<div class="card mx-auto">
+    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+      class="card_img" alt="...">
+    <div class="card-body">
+      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+      <a class="stretched-link" href="./view_ind_post_m.php"></a>
+      </div>
+      </div>
+</div>';
+
+}
+
+        break;
+
+    case "Post":
+        
+$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
+$Result = mysqli_query($conn, $sql);
+
+while($resultA = mysqli_fetch_array($Result)){
+
+echo '
+<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+<div class="card mx-auto">
+    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+      class="card_img" alt="...">
+    <div class="card-body">
+      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+      <a class="stretched-link" href="./view_ind_post_m.php"></a>
+      </div>
+      </div>
+</div>';
+
+}
+        break;
+
+    default:
+        
+$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
+$Result = mysqli_query($conn, $sql);
+
+while($resultA = mysqli_fetch_array($Result)){
+
+echo '
+<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+<div class="card mx-auto">
+    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+      class="card_img" alt="...">
+    <div class="card-body">
+      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+      <a class="stretched-link" href="./view_ind_post_m.php"></a>
+      </div>
+      </div>
+</div>';
+
+}
+    
+}
+
 ?>
+
+
+<!--
+
+
 
 </div>
   </div>
-<!--
+
     <div class="row mx-auto">
       <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
         <div class="card mx-auto">
