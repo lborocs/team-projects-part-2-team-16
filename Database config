@@ -26,6 +26,7 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 | posts             | content        | varchar(1000) |               |
 | posts             | img_url        | varchar(255)  |               |
 | posts             | Date           | date          |               |
+| posts             | views          | int           |               |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
