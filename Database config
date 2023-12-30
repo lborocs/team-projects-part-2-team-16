@@ -4,8 +4,6 @@ include "db_connection.php";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 ?>
 
-- For the Topics and Posts database, a new row is needed for the date added so we can sort by this.
-
 +-------------------+----------------+---------------+---------------+
 | TABLE_NAME        | COLUMN_NAME    | COLUMN_TYPE   | CONSRAINTS    |
 +-------------------+----------------+---------------+---------------+
