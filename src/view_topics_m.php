@@ -114,14 +114,14 @@ include "db_connection.php";
 
     <form action="view_topics_m.php" method="post">
     <div class="input-group mb-3 Search con2">
-        <input type="text" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
+        <input type="text" name="Search" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
             aria-expanded="false">Sort By</button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><button id="Date" name="ABC" class="dropdown-item" type="submit">Alphabetically</button></li>
-            <li><button id="Date" name="Date" class="dropdown-item" type="submit">Date Posted</button></li>
-            <li><button id="Post" name="Post" class="dropdown-item" type="submit">Posts</button></li>
-            <li><button id="View" name="View" class="dropdown-item" type="submit">Views</button></li>
+            <li><button name="ABC" class="dropdown-item" type="submit">Alphabetically</button></li>
+            <li><button name="Date" class="dropdown-item" type="submit">Date Posted</button></li>
+            <li><button name="Post" class="dropdown-item" type="submit">Posts</button></li>
+            <li><button name="View" class="dropdown-item" type="submit">Views</button></li>
         </ul>
         
     </div>
@@ -134,6 +134,11 @@ include "db_connection.php";
 <div class="con1">
 
 <?php
+if (isset($_POST['Search']) && $_POST['Search'] !== ""){
+    $PHPID = "Search";
+    $Topic_search = "%" . strtolower($_POST['Search']) . "%";
+}
+else{
 if (isset($_POST['ABC'])){
     $PHPID = "ABC";
 }
@@ -146,17 +151,40 @@ elseif(isset($_POST['Post'])){
 elseif(isset($_POST['View'])){
     $PHPID = "View";
 }
-
+}
 
 switch($PHPID){
-    case "ABC":
-        $sql = "SELECT title, views, posts  FROM topics ORDER BY title ASC";
+    case "Search":
+        $sql = "SELECT topic_ID, title, views, posts  FROM topics WHERE LOWER(title) LIKE '$Topic_search' ORDER BY title ASC";
         $Result = mysqli_query($conn, $sql);
         
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href=\'./view_posts_m.html\';">
+            onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
+            <div style="display: inline-block; width: 100%">
+                <p>' . $resultA["title"] . '</p>
+                <div style="float: right;height: 20px;position: relative;">
+                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
+                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br>';    
+        }
+
+        break;
+
+    case "ABC":
+        $sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY title ASC";
+        $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
+    
+        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+            onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
             <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -173,14 +201,14 @@ switch($PHPID){
         break;
 
     case "Date":
-        $sql = "SELECT title, views, posts  FROM topics ORDER BY Date ASC";
+        $sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY Date ASC";
         $Result = mysqli_query($conn, $sql);
         
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="AnotherView()">
-            <div style="display: inline-block; width: 100%">
+        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
                     <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
@@ -196,14 +224,14 @@ switch($PHPID){
         break;
 
     case "Post":
-        $sql = "SELECT title, views, posts  FROM topics ORDER BY posts ASC";
+        $sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY posts DESC";
         $Result = mysqli_query($conn, $sql);
         
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="AnotherView()">
-            <div style="display: inline-block; width: 100%">
+        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
                     <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
@@ -218,15 +246,15 @@ switch($PHPID){
 
         break;
 
-    case "View";
-        $sql = "SELECT title, views, posts  FROM topics ORDER BY views ASC";
+    case "View":
+        $sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY views DESC";
         $Result = mysqli_query($conn, $sql);
         
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="AnotherView()">
-            <div style="display: inline-block; width: 100%">
+        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
                     <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
@@ -242,14 +270,14 @@ switch($PHPID){
         break;
 
     default:
-        $sql = "SELECT title, views, posts  FROM topics ORDER BY title ASC";
+        $sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY title ASC";
         $Result = mysqli_query($conn, $sql);
     
         while($resultA = mysqli_fetch_array($Result)){
 
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="AnotherView()">
-            <div style="display: inline-block; width: 100%">
+        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
                     <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
@@ -300,5 +328,6 @@ switch($PHPID){
         crossorigin="anonymous"></script>
 
 </body>
+
 
 
