@@ -55,7 +55,15 @@ include "db_connection.php";
     if (!$conn) {
       echo "Connection Error." ;
     }
+
+    
+    $Current_Topic = $_GET['Post_topic_ID'];
+  
+    $INT_ID = (int)$Current_Topic;
     ?>
+
+
+
   <script>
 		function settings() {
 			window.location.href = "./settings_m.php";
@@ -97,18 +105,21 @@ include "db_connection.php";
 		</div>
 	</header>
 
-  <form action="view_topics_m.php" method="post">
-  <div class="input-group mb-3 Search con2">
-    <input type="text" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-      aria-expanded="false">Sort By</button>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" name="ABC" type="submit">Alphabetically</a></li>
-      <li><a class="dropdown-item" name="Date" type="submit">Date Posted</a></li>
-      <li><a class="dropdown-item" name="Post" type="submit">Views</a></li>
-    </ul>
-  </div>
-  </form>
+  <form action="view_posts_m.php" method="post">
+    <div class="input-group mb-3 Search con2">
+        <input type="text" name="Search" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
+        <input type="hidden" name="Post_topic_ID" value="<?php echo $INT_ID; ?>">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">Sort By</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><button name="ABC" class="dropdown-item" type="submit">Alphabetically</button></li>
+            <li><button name="Date" class="dropdown-item" type="submit">Date Posted</button></li>
+            <li><button name="View" class="dropdown-item" type="submit">Views</button></li>
+        </ul>
+        
+    </div>
+    </form>
+
   <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton"
     onclick="window.location.href='./create_post_m.php';">Create Post</button>
 
@@ -119,92 +130,105 @@ include "db_connection.php";
 
 
 
-  <?php
+<?php
+
+if (isset($_POST['Search']) && $_POST['Search'] !== ""){
+  $INT_ID = $_POST['Post_topic_ID'];
+  $PHPID = "Search";
+  $Topic_search = "%" . strtolower($_POST['Search']) . "%";
+}
+else{
 if (isset($_POST['ABC'])){
-    $PHPID = "ABC";
+  $INT_ID = $_POST['Post_topic_ID'];
+  $PHPID = "ABC";
 }
 elseif (isset($_POST['Date'])){
-    $PHPID = "Date";
-}
-elseif(isset($_POST['Post'])){
-    $PHPID = "Post";
-}
+  $INT_ID = $_POST['Post_topic_ID'];
+  var_dump($_POST);
 
-$Current_Topic = $_GET['Post_topic_ID'];
-$INT_ID = (int)$Current_Topic;
-
-$sql = "UPDATE topics SET views = views + 1 WHERE topic_ID = $INT_ID";
+  $PHPID = "Date";
+}
+elseif(isset($_POST['View'])){
+  $INT_ID = $_POST['Post_topic_ID'];
+  $PHPID = "View";
+}
+}
 
 switch($PHPID){
-    case "ABC":
+
+case "ABC":
         
-$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
-$Result = mysqli_query($conn, $sql);
+  $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
+  $Result = mysqli_query($conn, $sql);
+  
+  while($resultA = mysqli_fetch_array($Result)){
+  
+  echo '
+  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+  <div class="card mx-auto">
+      <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+        class="card_img" alt="...">
+      <div class="card-body">
+        <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+        <a class="stretched-link" href="./view_ind_post_m.php"></a>
+        </div>
+        </div>
+  </div>';
+  
+  }
+      
 
-while($resultA = mysqli_fetch_array($Result)){
 
-echo '
-<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-<div class="card mx-auto">
-    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-      class="card_img" alt="...">
-    <div class="card-body">
-      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-      <a class="stretched-link" href="./view_ind_post_m.php"></a>
-      </div>
-      </div>
-</div>';
+break;
 
-}
-
-        break;
-
-    case "Date":
+case "Date":
         
-$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY Date ASC";
-$Result = mysqli_query($conn, $sql);
+  $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY DATE ASC";
+  $Result = mysqli_query($conn, $sql);
+  
+  while($resultA = mysqli_fetch_array($Result)){
+  
+  echo '
+  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+  <div class="card mx-auto">
+      <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+        class="card_img" alt="...">
+      <div class="card-body">
+        <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+        <a class="stretched-link" href="./view_ind_post_m.php"></a>
+        </div>
+        </div>
+  </div>';
+  
+  }
+      
 
-while($resultA = mysqli_fetch_array($Result)){
+break;
 
-echo '
-<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-<div class="card mx-auto">
-    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-      class="card_img" alt="...">
-    <div class="card-body">
-      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-      <a class="stretched-link" href="./view_ind_post_m.php"></a>
-      </div>
-      </div>
-</div>';
+case "View":
+  $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY views DESC";
+  $Result = mysqli_query($conn, $sql);
+  
+  while($resultA = mysqli_fetch_array($Result)){
+  
+  echo '
+  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+  <div class="card mx-auto">
+      <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+        class="card_img" alt="...">
+      <div class="card-body">
+        <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+        <a class="stretched-link" href="./view_ind_post_m.php"></a>
+        </div>
+        </div>
+  </div>';
+  
+  }
+      
 
-}
+break;
 
-        break;
-
-    case "Post":
-        
-$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
-$Result = mysqli_query($conn, $sql);
-
-while($resultA = mysqli_fetch_array($Result)){
-
-echo '
-<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-<div class="card mx-auto">
-    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-      class="card_img" alt="...">
-    <div class="card-body">
-      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-      <a class="stretched-link" href="./view_ind_post_m.php"></a>
-      </div>
-      </div>
-</div>';
-
-}
-        break;
-
-    default:
+default:
         
 $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
 $Result = mysqli_query($conn, $sql);
@@ -228,114 +252,6 @@ echo '
 }
 
 ?>
-
-
-<!--
-
-
-
-</div>
-  </div>
-
-    <div class="row mx-auto">
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-        <div class="card mx-auto">
-          <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-        <div class="card mx-auto">
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-        <div class="card mx-auto">
-          <img src="https://www.copahost.com/blog/wp-content/uploads/2019/02/blog-404-error-code-example.jpg"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
-        <div class="card mx-auto">
-          <img src="https://oldschool.runescape.wiki/images/thumb/Smashed_table.png/800px-Smashed_table.png"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
-        <div class="card mx-auto">
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
-        <div class="card mx-auto">
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
-        <div class="card mx-auto">
-          <img src="https://cdn.pixabay.com/photo/2019/06/17/19/48/source-4280758_640.jpg" class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
-        <div class="card mx-auto">
-          <img
-            src="https://www.freecodecamp.org/news/content/images/size/w2000/2022/01/safar-safarov-koOdUvfGr4c-unsplash--1-.jpg"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">Some quick example text to build on the card title and make up the bulk of the
-              card's content.</p>
-            <a class="stretched-link" href="./view_ind_post_m.html"></a>
-          </div>
-        </div>
-      </div>
-
-    </div>
--->
   </div>
 
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
