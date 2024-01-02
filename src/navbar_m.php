@@ -64,11 +64,6 @@
 	}else{
 		$colour = "";
 	}?>
-	<script>
-		function logout() {
-			window.location.href = "./login.php";
-		};
-	</script>
 	<header class="p-3 border-bottom <?php echo $colour;?>">
 		<div class="container <?php echo $colour;?>">
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start <?php echo $colour;?>">
@@ -95,7 +90,7 @@
 						<li>
 							<hr class="dropdown-divider <?php echo $colour;?>">
 						</li>
-						<li><a class="dropdown-item <?php echo $colour;?>"  onclick="logout()">Sign out</a></li>
+						<li><a class="dropdown-item <?php echo $colour;?>" href="./login.php">Sign out</a></li>
 					</ul>
 				</div>
 			</div>
