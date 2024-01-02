@@ -90,7 +90,7 @@
 						<li>
 							<hr class="dropdown-divider <?php echo $colour;?>">
 						</li>
-						<li><a class="dropdown-item <?php echo $colour;?>" href="#" onclick="logout()">Sign out</a></li>
+						<li><a class="dropdown-item <?php echo $colour;?>" href="./login.php">Sign out</a></li>
 					</ul>
 				</div>
 			</div>
