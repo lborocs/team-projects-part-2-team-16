@@ -64,11 +64,6 @@
 	}else{
 		$colour = "";
 	}?>
-	<script>
-		function logout() {
-			window.location.href = "./login.php";
-		};
-	</script>
 	<header class="p-3 border-bottom <?php echo $colour;?>" style = "margin:0px; padding:0px;">
 		<div class="container <?php echo $colour;?>">
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start <?php echo $colour;?>">
