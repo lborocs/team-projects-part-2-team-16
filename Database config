@@ -32,8 +32,8 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 +-------------------+----------------+---------------+---------------+
 | project           | project_ID     | int           | PK            |
 | project           | team_leader    | int           |               |
-| project           | dueDate        | date          |               |
 | project           | project_title  | varchar(255)  |               |
+| project           | due_date       | date          |               |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
@@ -56,6 +56,7 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 | tasks             | description    | varchar(1000) |               |
 | tasks             | due_date       | date          |               |
 | tasks             | est_hours      | int           |               |
+| tasks             | progess        | int           |               |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
