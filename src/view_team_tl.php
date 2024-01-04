@@ -6,15 +6,6 @@
 		exit;
 	}
 	
-	// mysql: SELECT * FROM project;
-	// +------------+-------------+----------------+------------+
-	// | project_ID | team_leader | project_title  | due_date   |
-	// +------------+-------------+----------------+------------+
-	// |          1 |           1 | test project 1 | 2030-01-01 |
-	// |          2 |           1 | test project 2 | 2040-01-01 |
-	// |          3 |           1 | test project 3 | 2050-01-01 |
-	// +------------+-------------+----------------+------------+
-	
 	$result = mysqli_query($conn, "SELECT project_ID, project_title, due_date FROM  project where team_leader =".$_SESSION["user_ID"]);
 	if (!$result) {
 		echo "Connection Error.";
@@ -33,51 +24,26 @@
 		exit;
 	}
 	$taskArray = mysqli_fetch_all($result);
-	// example where current project id = 1:
-	// +---------+---------+----------+---------+-------+-------------+------------+-----------+----------+
-	// | task_ID | user_ID | forename | surname | title | description | due_date   | est_hours | progress |
-	// +---------+---------+----------+---------+-------+-------------+------------+-----------+----------+
-	// |       1 |       1 | Harry    | Kane    | title | desc        | 2023-12-27 |         7 |        0 |
-	// |       2 |       1 | Harry    | Kane    | title | desc        | 2023-12-27 |         7 |        0 |
-	// +---------+---------+----------+---------+-------+-------------+------------+-----------+----------+
+	
+	$teamCompletedTasks = 0;
+	$totalTeamTasks = count($taskArray);
+	$currentUserID = -1;
+	$usersProgress = [];			//dictionary for storing [completed tasks, total tasks]
+	foreach ($taskArray as $task) {
+		if ($task[1] != $currentUserID) {		//if current task is for a new team member
+			$currentUserID = $task[1];
+			$usersProgress[$currentUserID] = [0,0];
+		}
+		$usersProgress[$currentUserID][1]++;
+		if ($task[8] == 2) {
+			$teamCompletedTasks++;
+			$usersProgress[$currentUserID][0]++;
+		}
+	}
 ?>
 <html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
 <head>
-	<meta charset="utf-8">
-	<title>Dashboard</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
-
-	<link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-	<link rel="apple-touch-icon" href="/docs/5.0/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-	<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-	<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-	<link rel="manifest" href="/docs/5.0/assets/img/favicons/manifest.json">
-	<link rel="mask-icon" href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
-	<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon.ico">
-	<meta name="theme-color" content="#7952b3">
-
-
 	<style>
-		/*.bd-placeholder-img {
-			font-size: 1.125rem;
-			text-anchor: middle;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			user-select: none;
-		}
-		
-		@media (min-width: 768px) {
-			.bd-placeholder-img-lg {
-				font-size: 3.5rem;
-			}
-		}*/
-		
 		#page-content {
 			margin-bottom: 12rem;
 		}
@@ -140,7 +106,6 @@
 			margin: 2%;
 		}
 	</style>
-	<link href="./headers.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-3" id="page-content">
@@ -151,34 +116,29 @@
 			</div>
 			<div class="flex-grow-1 p-2">
 				<div class="progress" style="width: 28%; height: 10px; float:right;">
-					<div class="progress-bar" role="progressbar" style="width: 17%;" aria-valuenow="17"
+					<div class="progress-bar" role="progressbar"
+					<?php echo 'style="width: '.(($teamCompletedTasks/$totalTeamTasks)*100).'%;" aria-valuenow="'.(($teamCompletedTasks/$totalTeamTasks)*100).'"';?>
 						aria-valuemin="0" aria-valuemax="100"></div>
 				</div>
 			</div>
 			<div class="p-2">
-				<small class="text-muted" style="float:right;">2 of 12</small>
+				<small class="text-muted" style="float:right;"><?php echo $teamCompletedTasks.' of '.$totalTeamTasks;?></small>
 			</div>
 		</div>
 	</div>
 	<div class="accordion">
 		<?php
-		$totalTeamTasks = count($taskArray);
-		$teamCompletedTasks = 0;
-		$currentUserID = -1;
+		$numOfUsersAdded = 0;
 		foreach ($taskArray as $task) {
-			$totalTeamTasks++;
 			if ($task[1] != $currentUserID) {					//if current task is for a new team member
 				$currentUserID = $task[1];
-				$totalUserTasks = 0;
-				$tasksCompletedByUser = 0;
 				if ($currentUserID != $taskArray[0][1]) {		//if current team member is not the first team member in the team
+					$numOfUsersAdded++;
 					echo '</div></div></div></div></div>';		//ends accordion item for previous team member
 				}
-				// to change in text below: progess bar -----------------------------------------------------------------------------------------------
-				// current issues: need to find progress before progress bars are echoed
 				echo '<div class="accordion-item">
 						<h2 class="accordion-header">
-							<div class="accordion-button" onclick="toggleAccordion(\'collapseOne\')">
+							<div class="accordion-button" id="accordion-button-'.$numOfUsersAdded.'" onclick="toggleAccordion('.$numOfUsersAdded.')">
 								<div class="row flex-md-nowrap align-items-center">
 									<div class="col-md-9" type="button">
 										<h2>'.$task[2].' '.$task[3].'</h2>
@@ -211,18 +171,19 @@
 									</div>
 								</div>
 								<div class="progress memberprogress" style="width: 20%; height: 10px;">
-									<div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
+									<div class="progress-bar" role="progressbar"
+										style="width: '.(($usersProgress[$currentUserID][0]/$usersProgress[$currentUserID][1])*100).'%;"
+										aria-valuenow="'.(($usersProgress[$currentUserID][0]/$usersProgress[$currentUserID][1])*100).'"
 										aria-valuemin="0" aria-valuemax="100"></div>
 								</div>
-								<p class="progress-text"><small class="text-muted">0 of 4</small></p>
+								<p class="progress-text"><small class="text-muted">'.$usersProgress[$currentUserID][0].' of '.$usersProgress[$currentUserID][1].'</small></p>
 							</div>
 						</h2>
-						<div id="collapseOne" class="accordion-collapse collapse show">
+						<div id="collapse'.$numOfUsersAdded.'" class="accordion-collapse collapse show">
 							<div class="accordion-body pt-0">
 								<div class="container-fluid px-0">
 									<div class="row flex-md-row horizontal-scroll flex-md-nowrap">';
 			}
-			$totalUserTasks++;
 			echo '<div class="col-12 col-md-3 mb-3 mb-md-0">
 					<div class="card card-body h-100 taskcard ';
 			if ($task[8] == 0) {
@@ -231,8 +192,6 @@
 				echo 'task-in-progress';
 			} else {
 				echo 'task-completed';
-				$teamCompletedTasks++;
-				$tasksCompletedByUser++;
 			}
 			echo '">
 						<h5 class="card-title">'.$task[4].'</h5>
@@ -250,22 +209,18 @@
 <!-- add to-do list -->
 <!-- add footer -->
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-function toggleAccordion(collapseId) {
-	$('#'+collapseId).collapse('toggle');
+function toggleAccordion(collapseNum) {
+	if (!$("#collapse"+collapseNum).hasClass("collapsing")) {
+		$("#accordion-button-"+collapseNum).toggleClass("collapsed");
+	}
+	$("#collapse"+collapseNum).collapse("toggle");
 }
 
 function stopProp(event) {
 	event.stopPropagation();
 }
-
-function settings() {
-	window.location.href = "./settings_tl.html";
-};
-
-function logout() {
-	window.location.href = "./login.html";
-};
 </script>
 </body>
 </html>
