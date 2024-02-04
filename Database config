@@ -34,6 +34,7 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 | project           | team_leader    | int           |               |
 | project           | project_title  | varchar(255)  |               |
 | project           | due_date       | date          |               |
+| project           | description    | varchar(1000) |               |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
