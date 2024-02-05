@@ -7,6 +7,7 @@
 				$topicview = "link-dark";
 				$dashview = "border-bottom border-primary link-primary";
 				include "./navbar_m.php";
+				include "./dashboard_m.php";
 			}else if($_SESSION["role"] == "TL"){
 				$topicview = "link-dark";
 				$taskcreate = "link-dark";

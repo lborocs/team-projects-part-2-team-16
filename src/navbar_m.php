@@ -96,4 +96,5 @@
 			</div>
 		</div>
 	</header>
+	<?php echo $main; ?>
 </body>
