@@ -56,9 +56,17 @@ include "db_connection.php";
       echo "Connection Error." ;
     }
 
-    
-    $Current_Topic = $_GET['Post_topic_ID'];
+    setcookie('TopicID', $_GET['Post_topic_ID']);
+    session_start();
+    $_SESSION['TopicID'] = $_GET['Post_topic_ID'];
+    if (isset($_COOKIE['TopicID'])) {
+      $Current_Topic = $_COOKIE['TopicID'];
+  } else {
+      echo "Cookie 'TopicID' not set <br>";
+  }
+    //$Current_Topic = $_GET['Post_topic_ID'];
   
+    
     $INT_ID = (int)$Current_Topic;
     ?>
 
@@ -132,6 +140,8 @@ include "db_connection.php";
 
 <?php
 
+
+
 if (isset($_POST['Search']) && $_POST['Search'] !== ""){
   $INT_ID = $_POST['Post_topic_ID'];
   $PHPID = "Search";
@@ -145,7 +155,6 @@ if (isset($_POST['ABC'])){
 elseif (isset($_POST['Date'])){
   $INT_ID = $_POST['Post_topic_ID'];
   var_dump($_POST);
-
   $PHPID = "Date";
 }
 elseif(isset($_POST['View'])){
@@ -155,6 +164,27 @@ elseif(isset($_POST['View'])){
 }
 
 switch($PHPID){
+
+  case "Search":
+    $sql = "SELECT title, content, img_url  FROM posts WHERE LOWER(title) LIKE '$Topic_search' ORDER BY title ASC";
+    $Result = mysqli_query($conn, $sql);
+    
+    while($resultA = mysqli_fetch_array($Result)){
+
+      echo '
+      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+      <div class="card mx-auto">
+          <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+            class="card_img" alt="...">
+          <div class="card-body">
+            <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
+            <a class="stretched-link" href="./view_ind_post_m.php"></a>
+            </div>
+            </div>
+      </div>';  
+    }
+
+    break;
 
 case "ABC":
         
@@ -176,8 +206,7 @@ case "ABC":
   </div>';
   
   }
-      
-
+    
 
 break;
 
