@@ -240,7 +240,7 @@
 
                         <div class="form-group row">
                             <div class="col-sm-10" style="margin-bottom: 15px;">
-                                <button type="button" class="btn btn-primary" onclick="addTask()">Assign Task</button>
+                                <button id="assingTaskButton" type="button" class="btn btn-primary" onclick="addTask()">Assign Task</button>
                             </div>
                         </div>
 
@@ -265,7 +265,7 @@
 
                     <div class="form-group row">
                         <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary">Create Project</button>
+                            <button id="submitButton" type="submit" class="btn btn-primary">Create Project</button>
                         </div>
                     </div>
                 </form>
@@ -320,6 +320,16 @@
     // searchable drop downns
 
     function filterFunction(dropdown) {
+        document.getElementById(dropdown + 'search').classList.add("is-invalid");
+        document.getElementById(dropdown + 'search').classList.remove("is-valid");
+        document.getElementById('hidden' + dropdown + 'search').value = null;
+        if (dropdown == "TL"){
+            document.getElementById("submitButton").classList.add("disabled");
+        } else if (dropdown == "emp"){
+            document.getElementById("assingTaskButton").classList.add("disabled");
+        }
+        
+
         var input, filter, ul, li, i;
         input = document.getElementById(dropdown + "search");
         filter = input.value.toUpperCase();
@@ -338,7 +348,14 @@
     function setSearch(dropdown, id) {
         document.getElementById('hidden' + dropdown + 'search').value = document.getElementById('id_' + id).value;
         document.getElementById(dropdown + 'search').value = document.getElementById(id).innerHTML;
+        document.getElementById(dropdown + 'search').classList.add("is-valid");
+        document.getElementById(dropdown + 'search').classList.remove("is-invalid");
         document.getElementById(dropdown + 'Dropdown').classList.remove("show");
+        if (dropdown == "TL"){
+            document.getElementById("submitButton").classList.remove("disabled");
+        } else if (dropdown == "emp"){
+            document.getElementById("assingTaskButton").classList.remove("disabled");
+        }
     }
 
     let taskBuffer = [];
