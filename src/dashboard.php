@@ -14,6 +14,7 @@
 				$taskview = "link-dark";
 				$dashview = "border-bottom border-primary link-primary";
 				include "./navbar_tl.php";
+				include "./view_team_tl.php";
 			}else if($_SESSION["role"] == "Employee"){
 				$topicview = "link-dark";
 				$dashview = "border-bottom border-primary link-primary";
