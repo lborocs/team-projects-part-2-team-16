@@ -122,7 +122,10 @@
                     <div class="form-group row">
                         <label for="proj_title" class="col-form-label" style="margin-left: 0px; margin-right: 0px;">Title</label>
                         <div>
-                            <input type="title" class="form-control" id="proj_title" name="proj_title" placeholder="..." required>
+                            <input type="title" class="form-control" id="proj_title" name="proj_title" placeholder="..." onkeyup="isDuplicateTitle()" required>
+                            <div id="duplicateTitleWarning" class="alert alert-warning alert-dismissible" style="display: none;">
+                                <strong>Carefull!</strong> Project with this title already exists.
+                            </div>
                         </div>
                     </div>
 
@@ -196,11 +199,11 @@
                             <div style="flex-direction: row;">
                                 <label for="taskmanhours">Estimated Man Hours</label>
                                 <input type="number" id="taskmanhours" class="form-control"
-                                    placeholder="Hours" style="width: 200px;" min="1">
+                                    placeholder="Hours" style="width: 250px;" min="1">
                             </div>
                             <div style="flex-direction: row; margin-left: 50px;">
                                 <label for="taskdate">Select Task Due Date</label>
-                                <input class="form-control" id="taskdate" type="date" style="width: 200px;">
+                                <input class="form-control" id="taskdate" type="date" style="width: 250px;">
                                 <script>
                                     let taskdate = new Date();
                                     document.getElementById("taskdate").min = taskdate.getFullYear() + "-" + (taskdate.getMonth() + 1) + "-" + taskdate.getDate();
@@ -212,7 +215,7 @@
                         <br>
                         <div class="dropdown">
                             <input type="text" placeholder="Search.." id="empsearch" class="searchbox form-control"
-                                onkeyup="filterFunction('emp')">
+                                onkeyup="filterFunction('emp')" style="width: 250px;">
                             <input type="hidden" id="hiddenempsearch">
                             <?php
                             $sql = 'SELECT forename, surname, user_ID FROM users where role != "Manager"';
@@ -223,7 +226,7 @@
                             }
                             $userArray = mysqli_fetch_all($result);
                             ?>
-                            <div id="empDropdown" class="dropdown-content">
+                            <div id="empDropdown" class="dropdown-content" style="width: 250px;">
                                 <?php
                                 $i = 0;
                                 foreach ($userArray as $user) {
@@ -289,6 +292,31 @@
 
 </html>
 <script>
+
+    function isDuplicateTitle() {
+        <?php
+            $sql = 'SELECT project_title FROM project';
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                echo "Connection Error.";
+                exit;
+            }
+            $result = mysqli_fetch_all($result);
+        ?>
+        titles = <?php echo json_encode($result) ?>;
+        // console.log(titles);
+        typedTitle = document.getElementById("proj_title").value;
+        for (let i = 0; i < titles.length; i++) {
+            if (titles[i][0] == typedTitle) {
+                document.getElementById("duplicateTitleWarning").style.display = "block";
+                return;
+            }
+            
+        }
+        document.getElementById("duplicateTitleWarning").style.display = "none";
+
+    }
+
     // searchable drop downns
 
     function filterFunction(dropdown) {
