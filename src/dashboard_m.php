@@ -97,7 +97,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     $completionPercentage = 0;
                                 }
                                 ?>
-                                <div class="progress border no-dark" role="progressbar" aria-label="Basic example" aria-valuenow="<?php echo $completionPercentage; ?>" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress border no-dark" role="progressbar" aria-label="Completion Percentage" aria-valuenow="<?php echo $completionPercentage; ?>" aria-valuemin="0" aria-valuemax="100">
                                     <div class="progress-bar no-dark" style="width: <?php echo $completionPercentage; ?>%"></div>
                                 </div>
                                 <p class="card-text">

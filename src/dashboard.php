@@ -19,5 +19,6 @@
 				$topicview = "link-dark";
 				$dashview = "border-bottom border-primary link-primary";
 				include "./navbar_e.php";
+				include "./dashboard_e.php";
 			}
 		?>
