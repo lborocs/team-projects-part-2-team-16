@@ -129,13 +129,19 @@
 	<div class="accordion">
 		<?php
 		$numOfUsersAdded = 0;
+		$currentUserID = 0;
 		foreach ($taskArray as $task) {
+			echo '<script>console.log('.$task[1].');</script>';
+			echo '<script>console.log('.$currentUserID.');</script>';
 			if ($task[1] != $currentUserID) {					//if current task is for a new team member
+				echo '<script>console.log(0.5);</script>';
 				$currentUserID = $task[1];
 				if ($currentUserID != $taskArray[0][1]) {		//if current team member is not the first team member in the team
+					echo '<script>console.log(1);</script>';
 					$numOfUsersAdded++;
 					echo '</div></div></div></div></div>';		//ends accordion item for previous team member
 				}
+				echo '<script>console.log(2);</script>';
 				echo '<div class="accordion-item">
 						<h2 class="accordion-header">
 							<div class="accordion-button" id="accordion-button-'.$numOfUsersAdded.'" onclick="toggleAccordion('.$numOfUsersAdded.')">
