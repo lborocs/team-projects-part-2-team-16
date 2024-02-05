@@ -133,6 +133,8 @@ include "db_connection.php";
 
 <div class="con1">
 
+
+
 <?php
 if (isset($_POST['Search']) && $_POST['Search'] !== ""){
     $PHPID = "Search";
@@ -197,6 +199,10 @@ switch($PHPID){
         </div>
         <br>';    
         }
+
+        //setcookie('TopicID', $resultA['topic_ID']);
+        //session_start();
+        //$_SESSION['TopicID'] = $resultA['topic_ID'];
 
         break;
 
@@ -328,6 +334,9 @@ switch($PHPID){
         crossorigin="anonymous"></script>
 
 </body>
+
+
+
 
 
 
