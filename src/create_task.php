@@ -47,10 +47,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assign Task</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
+    <!-- <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/"> -->
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
 
 
 
@@ -70,7 +70,6 @@
         }
     </style>
 
-    <link rel="stylesheet" href="./headers.css">
     <link rel="stylesheet" href="./searchable_dropdown.css">
 </head>
 
@@ -114,11 +113,11 @@
             <div style="display: flex;">
                 <div style="flex-direction: row;">
                     <label for="manhours">Estimated Man Hours</label>
-                    <input type="number" id="manhours" name="manhours" class="form-control" placeholder="Hours" style="width: 200px;" min="1" required>
+                    <input type="number" id="manhours" name="manhours" class="form-control" placeholder="Hours" style="width: 250px;" min="1" required>
                 </div>
                 <div style="flex-direction: row; margin-left: 50px;">
                     <label for="date">Select Due Date</label>
-                    <input class="form-control" id="date" name="date" type="date" style="width: 200px;" required>
+                    <input class="form-control" id="date" name="date" type="date" style="width: 250px;" required>
                     <script>    
                         let date = new Date(); 
                         document.getElementById("date").min = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
@@ -131,8 +130,8 @@
             <label class="mr-sm-2" for="projectsearch">Select Project</label>
             <br>
             <div class="dropdown">
-                <input type="text" placeholder="Search.." id="projectsearch" class="searchbox form-control" onkeyup="filterFunction('project')" required>
-                <input type="hidden" id="hiddenprojectsearch" name="project">
+                <input type="text" placeholder="Search.." id="projectsearch" class="searchbox form-control" style="width: 250px" onkeyup="filterFunction('project')" required>
+                <input type="hidden" id="hiddenprojectsearch" name="project" required>
                 <?php
                 include "db_connection.php";
                 $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -155,7 +154,7 @@
                 }
                 $projectsArray = mysqli_fetch_all($result);
                 ?>
-                <div id="projectDropdown" class="dropdown-content">
+                <div id="projectDropdown" class="dropdown-content" style="width: 250px">
                     <?php
                     $i = 0;
                     foreach ($projectsArray as $project) {
@@ -172,8 +171,8 @@
             <label for="empsearch">Assign to Staff Member</label>
             <br>
             <div class="dropdown">
-                <input type="text" placeholder="Search.." id="empsearch" class="searchbox form-control" onkeyup="filterFunction('emp')" required>
-                <input type="hidden" id="hiddenempsearch" name="employee">
+                <input type="text" placeholder="Search.." id="empsearch" class="searchbox form-control" style="width: 250px" onkeyup="filterFunction('emp')" required>
+                <input type="hidden" id="hiddenempsearch" name="employee" required>
                 <?php
                 if ($_SESSION["role"] == "TL") {
                     $sql = "SELECT forename, surname, user_ID FROM users where role = 'Employee' or user_ID = ". $_SESSION["user_ID"];
@@ -190,7 +189,7 @@
                 }
                 $userArray = mysqli_fetch_all($result);
                 ?>
-                <div id="empDropdown" class="dropdown-content">
+                <div id="empDropdown" class="dropdown-content" style="width: 250px">
                     <?php
                     $i = 0;
                     foreach ($userArray as $user) {
@@ -205,7 +204,7 @@
 
             <div class="form-group row">
                 <div class="col-sm-10">
-                    <button type="submit" class="btn btn-primary">Assign</button>
+                    <button id="submitButton" type="submit" class="btn btn-primary">Assign Task</button>
                 </div>
             </div>
 
@@ -230,14 +229,19 @@
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 
 
     <script>
         // searchable drop downs
         function filterFunction(dropdown) {
+            document.getElementById(dropdown + 'search').classList.add("is-invalid");
+            document.getElementById(dropdown + 'search').classList.remove("is-valid");
+            document.getElementById("submitButton").classList.add("disabled");
+            document.getElementById('hidden' + dropdown + 'search').value = null;
+
             var input, filter, ul, li, i;
             input = document.getElementById(dropdown + "search");
             filter = input.value.toUpperCase();
@@ -256,7 +260,10 @@
         function setSearch(dropdown, id) {
             document.getElementById('hidden' + dropdown + 'search').value = document.getElementById('id_' + id).value;
             document.getElementById(dropdown + 'search').value = document.getElementById(id).innerHTML;
+            document.getElementById(dropdown + 'search').classList.add("is-valid");
+            document.getElementById(dropdown + 'search').classList.remove("is-invalid");
             document.getElementById(dropdown + 'Dropdown').classList.remove("show");
+            document.getElementById("submitButton").classList.remove("disabled");
         }
     </script>
 
