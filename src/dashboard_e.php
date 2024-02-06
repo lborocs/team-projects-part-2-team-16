@@ -36,7 +36,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 ?>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <style>
     .bd-placeholder-img {
         font-size: 1.125rem;
@@ -63,8 +63,53 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <script>
     function getTasks() {
-        $.post("get_tasks_e.php", function(response) {
-            $(".accordion-item").html(response);
+        $.post("get_tasks.php", {
+            user_ID: <?php echo $_SESSION["user_ID"] ?>
+        }, function(response) {
+            response = JSON.parse(response);
+
+            var incompleteTasks = response["incompleteTasks"];
+            if (incompleteTasks.length == 0) {
+                $("#incomplete").html("<h3>All tasks complete. Well done!</h3>");
+            } else {
+                var html = "";
+                for (var i = 0; i < incompleteTasks.length; i++) {
+                    var task = incompleteTasks[i];
+                    html += "<div class='col col-md-3 mb-3 mb-sm-0'>";
+                    html += "<div class='card mb-3'>";
+                    html += "<div class='card-body'>";
+                    html += "<h4 class='card-title'>" + task["title"] + "</h4>";
+                    html += "<h6>" + task["project_title"] + "</h6>";
+                    html += "<h6 class='card-subtitle mb-2 text-secondary'>Ongoing: Due " + task["due_date"] + "</h6>";
+                    html += "<p class='card-text'>" + task["description"] + "</p>";
+                    html += "<button type='submit' class='btn btn-primary' onclick='completeTask(" + task["task_ID"] + ")'>Mark as Complete</button>";
+                    html += "</div>";
+                    html += "</div>";
+                    html += "</div>";
+                }
+                $("#incomplete").html(html);
+            }
+            var completedTasks = response["completedTasks"];
+            if (completedTasks.length == 0) {
+                $("#complete").html("<h3>No completed tasks.</h3>");
+            } else {
+                var html = "";
+                for (var i = 0; i < completedTasks.length; i++) {
+                    var task = completedTasks[i];
+                    html += "<div class='col col-md-3 mb-3 mb-sm-0'>";
+                    html += "<div class='card mb-3'>";
+                    html += "<div class='card-body'>";
+                    html += "<h4 class='card-title'>" + task["title"] + "</h4>";
+                    html += "<h6>" + task["project_title"] + "</h6>";
+                    html += "<h6 class='card-subtitle mb-2 text-success'>Completed</h6>";
+                    html += "<p class='card-text'>" + task["description"] + "</p>";
+                    html += "<button type='submit' class='btn btn-primary' onclick='uncompleteTask(" + task["task_ID"] + ")'>Mark as Incomplete</button>";
+                    html += "</div>";
+                    html += "</div>";
+                    html += "</div>";
+                }
+                $("#complete").html(html);
+            }
             setDarkMode();
         });
     }
@@ -80,24 +125,78 @@ while ($row = mysqli_fetch_assoc($result)) {
     }
 
     function completeTask(taskID) {
-        $.post("complete_task.php", {
+        $.post("change_task_progress.php", {
             task_ID: taskID,
             progress: 1
         }, function(response) {
             getTasks();
         });
     }
+
     function uncompleteTask(taskID) {
-        $.post("complete_task.php", {
+        $.post("change_task_progress.php", {
             task_ID: taskID,
             progress: 0
         }, function(response) {
             getTasks();
         });
     }
+
+    function updateToDoItem(itemID, status) {
+        $.post("update_todo_item.php", {
+            item_ID: itemID,
+            status: status
+        }, function(response) {
+            getToDoList();
+        });
+    }
+
+    function getToDoList() {
+        $.post("get_todo_list.php", {
+            user_ID: <?php echo $_SESSION["user_ID"] ?>
+        }, function(response) {
+            response = JSON.parse(response);
+            var html = "";
+            for (var i = 0; i < response.length; i++) {
+                var todoitem = response[i];
+                html += "<label class='list-group-item d-flex gap-3'>";
+                // If the task is complete, check the checkbox
+                if (todoitem["status"] == 1) {
+                    html += "<input class='form-check-input flex-shrink-0' type='checkbox' value='' checked style='font-size: 1.375em;' onclick='updateToDoItem(" + todoitem["item_ID"] + ", 0)'>";
+                } else {
+                    html += "<input class='form-check-input flex-shrink-0' type='checkbox' value='' style='font-size: 1.375em;' onclick='updateToDoItem(" + todoitem["item_ID"] + ", 1)'>";
+                }
+                html += "<span class='pt-1 form-checked-content'>";
+                html += "<strong>" + todoitem["title"] + "</strong>";
+                html += "<small class='d-block text-body-secondary'>";
+                html += "<svg class='bi me-1' width='1em' height='1em'>";
+                html += "<use xlink:href='#calendar-event'></use>";
+                html += "</svg>";
+                html += todoitem["due_date"];
+                html += "</small>";
+                html += "</span>";
+                html += "</label>";
+            }
+            $("#todo-list").html(html);
+            setDarkMode();
+        });
+    }
     $(document).ready(() => {
         setDarkMode();
         getTasks();
+        getToDoList();
+        $("#addToDoItem").submit((e) => {
+            e.preventDefault();
+            $.post("create_todo_item.php", {
+                user_ID: <?php echo $_SESSION["user_ID"] ?>,
+                title: $("#title").val(),
+                due_date: $("#due_date").val()
+            }, function(response) {
+                console.log(response);
+                getToDoList();
+                $("#addToDoItem").trigger("reset");
+            });
+        });
     })
 </script>
 
@@ -105,58 +204,50 @@ while ($row = mysqli_fetch_assoc($result)) {
     <div class="min-vh-100">
         <main class="container">
             <h1 class="my-5">Dashboard</h1>
-            <div class="accordion-item"></div>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Incomplete</button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show">
+                        <div id="incomplete" class="accordion-body row flex-column flex-md-row">
+                            <h3>All tasks complete. Well done!</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Completed</button>
+                        </h2>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse">
+                        <div id="complete" class="accordion-body row flex-column flex-md-row">
+                            <h3>No completed tasks.</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <h1 class="my-5">Todo List</h1>
             <div class="d-flex flex-column flex-md-row py-md-10 align-items-center justify-content-center" style="width:100%;">
                 <div class="list-group" style="width:100%;">
-                    <label class="list-group-item d-flex gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="" checked="" style="font-size: 1.375em;">
-                        <span class="pt-1 form-checked-content">
-                            <strong>Check Topic Screen</strong>
-                            <small class="d-block text-body-secondary">
-                                <svg class="bi me-1" width="1em" height="1em">
-                                    <use xlink:href="#calendar-event"></use>
-                                </svg>
-                                1:00–2:00pm
-                            </small>
-                        </span>
-                    </label>
-                    <label class="list-group-item d-flex gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
-                        <span class="pt-1 form-checked-content">
-                            <strong>Develop Task 1</strong>
-                            <small class="d-block text-body-secondary">
-                                <svg class="bi me-1" width="1em" height="1em">
-                                    <use xlink:href="#calendar-event"></use>
-                                </svg>
-                                2:00–2:30pm
-                            </small>
-                        </span>
-                    </label>
-                    <label class="list-group-item d-flex gap-3">
-                        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
-                        <span class="pt-1 form-checked-content">
-                            <strong>Out of office</strong>
-                            <small class="d-block text-body-secondary">
-                                <svg class="bi me-1" width="1em" height="1em">
-                                    <use xlink:href="#alarm"></use>
-                                </svg>
-                                Tomorrow
-                            </small>
-                        </span>
-                    </label>
-                    <label class="list-group-item d-flex gap-3 bg-body-tertiary">
-                        <input class="form-check-input form-check-input-placeholder bg-body-tertiary flex-shrink-0 pe-none" disabled="" type="checkbox" value="" style="font-size: 1.375em;">
-                        <span class="pt-1 form-checked-content">
-                            <span contenteditable="true" class="w-100">Add new task...</span>
-                            <small class="d-block text-body-secondary">
-                                <svg class="bi me-1" width="1em" height="1em">
-                                    <use xlink:href="#list-check"></use>
-                                </svg>
-                                Specify Time
-                            </small>
-                        </span>
-                    </label>
+                    <div id="todo-list">
+                    </div>
+                    <form id="addToDoItem">
+                        <label class="list-group-item d-flex gap-3 bg-body-tertiary">
+                            <input class="form-check-input form-check-input-placeholder bg-body-tertiary flex-shrink-0 pe-none" disabled="" type="checkbox" value="" style="font-size: 1.375em;">
+                            <span class="pt-1 form-checked-content">
+                                <span class="w-100"><input class="form-control" type="text" name="title" id="title" placeholder="Add new task..." required></span>
+                                <small class="d-block text-body-secondary">
+                                    <svg class="bi me-1" width="1em" height="1em">
+                                        <use xlink:href="#list-check"></use>
+                                    </svg>
+                                    <input class="form-control" type="datetime-local" id="due_date" name="due_date" required>
+                                </small>
+                            </span>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </label>
+                    </form>
                 </div>
             </div>
         </main>

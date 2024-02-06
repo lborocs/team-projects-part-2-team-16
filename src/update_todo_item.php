@@ -17,18 +17,18 @@ if (!$conn) {
 if (!$_POST) {
     trigger_error("No POST request.");
 } else {
-    if (!isset($_POST["task_ID"])) {
-        trigger_error("No task_ID in POST request.");
+    if (!isset($_POST["item_ID"])) {
+        trigger_error("No item_ID in POST request.");
     }
-    if (!isset($_POST["progress"])) {
-        trigger_error("No progress in POST request.");
+    if (!isset($_POST["status"])) {
+        trigger_error("No status in POST request.");
     }
-    if ($_POST["progress"] != 1 && $_POST["progress"] != 0) {
-        trigger_error("Invalid progress in POST request.");
+    if ($_POST["status"] != 1 && $_POST["status"] != 0) {
+        trigger_error("Invalid status in POST request.");
     }
-    $task_ID = $_POST["task_ID"];
-    $progress = $_POST["progress"];
-    $sql = "UPDATE tasks SET progress = " . $progress . " WHERE task_ID = " . $task_ID;
+    $item_ID = $_POST["item_ID"];
+    $status = $_POST["status"];
+    $sql = "UPDATE ToDoItems SET status = " . $status . " WHERE item_ID = " . $item_ID;
     $result = mysqli_query($conn, $sql);
     if (!$result) {
         trigger_error("Error updating task progress.");
