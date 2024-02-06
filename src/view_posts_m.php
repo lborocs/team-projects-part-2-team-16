@@ -55,7 +55,7 @@ include "db_connection.php";
     if (!$conn) {
       echo "Connection Error." ;
     }
-
+/*
     setcookie('TopicID', $_GET['Post_topic_ID']);
     session_start();
     $_SESSION['TopicID'] = $_GET['Post_topic_ID'];
@@ -64,7 +64,8 @@ include "db_connection.php";
   } else {
       echo "Cookie 'TopicID' not set <br>";
   }
-    //$Current_Topic = $_GET['Post_topic_ID'];
+  */
+  $Current_Topic = $_GET['Post_topic_ID'];
   
     
     $INT_ID = (int)$Current_Topic;
@@ -139,6 +140,29 @@ include "db_connection.php";
 
 
 <?php
+
+
+
+if (isset($Current_Topic)) {
+  $sql = "SELECT views FROM topics WHERE topic_ID = $INT_ID";
+  $result = mysqli_query($conn, $sql);
+
+          $changingview = mysqli_fetch_assoc($result);
+          $currentViews = $changingview['views'];
+
+          $newViews = $currentViews + 1;
+
+          $updateSql = "UPDATE topics SET views = $newViews WHERE topic_ID = $INT_ID";
+
+          if (mysqli_query($conn, $updateSql)) {
+
+          } else {
+              echo "Error";
+          }
+      
+  
+}
+
 
 
 
@@ -313,3 +337,4 @@ echo '
     crossorigin="anonymous"></script>
 
 </body>
+
