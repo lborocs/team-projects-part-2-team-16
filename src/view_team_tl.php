@@ -23,10 +23,7 @@
 		echo "Connection Error.";
 		exit;
 	}
-	$array = array();
-	while ($row = mysqli_fetch_assoc($result)){
-		$array[] = $row;
-	}
+	$taskArray = mysqli_fetch_all($result);
 	
 	$teamCompletedTasks = 0;
 	$totalTeamTasks = count($taskArray);
