@@ -131,6 +131,9 @@ include "db_connection.php";
         onclick="window.location.href='./create_topic_m.html';">Create Topic</button>
 
 
+
+    
+
 <div class="con1">
 
 
@@ -334,6 +337,9 @@ switch($PHPID){
         crossorigin="anonymous"></script>
 
 </body>
+
+
+
 
 
 
