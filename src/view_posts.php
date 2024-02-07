@@ -5,7 +5,7 @@
   <title>Posts</title>
 
   <link rel="stylesheet" type="text/css" href="./posts.css">
-
+<!--
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -27,7 +27,7 @@
   <link rel="mask-icon" href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
   <link rel="icon" href="/docs/5.0/assets/img/favicons/favicon.ico">
   <meta name="theme-color" content="#7952b3">
-
+-->
 
   <style>
     .bd-placeholder-img {
@@ -81,40 +81,33 @@ include "db_connection.php";
 			window.location.href = "./login.php";
 		};
 	</script>
-	<header class="p-3 mb-3 border-bottom">
-		<div class="container">
-			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 
-				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-					<li><a href="./dashboard_m.php" class="nav-link px-2 link-dark">Dashboard</a></li>
-					<li><a href="./view_topics_m.php" class="nav-link px-2 link-dark">Topics</a></li>
-					<li><a href="./create_task_m.php" class="nav-link px-2 link-dark">Assign Tasks</a></li>
-				</ul>
+<?php 
+            session_start();
+			if(!isset($_SESSION["role"])){
+				echo "<script>window.location.href='./login.php'</script>";
+			}else if($_SESSION["role"] == "Manager"){
+				$taskcreate = "link-dark";
+				$topicview = "link-dark";
+				$dashview = "link-dark";
+				include "./navbar_m.php";
+				//include "./dashboard_m.php";
+			}else if($_SESSION["role"] == "TL"){
+				$topicview = "link-dark";
+				$taskcreate = "link-dark";
+				$taskview = "link-dark";
+				$dashview = "link-dark";
+				include "./navbar_tl.php";
+				//include "./view_team_tl.php";
+			}else if($_SESSION["role"] == "Employee"){
+				$topicview = "link-dark";
+				$dashview = "link-dark";
+				include "./navbar_e.php";
+				//include "./dashboard_e.php";
+			}
+		?>
 
-				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.php">
-					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search">
-				</form>
-
-				<div class="dropdown text-end">
-					<a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
-						data-bs-toggle="dropdown" aria-expanded="false">
-						<img src="./icon.png" alt="mdo" width="32" height="32" class="rounded-circle">
-					</a>
-					<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item" href="./create_topic_m.php">Create New Topic...</a></li>
-						<li><a class="dropdown-item" href="./manageEmp.php">Manage Employees</a></li>
-						<li><a class="dropdown-item" href="#" onclick="settings()">Settings</a></li>
-						<li>
-							<hr class="dropdown-divider">
-						</li>
-						<li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</header>
-
-  <form action="view_posts_m.php" method="post">
+  <form action="view_posts.php" method="post">
     <div class="input-group mb-3 Search con2">
         <input type="text" name="Search" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
         <input type="hidden" name="Post_topic_ID" value="<?php echo $INT_ID; ?>">
@@ -130,7 +123,7 @@ include "db_connection.php";
     </form>
 
   <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton"
-    onclick="window.location.href='./create_post_m.php';">Create Post</button>
+    onclick="window.location.href='./create_post.php';">Create Post</button>
 
   <div class="container con1">
   <div class="row mx-auto">
@@ -308,33 +301,20 @@ echo '
   </div>
 
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
-    style="padding-left: 25px; padding-right: 25px;">
-    <p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
+        style="padding-left: 25px; padding-right: 25px;">
+        <p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
 
-    <a href="/"
-      class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-      <img src="complogo.png" alt="mdo" width="200" height="50">
-      </svg>
-    </a>
+        <a href="/"
+            class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <img src="./logo.png" alt="mdo" width="200" height="50">
+            </svg>
+        </a>
 
-    <div class="justify-content-end">
-      <p>Phone: 01509 888999</p>
-      <p>Email: king@make‐it‐all.co.uk</p>
-    </div>
-  </footer>
-
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+        <div class="justify-content-end">
+            <p>Phone: 01509 888999</p>
+            <p>Email: king@make-it-all.co.uk</p>
+        </div>
+    </footer>
 
 </body>
 
