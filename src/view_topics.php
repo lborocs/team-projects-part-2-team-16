@@ -78,41 +78,32 @@ include "db_connection.php";
             window.location.href = "./login.php";
         };
     </script>
-    <header class="p-3 mb-3 border-bottom">
-        <div class="container">
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+<?php 
+            session_start();
+			if(!isset($_SESSION["role"])){
+				echo "<script>window.location.href='./login.php'</script>";
+			}else if($_SESSION["role"] == "Manager"){
+				$taskcreate = "link-dark";
+				$topicview = "border-bottom border-primary link-primary";
+				$dashview = "link-dark";
+				include "./navbar_m.php";
+				//include "./dashboard_m.php";
+			}else if($_SESSION["role"] == "TL"){
+				$topicview = "border-bottom border-primary link-primary";
+				$taskcreate = "link-dark";
+				$taskview = "link-dark";
+				$dashview = "link-dark";
+				include "./navbar_tl.php";
+				//include "./view_team_tl.php";
+			}else if($_SESSION["role"] == "Employee"){
+				$topicview = "border-bottom border-primary link-primary";
+				$dashview = "link-dark";
+				include "./navbar_e.php";
+				//include "./dashboard_e.php";
+			}
+		?>
 
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="./dashboard_m.html" class="nav-link px-2 link-dark">Dashboard</a></li>
-                    <li><a href="./view_topics_m.html"
-                            class="nav-link px-2 border-bottom border-primary link-primary">Topics</a></li>
-                    <li><a href="./create_task_m.html" class="nav-link px-2 link-dark">Assign Tasks</a></li>
-                </ul>
-
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.html">
-                    <input type="search" class="form-control" placeholder="Search Topics" aria-label="Search">
-                </form>
-
-                <div class="dropdown text-end">
-                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="./icon.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                    </a>
-                    <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="./create_topic_m.html">Create New Topic...</a></li>
-                        <li><a class="dropdown-item" href="./manageEmp.html">Manage Employees</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="settings()">Settings</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <form action="view_topics_m.php" method="post">
+    <form action="view_topics.php" method="post">
     <div class="input-group mb-3 Search con2">
         <input type="text" name="Search" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -128,11 +119,9 @@ include "db_connection.php";
     </form>
 
     <button type="button" class="btn btn-primary input-group mb-3 createPost conButton"
-        onclick="window.location.href='./create_topic_m.html';">Create Topic</button>
+        onclick="window.location.href='./create_topic.html';">Create Topic</button>
 
 
-
-    
 
 <div class="con1">
 
@@ -166,7 +155,7 @@ switch($PHPID){
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
+            onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
             <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -189,7 +178,7 @@ switch($PHPID){
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-            onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
+            onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
             <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -216,7 +205,7 @@ switch($PHPID){
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -239,7 +228,7 @@ switch($PHPID){
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -262,7 +251,7 @@ switch($PHPID){
         while($resultA = mysqli_fetch_array($Result)){
     
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -285,7 +274,7 @@ switch($PHPID){
         while($resultA = mysqli_fetch_array($Result)){
 
         echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
-        onclick="window.location.href=\'./view_posts_m.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
                 <p>' . $resultA["title"] . '</p>
                 <div style="float: right;height: 20px;position: relative;">
@@ -323,24 +312,9 @@ switch($PHPID){
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+
 
 </body>
-
-
-
-
 
 
 
