@@ -5,29 +5,7 @@
   <title>Posts</title>
 
   <link rel="stylesheet" type="text/css" href="./posts.css">
-<!--
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Managers Dash</title>
-
-  <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
-
-  <link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-  <link rel="apple-touch-icon" href="/docs/5.0/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-  <link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-  <link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-  <link rel="manifest" href="/docs/5.0/assets/img/favicons/manifest.json">
-  <link rel="mask-icon" href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
-  <link rel="icon" href="/docs/5.0/assets/img/favicons/favicon.ico">
-  <meta name="theme-color" content="#7952b3">
--->
 
   <style>
     .bd-placeholder-img {
@@ -107,26 +85,74 @@ include "db_connection.php";
 			}
 		?>
 
-  <form action="view_posts.php" method="post">
-    <div class="input-group mb-3 Search con2">
-        <input type="text" name="Search" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
-        <input type="hidden" name="Post_topic_ID" value="<?php echo $INT_ID; ?>">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-            aria-expanded="false">Sort By</button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li><button name="ABC" class="dropdown-item" type="submit">Alphabetically</button></li>
-            <li><button name="Date" class="dropdown-item" type="submit">Date Posted</button></li>
-            <li><button name="View" class="dropdown-item" type="submit">Views</button></li>
-        </ul>
-        
-    </div>
-    </form>
+<div class="input-group mb-3 Search con2">
+
+<input id="IDsearch" type="text" name="Search" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
+<input type="hidden" name="Post_topic_ID" value="<?php echo $INT_ID; ?>">
+<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sort By</button>
+
+<ul class="dropdown-menu dropdown-menu-end">
+<li>
+    <button name="ABC" class="dropdown-item" type="button" onclick="change('ABC')">Alphabetically</button>
+</li>
+<li>
+    <button name="Date" class="dropdown-item" type="button" onclick="change('Date')">Date Posted</button>
+</li>
+<li>
+    <button name="View" class="dropdown-item" type="button" onclick="change('View')">Views</button>
+</li>
+</ul>
+</div>
 
   <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton"
     onclick="window.location.href='./create_post.php';">Create Post</button>
 
-  <div class="container con1">
-  <div class="row mx-auto">
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+
+$(document).ready(function() {
+     console.log("Hello");
+});
+
+function change(sortby)
+     {
+        var searchinput = $("#IDsearch").val();
+
+        console.log('searchInputValue:',searchinput);
+        console.log('sortby:', sortby);
+
+        $.ajax({
+            type: "POST",
+            url: "asyncposts.php",
+            data:
+             {   sortby: sortby,
+                 search: searchinput,
+                 asyncINT_ID: "<?php echo $INT_ID; ?>" },
+
+            success:
+             function (response){
+                $("#async").find(".this-div").html(response); 
+
+             },
+            error:
+             function (e){                  
+                console.error('Error');
+            }
+
+        });
+    }
+
+</script>
+
+
+
+
+  <div id="async" class="container con1">
+  <div class="row mx-auto this-div">
 
 
 
@@ -157,124 +183,6 @@ if (isset($Current_Topic)) {
 }
 
 
-
-
-if (isset($_POST['Search']) && $_POST['Search'] !== ""){
-  $INT_ID = $_POST['Post_topic_ID'];
-  $PHPID = "Search";
-  $Topic_search = "%" . strtolower($_POST['Search']) . "%";
-}
-else{
-if (isset($_POST['ABC'])){
-  $INT_ID = $_POST['Post_topic_ID'];
-  $PHPID = "ABC";
-}
-elseif (isset($_POST['Date'])){
-  $INT_ID = $_POST['Post_topic_ID'];
-  var_dump($_POST);
-  $PHPID = "Date";
-}
-elseif(isset($_POST['View'])){
-  $INT_ID = $_POST['Post_topic_ID'];
-  $PHPID = "View";
-}
-}
-
-switch($PHPID){
-
-  case "Search":
-    $sql = "SELECT title, content, img_url  FROM posts WHERE LOWER(title) LIKE '$Topic_search' ORDER BY title ASC";
-    $Result = mysqli_query($conn, $sql);
-    
-    while($resultA = mysqli_fetch_array($Result)){
-
-      echo '
-      <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-      <div class="card mx-auto">
-          <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-            class="card_img" alt="...">
-          <div class="card-body">
-            <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-            <a class="stretched-link" href="./view_ind_post_m.php"></a>
-            </div>
-            </div>
-      </div>';  
-    }
-
-    break;
-
-case "ABC":
-        
-  $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
-  $Result = mysqli_query($conn, $sql);
-  
-  while($resultA = mysqli_fetch_array($Result)){
-  
-  echo '
-  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-  <div class="card mx-auto">
-      <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-        class="card_img" alt="...">
-      <div class="card-body">
-        <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-        <a class="stretched-link" href="./view_ind_post_m.php"></a>
-        </div>
-        </div>
-  </div>';
-  
-  }
-    
-
-break;
-
-case "Date":
-        
-  $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY DATE ASC";
-  $Result = mysqli_query($conn, $sql);
-  
-  while($resultA = mysqli_fetch_array($Result)){
-  
-  echo '
-  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-  <div class="card mx-auto">
-      <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-        class="card_img" alt="...">
-      <div class="card-body">
-        <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-        <a class="stretched-link" href="./view_ind_post_m.php"></a>
-        </div>
-        </div>
-  </div>';
-  
-  }
-      
-
-break;
-
-case "View":
-  $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY views DESC";
-  $Result = mysqli_query($conn, $sql);
-  
-  while($resultA = mysqli_fetch_array($Result)){
-  
-  echo '
-  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-  <div class="card mx-auto">
-      <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
-        class="card_img" alt="...">
-      <div class="card-body">
-        <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-        <a class="stretched-link" href="./view_ind_post_m.php"></a>
-        </div>
-        </div>
-  </div>';
-  
-  }
-      
-
-break;
-
-default:
         
 $sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
 $Result = mysqli_query($conn, $sql);
@@ -295,9 +203,10 @@ echo '
 
 }
     
-}
+
 
 ?>
+  </div>
   </div>
 
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
@@ -317,4 +226,3 @@ echo '
     </footer>
 
 </body>
-
