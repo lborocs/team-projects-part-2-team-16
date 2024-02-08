@@ -1,38 +1,111 @@
 <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        
-        $empID = $_POST["employee"];
-        $projectID = $_POST["project"];
-        $title = $_POST["title"];
-        $description = $_POST["description"];
-        $date = $_POST["date"];
-        $hours = $_POST["manhours"];
-        
-        
-        include "db_connection.php";
-        $conn = mysqli_connect($servername, $username, $password, $dbname);
-        if (!$conn) {
-            echo "Connection Error.";
-            exit;
+    session_start();
+    use PDO;
+    use PDOException;
+    
+    function create_task() {
+        if (isset($_POST["employee"])){
+            $empID = $_POST["employee"];
+            if (!is_numeric($empID)) {
+                return false;
+            } else {
+                $empID = intval($empID);
+            }
+        } else {
+            return false;
         }
-        $result = mysqli_query($conn, "select max(task_ID) from tasks;");
-        $maxID = mysqli_fetch_row($result)[0];
+        if (isset($_POST["project"])) {
+            $projectID = $_POST["project"];
+            if (!is_numeric($projectID)) {
+                return false;
+            } else {
+                $projectID = intval($projectID);
+            }
+        } else {
+            return false;
+        }
+        if (isset($_POST["title"])){
+            $title = $_POST["title"];
+            if (strlen($title) > 255) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        if (isset($_POST["description"])) {
+            $description = $_POST["description"];
+            if (strlen($description) > 1000) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        if (isset($_POST["date"])) {
+            $date = $_POST["date"];
+            if (!date_create_from_format("Y-m-d", $date)) {
+                return false;
+            }
+        } else {
+            return false; 
+        }
+        if (isset($_POST["manhours"])) {
+            $hours = $_POST["manhours"];
+            if (!is_numeric($hours)) {
+                return false;
+            }else {
+                $hours = intval($hours);
+            }
+        } else {
+            return false;
+        }
+        
+        
+        // $conn = mysqli_connect($servername, $username, $password, $dbname);
+        // if (!$conn) {
+        //     echo "Connection Error.";
+        //     exit;
+        // }
+        try {
+            include "db_connection.php";
+
+            $conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+        } catch (PDOException $e) {
+            echo "<script type='text/javascript'>alert('Failed to connect to database');</script>";
+        }
+
+        $result = $conn->query("SELECT max(task_ID) FROM tasks");
+        $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
         if ($maxID == null) {
             $ID = 1;
         } else {
             $ID = $maxID[0] + 1;
         }
-
-        $insertQuery = "insert into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours)
-                                 values ($ID, $empID, $projectID, '$title', '$description', DATE '$date', $hours);";
-
-        if (mysqli_query($conn, $insertQuery))  {
+        
+        // $stmt = $conn->prepare("insert into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours)
+        //                          values ($ID, $empID, $projectID, '$title', '$description', DATE '$date', $hours);");
+        $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) VALUES (:ID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
+        // $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) VALUES (10, 2, 3, 'adfsgdf', 'dsfgdfg', DATE '3000-12-12', 1, 0)");
+        $stmt->bindParam(':ID', $ID, PDO::PARAM_INT);
+        $stmt->bindParam(':empID', $empID, PDO::PARAM_INT);
+        $stmt->bindParam(':projectID', $projectID, PDO::PARAM_INT);
+        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':date', $date, PDO::PARAM_STR);
+        $stmt->bindParam(':hours', $hours, PDO::PARAM_INT);
+        
+        if ($stmt->execute())  {
             header("location: dashboard.php");
             die();
         } else {
             echo "<script>alert('request unsucessful');</script>";
         }
+    }
+    
 
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if(!create_task()) {
+            echo "<script type='text/javascript'>alert('Failed to create the task. One of your input violated input requirments');</script>";
+        }
     }
 ?>
 
@@ -52,6 +125,7 @@
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
 
     <style>
@@ -73,9 +147,29 @@
     <link rel="stylesheet" href="./searchable_dropdown.css">
 </head>
 
+<script>
+    <?php
+    if($_SESSION["lightmode"] == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark");
+                }
+            });
+        }
+    })
+</script>
+
 <body>
     <?php
-    session_start();
+    
     if (!isset($_SESSION["role"])) {
         echo "<script>window.location.href='./login.php'</script>";
     } else if ($_SESSION["role"] == "Manager") {
@@ -94,20 +188,20 @@
 
 
 
-    <main class="container" style="margin:50px; flex: 70%;">
+    <main class="container" style="margin:auto; flex: 70%;">
         <h1 class="my-5">Assign Task</h1>
         <form autocomplete="off" method="post" action="">
-            
+
             <div class="form-group row">
                 <label for="title" class="col-auto-2 col-form-label" style="margin-left: 0px; margin-right: 0px;">Task Name</label>
                 <div>
-                    <input type="title" name="title" class="form-control" id="title" placeholder="..." required>
+                    <input type="title" name="title" class="form-control" id="title" placeholder="..." maxlength="255" required>
                 </div>
             </div>
 
             <div class="form-group row" style="margin-left: 0px; margin-right: 0px;">
                 <label for="description" style="padding-left: 0px;">Task Description</label>
-                <textarea class="form-control" id="description" name="description" rows="10" placeholder="..." required></textarea>
+                <textarea class="form-control" id="description" name="description" rows="10" placeholder="..." maxlength="1000" required></textarea>
             </div>
 
             <div style="display: flex;">
