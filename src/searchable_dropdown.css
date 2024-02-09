@@ -40,7 +40,31 @@
     display: block;
 }
 
-
 .show {
     display: block;
 }   
+
+
+.section {
+    padding: 0 10%;
+    width: 100%;
+}
+
+.tasksection {
+    background-color: #aba9a9;
+}
+
+.bg-dark-task {
+    background-color: #393939 !important;
+}
+
+
+
+.horizontal-scroll {
+    overflow-x: auto;
+    padding-bottom: 1%;
+}
+
+.taskcard {
+    min-height: 10rem;
+}
