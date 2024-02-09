@@ -1,6 +1,10 @@
 <?php 
-session_start();
-
+if (session_status() == PHP_SESSION_NONE) {
+    @session_start();
+}
+if (!isset($_SESSION["role"])) {
+    header('location: ./login.php');
+}
 
 function createPost() {
     try {
@@ -53,8 +57,6 @@ function createPost() {
         } else {
             return false;
         }
-    }  else {
-        return false;
     }
     // $result = mysqli_query($conn, "select max(post_ID) from posts;");
     // $maxID = mysqli_fetch_row($result)[0];
@@ -66,21 +68,26 @@ function createPost() {
         $postID = $maxID[0] + 1;
     }
     
-    // $file = $_FILES["imageInput"];
-    // $fileName = $file["name"];
-    // $fileTmpName = $file["tmp_name"];
-    // print_r($file);
-    // $destination = "./postImageUploads" . basename($fileName);
-    // if (move_uploaded_file($fileTmpName, $destination)) {
-    //     echo "file uploaded";
-    // } else {
-    //     echo "file upload failed";
-    // }
+    if (isset($_FILES["imageInput"])){
+        $file = $_FILES["imageInput"];
+        $fileName = $file["name"];
+        $fileTmpName = $file["tmp_name"];
+        $destination = "./postImageUploads/" . basename($fileName);
+        if (move_uploaded_file($fileTmpName, $destination)) {
+            echo "file uploaded";
+        } else {
+            echo "file upload failed";
+        }
+    } else {
+        echo ("No image file uploaded");
+    }
 
 } 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     createPost();
+} else {
+    echo "No POST request received.";
 }
 
 ?>
@@ -95,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Post</title>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <style>
         .bd-placeholder-img {
@@ -170,7 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <main class="container">
         <h1 class="my-5">Create Post</h1>
         <div class="d-flex flex-wrap">
-            <form class="col-md-8" autocomplete="off" method="post" action="#" enctype="multipart/form-data">
+            <form class="col-md-8" autocomplete="off" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" enctype="multipart/form-data">
                 <div class="form-group row">
                     <label for="postTitle" class="col-auto-2 col-form-label" style="margin-left: 0px; margin-right: 0px;">Title</label>
                     <div class="col-auto-10">
@@ -278,11 +285,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </footer>
 
 
-</body>
 
-</html>
 
 <script>
+
+// $(document).ready(() => {
+//     $("form").submit((e) => {
+//         e.preventDefault();
+//         $.post("create_post.php", {
+//             user_ID: <?php echo $_SESSION["user_ID"] ?>,
+//             title: $("#title").val(),
+//             due_date: $("#due_date").val()
+//         }, function(response) {
+//             console.log(response);
+//             getToDoList();
+//             $("#addToDoItem").trigger("reset");
+//         });
+//     });
+// })
 
     function displayImage(obj) {
         if (obj.files && obj.files[0]) {
@@ -347,3 +367,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     }
 </script>
+
+</body>
+
+</html>
