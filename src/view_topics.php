@@ -61,6 +61,26 @@
 
 </head>
 
+<script>
+    <?php
+    if($_SESSION["lightmode"] == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark");
+                }
+            });
+        }
+    })
+</script>
+
 <body>
 
 <?php
@@ -105,7 +125,7 @@ include "db_connection.php";
 
 <div class="input-group mb-3 Search con2">
 
-<input id="IDsearch" type="text" name="Search" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
+<input id="IDsearch" type="text" name="IDsearch" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
 
 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sort By</button>
 
@@ -129,7 +149,7 @@ include "db_connection.php";
 
 
     <button type="button" class="btn btn-primary input-group mb-3 createPost conButton"
-        onclick="window.location.href='./create_topic.html';">Create Topic</button>
+        onclick="window.location.href='./create_post.php';">Create Topic</button>
 
 
 
@@ -138,23 +158,36 @@ include "db_connection.php";
 
 <script>
 
-   $(document).ready(function() {
-        console.log("Hello");
-   });
+
+function AsyncSearch() {
+        var searchInput = $("#IDsearch").val();
+
+        if (searchInput.trim() !== '') {
+            $.ajax({
+                type: "POST",
+                url: "asynctopics.php",
+                data: {
+                    search: searchInput
+                },
+                success: function (response) {
+                    $("#async").find(".this-div").html(response);
+                },
+                error: function (e) {
+                    console.error('Error');
+                }
+            });
+        }
+    }
+
+    $("#IDsearch").on('input', AsyncSearch);
 
    function change(sortby)
         {
-           var searchinput = $("#IDsearch").val();
-
-           console.log('searchInputValue:',searchinput);
-           console.log('sortby:', sortby);
-
            $.ajax({
                type: "POST",
                url: "asynctopics.php",
                data:
-                {   sortby: sortby,
-                    search: searchinput },
+                {   sortby: sortby },
 
                success:
                 function (response){
