@@ -8,15 +8,13 @@ if (!$conn) {
   echo "Connection Error." ;
 }
 
-if (isset($_POST['sortby']))
-{
-$PHPID = $_POST['sortby'];
 
-}
 
-switch($PHPID){
-    case "Search":
-        $sql = "SELECT topic_ID, title, views, posts  FROM topics WHERE LOWER(title) LIKE '$Topic_search' ORDER BY title ASC";
+if (isset($_POST['search'])) {
+    $searchInput = $_POST['search'];
+    $Topic_search = '%' . $searchInput . '%';
+
+    $sql = "SELECT topic_ID, title, views, posts  FROM topics WHERE LOWER(title) LIKE '$Topic_search' ORDER BY title ASC";
         $Result = mysqli_query($conn, $sql);
         
         while($resultA = mysqli_fetch_array($Result)){
@@ -36,8 +34,13 @@ switch($PHPID){
         <br>';    
         }
 
-        break;
+}
 
+elseif (isset($_POST['sortby'])){
+    $PHPID = $_POST['sortby'];
+    
+
+switch($PHPID){
     case "ABC":
         $sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY title ASC";
         $Result = mysqli_query($conn, $sql);
@@ -154,6 +157,6 @@ switch($PHPID){
     } 
     
 }
-
+}
 
 ?>
