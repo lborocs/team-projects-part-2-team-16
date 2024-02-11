@@ -107,19 +107,16 @@ include "db_connection.php";
 				$topicview = "border-bottom border-primary link-primary";
 				$dashview = "link-dark";
 				include "./navbar_m.php";
-				//include "./dashboard_m.php";
 			}else if($_SESSION["role"] == "TL"){
 				$topicview = "border-bottom border-primary link-primary";
 				$taskcreate = "link-dark";
 				$taskview = "link-dark";
 				$dashview = "link-dark";
 				include "./navbar_tl.php";
-				//include "./view_team_tl.php";
 			}else if($_SESSION["role"] == "Employee"){
 				$topicview = "border-bottom border-primary link-primary";
 				$dashview = "link-dark";
 				include "./navbar_e.php";
-				//include "./dashboard_e.php";
 			}
 		?>
 
@@ -162,7 +159,7 @@ include "db_connection.php";
 function AsyncSearch() {
         var searchInput = $("#IDsearch").val();
 
-        if (searchInput.trim() !== '') {
+        if (searchInput.trim().length > -1) {
             $.ajax({
                 type: "POST",
                 url: "asynctopics.php",
@@ -207,27 +204,29 @@ function AsyncSearch() {
 <div  id="async" class="con1">
 <div class="this-div">
 <?php
-$sql = "SELECT topic_ID, title, views, posts  FROM topics ORDER BY title ASC";
-        $Result = mysqli_query($conn, $sql);
-    
-        while($resultA = mysqli_fetch_array($Result)){
+$sqlTopics = "SELECT topic.topic_ID, topic.title, topic.views, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
+$resultTopics = mysqli_query($conn, $sqlTopics);
 
-        echo '<div type="button" style="top: 495px;" class="topic1 col-xl"
+while ($resultA = mysqli_fetch_array($resultTopics)) {
+
+
+        echo '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
-                <p>' . $resultA["title"] . '</p>
-                <div style="float: right;height: 20px;position: relative;">
-                    <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                        <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["posts"] . '
-                        <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
-                    </span>
-                </div>
+            <p>' . $resultA["title"] . '</p>
+            <div style="float: right;height: 20px;position: relative;">
+                <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                    <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
+                    <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                </span>
             </div>
         </div>
+        </div>
         <br>';
-
-    }
+    
+}
 ?>
+
     </div>
     </div>
 
