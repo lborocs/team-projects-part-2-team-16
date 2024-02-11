@@ -25,6 +25,26 @@
   <link href="./headers.css" rel="stylesheet">
 </head>
 
+<script>
+    <?php
+    if($_SESSION["lightmode"] == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark");
+                }
+            });
+        }
+    })
+</script>
+
 <body>
 
   <?php
@@ -87,7 +107,7 @@ include "db_connection.php";
 
 <div class="input-group mb-3 Search con2">
 
-<input id="IDsearch" type="text" name="Search" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
+<input id="IDsearch" type="text" name="IDsearch" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
 <input type="hidden" name="Post_topic_ID" value="<?php echo $INT_ID; ?>">
 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sort By</button>
 
@@ -114,23 +134,35 @@ include "db_connection.php";
 
     <script>
 
-$(document).ready(function() {
-     console.log("Hello");
-});
+function AsyncSearch() {
+        var searchInput = $("#IDsearch").val();
+
+        if (searchInput.trim().length > -1) {
+            $.ajax({
+                type: "POST",
+                url: "asyncposts.php",
+                data: {
+                    search: searchInput,
+                    asyncINT_ID: "<?php echo $INT_ID; ?>" },
+                success: function (response) {
+                    $("#async").find(".this-div").html(response);
+                },
+                error: function (e) {
+                    console.error('Error');
+                }
+            });
+        }
+    }
+
+    $("#IDsearch").on('input', AsyncSearch);
 
 function change(sortby)
      {
-        var searchinput = $("#IDsearch").val();
-
-        console.log('searchInputValue:',searchinput);
-        console.log('sortby:', sortby);
-
         $.ajax({
             type: "POST",
             url: "asyncposts.php",
             data:
              {   sortby: sortby,
-                 search: searchinput,
                  asyncINT_ID: "<?php echo $INT_ID; ?>" },
 
             success:
@@ -148,19 +180,10 @@ function change(sortby)
 
 </script>
 
-
-
-
   <div id="async" class="container con1">
   <div class="row mx-auto this-div">
 
-
-
-
-
 <?php
-
-
 
 if (isset($Current_Topic)) {
   $sql = "SELECT views FROM topics WHERE topic_ID = $INT_ID";
@@ -178,32 +201,35 @@ if (isset($Current_Topic)) {
           } else {
               echo "Error";
           }
-      
   
 }
 
-
         
-$sql = "SELECT title, content, img_url  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
+$sql = "SELECT title, content, img_url, post_ID  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
 $Result = mysqli_query($conn, $sql);
 
 while($resultA = mysqli_fetch_array($Result)){
 
+if ($resultA["img_url"] == 'null') {
+    $PIC = "grey.png";
+} else {
+    $PIC = $resultA["img_url"];
+}
+
 echo '
 <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
 <div class="card mx-auto">
-    <img src="https://thumbs.dreamstime.com/b/software-engineer-portrait-smiling-young-vietnamese-69422682.jpg"
+    <img src="' . $PIC . '"
       class="card_img" alt="...">
-    <div class="card-body">
-      <p class="card-text mb-0">' . $resultA["title"] . $resultA["content"] . '</p>
-      <a class="stretched-link" href="./view_ind_post_m.php"></a>
+    <div class="card-body" style="height: 68px; overflow: hidden;">
+      <p class="card-text mb-0">' . $resultA["title"] . '</p>
+      <a class="stretched-link" href="./get_ind_post.php?POST_ID=' . $resultA["post_ID"] . '"></a>
       </div>
       </div>
 </div>';
 
 }
     
-
 
 ?>
   </div>
@@ -226,3 +252,4 @@ echo '
     </footer>
 
 </body>
+
