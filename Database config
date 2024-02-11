@@ -67,7 +67,6 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 | topics            | title          | varchar(255)  | unique        |
 | topics            | Date           | date          |               |
 | topics            | views          | int           |               |
-| topics            | posts          | int           |               |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
