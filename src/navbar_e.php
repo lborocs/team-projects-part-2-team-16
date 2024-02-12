@@ -79,8 +79,8 @@
 					<li><a href="./view_topics.php" class="nav-link px-2 <?php if($topicview=="link-dark"){echo $colour;} echo $topicview;?>">Topics</a></li>
 				</ul>
 
-				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_e.html">
-					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search">
+				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics.php" method="get">
+					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search" name="NavbarTopic">
 				</form>
 
 				<div class="dropdown text-end">
