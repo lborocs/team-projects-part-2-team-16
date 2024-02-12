@@ -76,7 +76,7 @@
 				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 					<li><a href="./dashboard.php" class="nav-link px-2 <?php if($dashview=="link-dark"){echo $colour;}echo $dashview;?>">Dashboard</a>
 					</li>
-					<li><a href="./view_topics.php" class="nav-link px-2 link-dark <?php if($topicview=="link-dark"){echo $colour;} echo $topicview;?>">Topics</a></li>
+					<li><a href="./view_topics.php" class="nav-link px-2 <?php if($topicview=="link-dark"){echo $colour;} echo $topicview;?>">Topics</a></li>
 				</ul>
 
 				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_e.html">
