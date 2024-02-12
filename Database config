@@ -19,12 +19,13 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 +-------------------+----------------+---------------+---------------+
 | posts             | post_ID        | int           | PK            |
 | posts             | user_ID        | int           |               |
-| posts             | topic_ID       | int           |               |
+| posts             | topic_ID       | int or null   |               |
 | posts             | title          | varchar(255)  |               |
 | posts             | content        | varchar(1000) |               |
 | posts             | img_url        | varchar(255)  |               |
 | posts             | Date           | date          |               |
 | posts             | views          | int           |               |
+| posts             | project_ID     | int or null   |               |
 +-------------------+----------------+---------------+---------------+
 
 +-------------------+----------------+---------------+---------------+
