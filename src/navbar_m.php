@@ -90,7 +90,7 @@
 					</a>
 					<ul class="dropdown-menu text-small settingsCSS <?php echo $colour;?>" aria-labelledby="dropdownUser1">
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_topic_m.php">Create New Topic...</a></li>
-						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./manageEmp.php">Manage Employees</a></li>
+						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./manage.php">Manage Employees</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php" onclick="settings()">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider">
