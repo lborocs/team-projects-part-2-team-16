@@ -74,13 +74,13 @@
 			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start settingsCSS <?php echo $colour;?>">
 
 				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-					<li><a href="./dashboard.php" class="nav-link px-2 settingsCSS <?php if($dashview=="link-dark"){echo $colour;} echo $dashview;?>">Dashboard</a></li>
-					<li><a href="./view_topics_m.php" class="nav-link px-2 settingsCSS <?php if($topicview=="link-dark"){echo $colour;}echo $topicview;?>">Topics</a></li>
-					<li><a href="./create_task_m.php" class="nav-link px-2 settingsCSS <?php if($taskcreate=="link-dark"){echo $colour;}echo $taskcreate;?>">Assign Tasks</a></li>
+					<li><a href="./dashboard.php" class="nav-link px-2 settingsCSS <?php if($dashview=="link-primary"){echo $colour;} echo $dashview;?>">Dashboard</a></li>
+					<li><a href="./view_topics.php" class="nav-link px-2 settingsCSS <?php if($topicview=="link-primary"){echo $colour;}echo $topicview;?>">Topics</a></li>
+					<li><a href="./create_task.php" class="nav-link px-2 settingsCSS <?php if($taskcreate=="link-primary"){echo $colour;}echo $taskcreate;?>">Assign Tasks</a></li>
 				</ul>
 
-				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics_m.php">
-					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search">
+				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="./view_topics.php" method="get">
+					<input type="search" class="form-control" placeholder="Search Topics" aria-label="Search" name="NavbarTopic">
 				</form>
 
 				<div class="dropdown text-end settingsCSS ">
@@ -89,7 +89,7 @@
 						<img src="./<?php echo $_SESSION["icon"];?>.png" alt="mdo" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small settingsCSS <?php echo $colour;?>" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_topic_m.php">Create New Topic...</a></li>
+						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_post.php">Create New Topic...</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./manage.php">Manage Employees</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php" onclick="settings()">Settings</a></li>
 						<li>
