@@ -1,7 +1,7 @@
 <?php 
 	session_start();
 	$ErrorMessage = "";
-	$saved = "none";
+	$userDeleted = "none";
 	include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
 	//Lightmode
@@ -164,7 +164,7 @@
 	<div class="container <?php echo $colour;?>" style="margin-bottom: 10px;">
 		<div id="page-header">
 	<div class = "row">
-		<div class="dropdown align-items-right col-md-1">
+		<div class="dropdown align-items-right col-sm-1">
 			<button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdownMenuButton"
 				data-bs-toggle="dropdown">Sort By</button>
 			<div class=" dropdown-menu <?php echo $colour;?>" aria-labelledby="sortDropdownMenuButton">
@@ -176,7 +176,7 @@
 			</div>
 		</div>
 
-		<div class="dropdown align-items-right col-md-1">
+		<div class="dropdown align-items-right col-sm-1">
 			<button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdownMenuButton"
 				data-bs-toggle="dropdown">Filter For</button>
 			<div class=" dropdown-menu <?php echo $colour;?>" aria-labelledby="filterDropdownMenuButton">
@@ -187,8 +187,52 @@
 
 			</div>
 		</div>
+		<div class="col-sm-10">
+			<input id = 'searchbar' type="search" class="form-control" placeholder="Search Employees" oninput = "searchData()" aria-label="Search">
+		</div>
 
 	<script>
+		function searchData() {
+			var data = {};
+			if(filters[0] == 1){
+				data.filterManager = 'filterManager';
+			}else if(filters[1] == 1){
+				data.filterTL = 'filterTL';
+			}else if(filters[2] == 1){
+				data.filterEmployee = 'filterEmployee';
+			}
+			 
+			data.sortbyName = 'sortbyName';
+			if(sorting[0] == 1){
+				data.sortbyHoursD = 'sortbyHoursD';
+			}else if(sorting[1] == 1){
+				data.sortbyHoursA = 'sortbyHoursA';
+			}else if(sorting[2] == 1){
+				data.sortbyCountD = 'sortbyCountD';
+			}else if(sorting[3] == 1){
+				data.sortbyCountA = 'sortbyCountA';
+			}
+
+			if(document.getElementById('searchbar').value != ''){
+				data.search = document.getElementById('searchbar').value;
+			}
+			
+			$.ajax({
+				url: 'manageAsync.php',
+				method: 'POST',
+				data: data,
+				success: function(response) {
+					// Handle success
+					$('#displayedContent').html(response); // Update displayed content
+				},
+				error: function(xhr, status, error) {
+					// Handle error
+					console.error(error); // Log error to the console
+				}
+			});
+
+		}
+
 		function sortData(sortOption) {
 			fetchData(sortOption, null);
 		}
@@ -199,6 +243,18 @@
 
 		function fetchData(sortOption, filterOption) {
 			var data = {};
+			//if both are null we want to delete a user and refresh
+			if((sortOption == null )&&(filterOption ==null)){
+				if(optionsID[0] == "D"){
+					data.deleteUser = optionsID.slice(1);
+				}else if(optionsID[0] == "E"){
+					data.setEmployee = optionsID.slice(1);
+				}else if(optionsID[0] == "T"){
+					data.setTL = optionsID.slice(1);
+				}else if(optionsID[0] == "M"){
+					data.setManager = optionsID.slice(1);
+				}
+			}
 			// Check which sorting option is selected and add it to the data object
 			if (sortOption === 'sortbyName') {
 				data.sortbyName = sortOption;
@@ -244,6 +300,11 @@
 			}
 		
 
+			//search preservation
+
+			if((search[0]!=0) && (search[0]!='') && (typeof search[0] != 'undefined')){
+				data.search = search[0];
+			}
 
 			$.ajax({
 				url: 'manageAsync.php',
@@ -260,25 +321,70 @@
 			});
 
 		}
+		var optionsID;
+		function onSelect(selected_id,selection){
+			if(selected_id == null){
+				if(selection == "emp"){
+					document.getElementById('empNotification').style.display = "none";
+				}else if(selection == "tl"){
+					document.getElementById('tlNotification').style.display = "none";
+				}else if(selection == "mgr"){
+					document.getElementById('mgrNotification').style.display = "none";
+				}else if(selection == "del"){
+					document.getElementById('mgrNotification').style.display = "none";
+				}
+			}else if(selection == "delete"){
+				optionsID = "D"+selected_id;
+			}else{ 
+				if(selection == "emp"){
+					optionsID = "E"+selected_id;
+					document.getElementById('empNotification').style.display = "block";
+				}else if(selection == "tl"){
+					optionsID = "T"+selected_id;
+					document.getElementById('tlNotification').style.display = "block";
+				}else if(selection == "mgr"){
+					optionsID = "M"+selected_id;
+					document.getElementById('mgrNotification').style.display = "block";
+				}
+				fetchData(null,null)
+			}
+		}
+		function deleteConfimred(){
+			document.getElementById('deletedNotification').style.display = "block";
+			fetchData(null,null)
+		}
 	</script>
 
-				<div class="col-md-10 ">
-					<input type="search" class="form-control" placeholder="Search Employees" aria-label="Search">
-				</div>
+				
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="b-example-divider  <?php echo $colour;?>"></div>
+	<div class="alert alert-danger alert-dismissible fade show" role="alert" id = "deletedNotification" style = "display:none;">
+        User Deleted.
+        <button type="button" class="btn-close" aria-label="Close" onclick="onSelect(null,'del')"></button>
+    </div>
+	<div class="alert alert-success alert-dismissible fade show" role="alert" id = "empNotification" style = "display:none;">
+        User changed to Employee role.
+        <button type="button" class="btn-close"  aria-label="Close" onclick="onSelect(null,'emp')"></button>
+    </div>
+	<div class="alert alert-success alert-dismissible fade show" role="alert" id = "tlNotification" style = "display:none;">
+		User changed to Team Leader role.
+        <button type="button" class="btn-close"  aria-label="Close" onclick="onSelect(null,'tl')"></button>
+    </div>
+	<div class="alert alert-success alert-dismissible fade show" role="alert" id = "mgrNotification" style = "display:none;">
+		User changed to Manager role.
+        <button type="button" class="btn-close"  aria-label="Close" onclick="onSelect(null,'mgr')"></button>
+    </div>
 <div id = "displayedContent">
 <?php
-$count = 0;
 
 foreach ($result as $user){
 	if ($user['role'] == 'TL'){
 		$user['role'] = "Team Leader";
 	}
-
+	$count = $user['user_ID'];
 	echo '
 	<div class="container accordion-item '.$colour.' text-dark" style="border-radius:5px;">
 		<div class="row employee">
@@ -322,12 +428,15 @@ foreach ($result as $user){
 						<span class="visually-hidden">Toggle Dropdown</span>
 					</button>
 					<ul class="dropdown-menu '.$colour.'">
-						<li><a class="dropdown-item" >Set Manager</a></li>
-						<li><a class="dropdown-item" >Set Employee</a></li>
+						<li><a class="dropdown-item" onclick="onSelect(\''.$count.'\',\'mgr\')">Set Manager</a></li>
+						<li><a class="dropdown-item" onclick="onSelect(\''.$count.'\',\'tl\')">Set Team Leader</a></li>
+						<li><a class="dropdown-item" onclick="onSelect(\''.$count.'\',\'emp\')">Set Employee</a></li>
 						<li>
 							<hr class="dropdown-divider '.$colour.'">
 						</li>
-						<li><a class="dropdown-item '.$colour.'" href="#" style="color:red;">Delete User</a></li>
+						<li><a class="dropdown-item '.$colour.'" href="#" style="color:red;" data-bs-toggle="modal" data-bs-target="#exampleModalDefault" onclick="onSelect(\''.$count.'\',\'delete\')">
+							Delete User
+						</a></li>
 					</ul>
 				</div>
 			</div>    
@@ -372,10 +481,32 @@ foreach ($result as $user){
 	</div>
 
 	<br>';
-	$count = $count +1;
 }echo "<script>var sorting = [".!empty($_POST['sortbyHoursD']).",".!empty($_POST['sortbyHoursA']).",".!empty($_POST['sortbyCountD']).",".!empty($_POST['sortbyCountA']).",".!empty($_POST['sortbyName'])."]; 
-var filters = [".!empty($_POST['filterManager']).",".!empty($_POST['filterTL']).",".!empty($_POST['filterEmployee'])."];</script>";
+				var filters = [".!empty($_POST['filterManager']).",".!empty($_POST['filterTL']).",".!empty($_POST['filterEmployee'])."];
+				var search = ['";
+                    if(!empty($_POST['search'])){
+                        echo $_POST['search'];
+                    }else{
+                        echo !empty($_POST['search']);
+                    }echo "'];</script>";
 ?>
+</div>
+<div class="modal fade" id="exampleModalDefault" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" stule = "padding: 0px 2px;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete User</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this user? This cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick = "deleteConfimred()">Delete</button>
+      </div>
+    </div>
+  </div>
 </div>
 		<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top <?php echo $colour;?>"
 			style="padding-left: 25px; padding-right: 25px;">
