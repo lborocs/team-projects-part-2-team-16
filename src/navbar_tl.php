@@ -93,7 +93,7 @@
 						<li><a class="dropdown-item  settingsCSS <?php echo $colour;?>" href="./create_topic_tl.php">Create New Topic...</a></li>
 						<li><a class="dropdown-item  settingsCSS <?php echo $colour;?>" href="./settings.php">Settings</a></li>
 						<li>
-							<hr class="dropdown-divider  settingsCSS <?php echo $colour;?>">
+							<hr class="dropdown-divider">
 						</li>
 						<li><a class="dropdown-item  settingsCSS <?php echo $colour;?>" href="#" onclick="logout()">Sign out</a></li>
 					</ul>

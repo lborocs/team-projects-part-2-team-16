@@ -93,7 +93,7 @@
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./manageEmp.php">Manage Employees</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php" onclick="settings()">Settings</a></li>
 						<li>
-							<hr class="dropdown-divider settingsCSS <?php echo $colour;?>">
+							<hr class="dropdown-divider">
 						</li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>"  onclick="logout()">Sign out</a></li>
 					</ul>
