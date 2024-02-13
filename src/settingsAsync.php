@@ -131,7 +131,7 @@
 	if($_SESSION["lightmode"] == 1){
 		$colour = " text-light bg-dark";
 	}if($_SESSION["lightmode"] != 1){
-		$colour = " bg-white";
+		$colour = " bg-white text-dark";
 	}
 	?>
 	<script>
@@ -144,28 +144,6 @@
 		document.body.className = "<?php echo $colour;?>";
 		document.documentElement.className = "<?php echo $colour;?>";
 	</script>
-	<div style="margin:0px; padding:0px;">
-		<?php 
-			if(!isset($_SESSION["role"])){
-				echo "<script>window.location.href='./login.php'</script>";
-			}else if($_SESSION["role"] == "Manager"){
-				$taskcreate = "link-dark";
-				$topicview = "link-dark";
-				$dashview = "link-dark";
-				include "./navbar_m.php";
-			}else if($_SESSION["role"] == "TL"){
-				$topicview = "link-dark";
-				$taskcreate = "link-dark";
-				$taskview = "link-dark";
-				$dashview = "link-dark";
-				include "./navbar_tl.php";
-			}else if($_SESSION["role"] == "Employee"){
-				$topicview = "link-dark";
-				$dashview = "link-dark";
-				include "./navbar_e.php";
-			}
-		?>
-	</div>
 	<div class="<?php if($_SESSION["lightmode"] == 1){echo 'bg-secondary text-light border-light border-bottom';}else{echo 'bg-dark text-light';}?>  px-4 py-5 text-center" style="margin:0px; padding:0px;">
 		<div class="py-5">
 			<h1 class="display-5 fw-bold ">Settings</h1>
@@ -285,3 +263,22 @@
 			<p>Email: king@make‐it‐all.co.uk</p>
 		</div>
 	</footer>
+	<script>
+	<?php 
+		if($_SESSION["lightmode"] == 1){
+			echo '
+			var navbar = document.getElementsByClassName("settingsCSS");
+			for(var i = 0; i < navbar.length; i++)
+			{
+				navbar[i].classList.remove("bg-white", "text-dark");
+            	navbar[i].classList.add("text-light", "bg-dark");
+			}';
+		}if($_SESSION["lightmode"] != 1){
+			echo 'var navbar = document.getElementsByClassName("settingsCSS");
+			for(var i = 0; i < navbar.length; i++)
+			{
+				navbar[i].classList.add("bg-white", "text-dark");
+           		navbar[i].classList.remove("text-light", "bg-dark");
+			}';
+		}
+	?></script>

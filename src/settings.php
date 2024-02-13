@@ -56,16 +56,7 @@
 </head>
 
 <body class = "<?php echo $colour;?>";>
-	<div id = 'everything'>
-	<script>
-		function settings() {
-			window.location.href = "./settings.php";
-		};
-		function logout() {
-			window.location.href = "./login.php";
-		};
-	</script>
-	<div style="margin:0px; padding:0px;">
+<div style="margin:0px; padding:0px;">
 		<?php 
 			if(!isset($_SESSION["role"])){
 				echo "<script>window.location.href='./login.php'</script>";
@@ -87,6 +78,15 @@
 			}
 		?>
 	</div>
+	<div id = 'everything'>
+	<script>
+		function settings() {
+			window.location.href = "./settings.php";
+		};
+		function logout() {
+			window.location.href = "./login.php";
+		};
+	</script>
 	<div class="<?php if($_SESSION["lightmode"] == 1){echo 'bg-secondary text-light border-light border-bottom';}else{echo 'bg-dark text-light';}?>  px-4 py-5 text-center" style="margin:0px; padding:0px;">
 		<div class="py-5">
 			<h1 class="display-5 fw-bold ">Settings</h1>
