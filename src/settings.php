@@ -40,9 +40,9 @@
 	$codeResult = refreshLinks($conn);
 	//darkmode/lightmode css
 	if($_SESSION["lightmode"] == 1){
-		$colour = "text-light bg-dark";
+		$colour = " text-light bg-dark";
 	}if($_SESSION["lightmode"] != 1){
-		$colour = "bg-white";
+		$colour = " bg-white";
 	}
 	?>
 	
@@ -51,6 +51,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="./logo.ico">
 	<title>Settings</title>
 </head>
 
@@ -227,7 +228,6 @@
 			}else if(typeofsubmit == "lightSwitch"){
 				data.lightSwitch ='lightSwitch';
 			}
-			
 			$.ajax({
 				url: 'settingsAsync.php',
 				method: 'POST',

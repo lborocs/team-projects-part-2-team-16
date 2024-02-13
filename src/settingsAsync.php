@@ -129,13 +129,13 @@
 	}	
 	//darkmode/lightmode css
 	if($_SESSION["lightmode"] == 1){
-		$colour = "text-light bg-dark";
+		$colour = " text-light bg-dark";
 	}if($_SESSION["lightmode"] != 1){
-		$colour = "bg-white";
+		$colour = " bg-white";
 	}
 	?>
 	<script>
-function settings() {
+		function settings() {
 			window.location.href = "./settings.php";
 		};
 		function logout() {
