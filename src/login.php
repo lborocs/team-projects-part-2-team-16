@@ -1,4 +1,4 @@
-<!doctype html>
+<html>
 <html lang="en">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
   integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -12,9 +12,10 @@
   <meta name="description" content="">
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.84.0">
-  <title>Information Management System · Login</title>
+  <title>Make-It-All · Login</title>
 
   <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sign-in/">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 
 
@@ -58,7 +59,6 @@
     return false;
   }
 
-  </script>
 </script>
 
 <body class="text-center">
@@ -76,70 +76,77 @@
     return $data;
   }
   $errorMessage = '';
-  if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $HashedPassword = hash("sha256",structure_input($_POST["password"]));
-    $EnteredUsername = structure_input($_POST["username"]);
 
-    include "db_connection.php";
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
-    if (!$conn) {
-      echo "Connection Error." ;
-      exit;
-    }
-    $sql = "SELECT user_ID,role,icon,encrypted_pass,lightmode
-            FROM   users
-            WHERE  email ='".$EnteredUsername."'";
-
-    $result = mysqli_query($conn,$sql);
-
-    if (!$result) {
-        echo "Connection Error.";
-        exit;
-    }
-    $data = mysqli_fetch_assoc($result);
-    if (mysqli_num_rows($result) == 0) {
-      $errorMessage = 'Details Incorrect, please try again.';
-    }else{
-      if ($data["encrypted_pass"] == $HashedPassword){
-        session_start();
-        $_SESSION["user_ID"] = $data["user_ID"];
-        $_SESSION["role"] = $data["role"];
-        $_SESSION["icon"] = $data["icon"];
-        $_SESSION["lightmode"] = $data["lightmode"];
-        $_SESSION["expiry"]  = date("'m-d-Y')",mktime(0, 0, 0, date("m"), date("d")+1, date("Y")));
-
-        if(isset($_SESSION["role"])){
-          header('location:./dashboard.php');
-        }else{
-          $errorMessage = 'Details Incorrect, please try again.';
-        }
-      }else{
-        $errorMessage = 'Details Incorrect, please try again.';
-      }
-    }
-  }
 ?>
-  <main class="form-signin">
-    <form method = "POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-      <img class="mb-4" src="./logo.png" alt="" width="240" height="60">
+  <div id = "everything" class="container">
+    <main class="form-signin">
+      <form id = "loginForm">
+        <img class="mb-4" src="./logo.png" alt="" width="300" height="70" style="display: block;margin-left: auto;margin-right: auto;border-radius:4px;border:solid black 1px;">
 
-      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <h1 class="h3 mb-3 fw-normal">Please Sign-In</h1>
 
-      <div class="form-floating">
-        <input type="text" name="username" class="form-control" id="username" placeholder="Username">
-        <label for="username">Email</label>
-      </div>
-      <div class="form-floating">
-        <input type="password" class="form-control" id="password" name = "password" placeholder="Password">
-        <label for="floatingPassword">Password</label>
-      </div>
-      <div><p style = "color:red;"><?php echo  $errorMessage; ?></p></div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in </button>
-      <button class="w-100 btn btn-lg btn-secondary" type="button" onclick="createAcc()" style="margin:1% 0%">Create
-        Account</button>
-    </form>
-  </main>
+        <div class="form-floating">
+          <input type="text" name="username" class="form-control" id="username" placeholder="Username">
+          <label for="username">Email</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password" name = "password" placeholder="Password">
+          <label for="floatingPassword">Password</label>
+        </div>
+        <div><p id = "eMessage" style = "color:red;"><?php echo  $errorMessage; ?></p></div>
+        <button class="w-100 btn btn-lg btn-primary" type="button" onclick="login()">Sign In </button>
+        <button class="w-100 btn btn-lg btn-secondary" type="button" onclick="createAcc()" style="margin:1% 0%">Create
+          Account</button>
+      </form>
+    </main>
+</div>
 
 </body>
+<script>
+  function login() {
+      var form = document.getElementById('loginForm');
+
+      // Check if the form is valid
+      if (form.checkValidity()) {
+          // Form is valid, proceed with creating account
+          var data = {};
+          data.username = document.getElementById('username').value;
+          data.password = document.getElementById('password').value;
+
+          // AJAX request
+          $.ajax({
+              url: 'loginAsync.php',
+              method: 'POST',
+              data: data,
+              success: function(response) {
+                  // Handle success
+                  $('#everything').html(response); // Update displayed content
+              },
+              error: function(xhr, status, error) {
+                  // Handle error
+                  console.error(error); // Log error to the console
+                  $('#eMessage').text('Details Incorrect, please try again.');
+              }
+          });
+      } else {
+          // Form is not valid, do nothing
+          return false;
+      }
+    }
+    username.addEventListener('keyup', function(event) {
+        // Check if the key pressed is Enter (key code 13)
+        if (event.keyCode === 13) {
+            // Call the function to perform action
+            login();
+        }
+    });
+    password.addEventListener('keyup', function(event) {
+        // Check if the key pressed is Enter (key code 13)
+        if (event.keyCode === 13) {
+            // Call the function to perform action
+            login();
+        }
+    });
+</script>
 
 </html>
