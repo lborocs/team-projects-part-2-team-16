@@ -5,9 +5,21 @@
   <title>Posts</title>
 
   <link rel="stylesheet" type="text/css" href="./posts.css">
-
+  <link rel="icon" type="image/x-icon" href="./logo.ico">
 
   <style>
+    .card_img {
+  height: 175px;
+  width: 198px;
+  border-radius: 3px;
+ }
+ .edit{
+  max-width: 21%;
+  position: absolute;
+  border-radius: 3px;
+  left: 70%;
+  margin-top: -98px;
+}
     .bd-placeholder-img {
       font-size: 1.125rem;
       text-anchor: middle;
@@ -53,16 +65,7 @@ include "db_connection.php";
     if (!$conn) {
       echo "Connection Error." ;
     }
-/*
-    setcookie('TopicID', $_GET['Post_topic_ID']);
-    session_start();
-    $_SESSION['TopicID'] = $_GET['Post_topic_ID'];
-    if (isset($_COOKIE['TopicID'])) {
-      $Current_Topic = $_COOKIE['TopicID'];
-  } else {
-      echo "Cookie 'TopicID' not set <br>";
-  }
-  */
+
   $Current_Topic = $_GET['Post_topic_ID'];
   
     
@@ -89,19 +92,16 @@ include "db_connection.php";
 				$topicview = "link-dark";
 				$dashview = "link-dark";
 				include "./navbar_m.php";
-				//include "./dashboard_m.php";
 			}else if($_SESSION["role"] == "TL"){
 				$topicview = "link-dark";
 				$taskcreate = "link-dark";
 				$taskview = "link-dark";
 				$dashview = "link-dark";
 				include "./navbar_tl.php";
-				//include "./view_team_tl.php";
 			}else if($_SESSION["role"] == "Employee"){
 				$topicview = "link-dark";
 				$dashview = "link-dark";
 				include "./navbar_e.php";
-				//include "./dashboard_e.php";
 			}
 		?>
 
@@ -124,10 +124,48 @@ include "db_connection.php";
 </ul>
 </div>
 
-  <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton"
+<?php
+if($_SESSION["role"] == "Manager"){
+?>
+
+<form>
+
+<button class="btn btn-primary input-group edit dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Edit</button>
+
+<ul class="dropdown-menu dropdown-menu-end">
+<li>
+    <button class="dropdown-item" type="button"  onclick="window.location.href='./create_post.php';">Create Post</button>
+</li>
+<li>
+    <button class="dropdown-item" type="button" onclick="deletetopic()">Delete Topic</button>
+</li>
+</ul>
+</form>
+
+<form id="TopicDeletion" method="post" action="deletetopic.php">
+  <input type="hidden" name="deleteID" value="<?php echo $INT_ID; ?>">
+</form>
+
+<script>
+
+function deletetopic() {
+
+  document.getElementById("TopicDeletion").submit();
+  
+}
+
+</script>
+
+<?php
+} else{
+?>
+
+<button type="button" class="btn btn-primary input-group mb-3 createTopic conButton"
     onclick="window.location.href='./create_post.php';">Create Post</button>
 
-
+<?php
+}
+?>
 
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -252,4 +290,3 @@ echo '
     </footer>
 
 </body>
-
