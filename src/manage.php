@@ -31,9 +31,11 @@
 	}
 ?>
 <html class = "<?php echo $colour;?>">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Manage Employees</title>
+<link rel="icon" type="image/x-icon" href="./logo.ico">
 
 <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
 
@@ -331,7 +333,7 @@
 				}else if(selection == "mgr"){
 					document.getElementById('mgrNotification').style.display = "none";
 				}else if(selection == "del"){
-					document.getElementById('mgrNotification').style.display = "none";
+					document.getElementById('deletedNotification').style.display = "none";
 				}
 			}else if(selection == "delete"){
 				optionsID = "D"+selected_id;
