@@ -17,6 +17,7 @@
 		}
 		return $codeResult;
 	}
+
 	//Generate new links
 	function generateRandomCode() {
 		$randomCode = '';
@@ -36,8 +37,96 @@
 		$data = htmlspecialchars($data);
 		return $data;
 	  }
-	
-	$codeResult = refreshLinks($conn);
+	if(!empty($_POST['lightSwitch'])) {
+		$codeResult = refreshLinks($conn);
+		if($_SESSION["lightmode"] == 1){
+			$_SESSION["lightmode"] = 0;
+			$sql = "UPDATE users SET lightmode = 0 WHERE user_ID ='".$_SESSION["user_ID"]."'";
+			mysqli_query($conn,$sql);
+		}else{
+			$_SESSION["lightmode"] = 1;
+			$sql = "UPDATE users SET lightmode = 1 WHERE user_ID ='".$_SESSION["user_ID"]."'";
+			mysqli_query($conn,$sql);
+		}
+	}
+	if (!empty($_POST['generateLink'])) {
+		$code = generateRandomCode();
+		$sql = "SELECT * FROM activeInviteCodes WHERE code = '$code'";
+		while(mysqli_num_rows(mysqli_query($conn,$sql))!=0){
+			$code = generateRandomCode();
+			$sql = "SELECT * FROM activeInviteCodes WHERE code = '$code'";
+		}
+		$sql = "SELECT COUNT(code) AS code_count
+				FROM activeInviteCodes
+				WHERE authorID =".$_SESSION['user_ID'];
+		$result = mysqli_query($conn,$sql);
+		if(mysqli_fetch_assoc($result)['code_count'] <5){
+			$expirationDate = date('Y-m-d', strtotime('+7 days'));
+			$sql = "INSERT INTO activeInviteCodes VALUES('$code','$expirationDate',". $_SESSION['user_ID'].")";
+			mysqli_query($conn,$sql);
+		}
+		$codeResult = refreshLinks($conn);
+	}if(!empty($_POST['saveChanges'])){
+		$saved = "none";
+		$valid = true;
+		$codeResult = refreshLinks($conn);
+		$pass1 = structure_input($_POST["password1field"]);
+    	$pass2 = structure_input($_POST["password2field"]);
+		$iconSelection = $_POST["iconField"];
+		if(($_SESSION["icon"] != $iconSelection)&&($iconSelection!='')){
+			$_SESSION["icon"] = $iconSelection;
+			$sql = "UPDATE users SET icon = '".$iconSelection."' WHERE user_ID ='".$_SESSION['user_ID']."'";
+			mysqli_query($conn,$sql);
+			$saved = "block";
+            $ErrorMessage = '';
+		}
+		if(($pass1!='')|($pass2!='')){
+			if($pass1 == $pass2){
+				$sql = "SELECT forename,surname FROM users WHERE user_ID =".$_SESSION['user_ID'];
+				$result = mysqli_query($conn,$sql);
+				$row = mysqli_fetch_assoc($result);
+				if(str_contains(strtolower($pass1),strtolower($row['forename']))){
+					$valid = false;
+					$ErrorMessage = "Password must not contain firstname or secondname.";
+				}else if(str_contains(strtolower($pass1),strtolower($row['surname']))){
+					$valid = false;
+					$ErrorMessage = "Password must not contain firstname or secondname.";
+				}
+				//regex for password
+				$uppercaseCheck = '/[A-Z]/';
+				$lowercaseCheck = '/[a-z]/';
+				$digitCheck = '/\d/';
+				$specialCharCheck = '/[!@#$%^&*(),.?":{}|<>]/';
+				$isUppercase = preg_match($uppercaseCheck,$pass1);
+				$isLowercase = preg_match($lowercaseCheck,$pass1);
+				$isDigit = preg_match($digitCheck,$pass1);
+				$isSpecialChar = preg_match($specialCharCheck,$pass1);
+				$isLengthValid = strlen($pass1) >= 8;
+				if($isUppercase && $isLowercase && $isDigit && $isSpecialChar && $isLengthValid){
+					$encryptedPassword = hash('sha256', $pass1);
+				}else{
+					$valid = false;
+					$ErrorMessage = "Passwords format incorrect.";
+				}
+				//
+			}else{
+				$valid = false;
+				$ErrorMessage = "Passwords must match.";
+			}
+			if($valid){
+				include "db_connection.php";
+				$conn = mysqli_connect($servername, $username, $password, $dbname);
+				if (!$conn) {
+				  echo "Connection Error." ;
+				  exit;
+				}	
+				$sql = "UPDATE users SET encrypted_pass ='".$encryptedPassword."' WHERE user_ID='".$_SESSION['user_ID']."'";
+				mysqli_query($conn,$sql);
+				$saved = "block";
+            	$ErrorMessage = '';	
+			}
+		}
+	}	
 	//darkmode/lightmode css
 	if($_SESSION["lightmode"] == 1){
 		$colour = "text-light bg-dark";
@@ -45,24 +134,15 @@
 		$colour = "bg-white";
 	}
 	?>
-	
-<html class = "<?php echo $colour;?>">
-
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Settings</title>
-</head>
-
-<body class = "<?php echo $colour;?>";>
-	<div id = 'everything'>
 	<script>
-		function settings() {
+function settings() {
 			window.location.href = "./settings.php";
 		};
 		function logout() {
 			window.location.href = "./login.php";
 		};
+		document.body.className = "<?php echo $colour;?>";
+		document.documentElement.className = "<?php echo $colour;?>";
 	</script>
 	<div style="margin:0px; padding:0px;">
 		<?php 
@@ -110,11 +190,11 @@
 		</div>
 			<div class="col-md-12" style="padding:0px 4px;">
 				<label for="password1field" class="form-label">New Password</label>
-				<input type="password" class="form-control" id = "password1field" name="password1field" >
+				<input type="password" class="form-control" id = "password1field" name="password1field" value="" >
 			</div>
 			<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
 				<label for="password2field" class="form-label">Confirm New Password</label>
-				<input type="password" id = "password2field" name="password2field" class="form-control" placeholder="">
+				<input type="password" id = "password2field" name="password2field" class="form-control" placeholder="" value="">
 			</div>
 			<div class="col-md-12 <?php echo $colour;?>" style="padding:0px 4px;">
 				<label for="icon" class="form-label">Icon Colour</label>
@@ -205,44 +285,3 @@
 			<p>Email: king@make‐it‐all.co.uk</p>
 		</div>
 	</footer>
-	</div>
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-		crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-		crossorigin="anonymous"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-	
-	<script>
-		function refresh(typeofsubmit) {
-			var data = {};
-			if(typeofsubmit == "generateLink"){
-				data.generateLink ='generateLink';
-			}else if(typeofsubmit == "saveChanges"){
-				data.saveChanges ='saveChanges';
-				data.password1field = document.getElementById('password1field').value;
-				data.password2field = document.getElementById('password2field').value;
-				data.iconField = document.getElementById('iconField').selectedOptions[0].value;
-			}else if(typeofsubmit == "lightSwitch"){
-				data.lightSwitch ='lightSwitch';
-			}
-			
-			$.ajax({
-				url: 'settingsAsync.php',
-				method: 'POST',
-				data: data,
-				success: function(response) {
-					// Handle success
-					$('#everything').html(response); // Update displayed content
-				},
-				error: function(xhr, status, error) {
-					// Handle error
-					console.error(error); // Log error to the console
-				}
-			});
-
-		}
-	</script>
-</body>
-</html>
