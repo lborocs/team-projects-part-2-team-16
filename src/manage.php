@@ -430,13 +430,13 @@ foreach ($result as $user){
 						<span class="visually-hidden">Toggle Dropdown</span>
 					</button>
 					<ul class="dropdown-menu '.$colour.'">
-						<li><a class="dropdown-item" onclick="onSelect(\''.$count.'\',\'mgr\')">Set Manager</a></li>
-						<li><a class="dropdown-item" onclick="onSelect(\''.$count.'\',\'tl\')">Set Team Leader</a></li>
-						<li><a class="dropdown-item" onclick="onSelect(\''.$count.'\',\'emp\')">Set Employee</a></li>
+						<li><a class="dropdown-item '.$colour.'" onclick="onSelect(\''.$count.'\',\'mgr\')">Set Manager</a></li>
+						<li><a class="dropdown-item '.$colour.'" onclick="onSelect(\''.$count.'\',\'tl\')">Set Team Leader</a></li>
+						<li><a class="dropdown-item '.$colour.'" onclick="onSelect(\''.$count.'\',\'emp\')">Set Employee</a></li>
 						<li>
-							<hr class="dropdown-divider '.$colour.'">
+							<hr class="dropdown-divider">
 						</li>
-						<li><a class="dropdown-item '.$colour.'" href="#" style="color:red;" data-bs-toggle="modal" data-bs-target="#exampleModalDefault" onclick="onSelect(\''.$count.'\',\'delete\')">
+						<li><a class="dropdown-item" href="#" style="color:red;" data-bs-toggle="modal" data-bs-target="#exampleModalDefault" onclick="onSelect(\''.$count.'\',\'delete\')">
 							Delete User
 						</a></li>
 					</ul>
