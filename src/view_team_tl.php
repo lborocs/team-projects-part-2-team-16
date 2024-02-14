@@ -27,23 +27,52 @@
 		$title = $_POST["tasktitle"];
 		$desc = $_POST["taskdesc"];
 		$dateInput = $_POST["duedate"];
-		echo "<script>console.log(".$title.")</script>";
-		echo "<script>console.log('v')</script>";
-		echo "<script>console.log(".$dateInput.")</script>";
-		echo "<script>console.log('^')</script>";
-		$hours = $_POST["manhours"];
-		$dateObj = DateTime::createFromFormat("d/m/Y", $dateInput);
-		echo "<script>console.log('Date v')</script>";
-		echo "<script>console.log(".$dateObj.")</script>";
-		echo "<script>console.log('Date ^')</script>";
+        $projIdInt = intval($currentProjectID);
+		// echo "<script>console.log(".$title.")</script>";
+		// echo "<script>console.log('v')</script>";
+		// echo "<script>console.log(".$dateInput.")</script>";
+		// echo "<script>console.log('^')</script>";
+		$hours = intval($_POST["manhours"]);
+        $user_ID = intval($_POST["user_ID"]);
+        echo "got vars";
+		// $dateObj = DateTime::createFromFormat("d/m/Y", $dateInput);
+		// echo "<script>console.log('Date v')</script>";
+		// echo "<script>console.log(".$dateObj.")</script>";
+		// echo "<script>console.log('Date ^')</script>";
 		//echo $dateObj->format("Y-m-d");
-		$result = $conn->query("SELECT MAX(task_ID) FROM tasks");
-		$taskID = $result->fetchAll(PDO::FETCH_ASSOC)["task_ID"] + 1;							//creates a new ID for the new task
+		// $result = $conn->query("SELECT MAX(task_ID) FROM tasks");
+		// $taskID = $result->fetch(PDO::FETCH_ASSOC)["task_ID"] + 1;							//creates a new ID for the new task
+        $result = $conn->query("SELECT max(task_ID) FROM tasks");
+        $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
+        if ($maxID == null) {
+            $taskID = 1;
+        } else {
+            $taskID = $maxID[0] + 1;
+        }
+        echo "got ID: $taskID";
 		//adds task to database
 		// if (!mysqli_query($conn, "INSERT INTO tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours)
-									// VALUES (".$taskID.",".$_SESSION["user_ID"].",".$currentProjectID.",'".$title."','".$desc."','".$date."',".$hours.")")) {
-			// echo "<script>alert('request unsucessful');</script>";
+		// 							VALUES (".$taskID.",".$_SESSION["user_ID"].",".$currentProjectID.",'".$title."','".$desc."','".$date."',".$hours.")")) {
+		// 	echo "<script>alert('request unsucessful');</script>";
 		// }
+        $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
+                                        VALUES (:ID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
+        $stmt->bindParam(':ID', $taskID, PDO::PARAM_INT);
+        $stmt->bindParam(':empID', $user_ID, PDO::PARAM_INT);
+        $stmt->bindParam(':projectID', $projIdInt, PDO::PARAM_INT);
+        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $desc, PDO::PARAM_STR);
+        $stmt->bindParam(':date', $dateInput, PDO::PARAM_STR);
+        $stmt->bindParam(':hours', $hours, PDO::PARAM_INT);
+        
+        echo "bind params";
+
+        if ($stmt->execute())  {
+            header("location: dashboard.php");
+            die();
+        } else {
+            echo "<script type='text/javascript'>alert('request unsucesfull');</script>";
+        }
 	}
 	
 	//BETTER ERROR MESSAGE? -------------------------------------------------------------------------------------------------------------------------
@@ -186,6 +215,7 @@
 												data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
 												onclick="stopProp(event)">+ Assign task </button>
 											<form method="post" action="" class="dropdown-menu p-4 pt-3" style="width:256;" onclick="stopProp(event)">
+                                                <input type="hidden" name="user_ID" value='.$currentUserID.'>
 												<div class="mb-2">
 													<label for="tasktitle-'.$numOfUsersAdded.'" class="form-label">Task Title</label>
 													<input type="text" class="form-control" id="tasktitle-'.$numOfUsersAdded.'" name="tasktitle">
