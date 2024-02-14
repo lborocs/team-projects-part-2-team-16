@@ -117,7 +117,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     function setDarkMode() {
         <?php if ($colour == "text-light bg-dark") { ?>
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0){
                     $(this).addClass("text-light bg-dark");
                 }
             });

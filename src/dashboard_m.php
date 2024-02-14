@@ -14,9 +14,10 @@ if (!$conn) {
     echo "Connection Error.";
     die();
 }
+
 // Select count of number of tasks with progress 1 and count total number (including uncompleted) of tasks, due_date group by project_ID, join project on project_ID and get the project_title and due_date and first 15 characters of description if exists
-$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 15) as description, COUNT(CASE WHEN progress = 1 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID";
-$result = mysqli_query($conn, $sql);
+$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 15) as description, COUNT(CASE WHEN progress = 1 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID ORDER BY project.due_date ASC;";
+$result = mysqli_execute_query($conn, $sql);
 if (mysqli_num_rows($result) == 0) {
     echo "No projects found.";
     die();
@@ -57,7 +58,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     $(document).ready(function() {
         <?php if ($colour == "text-light bg-dark") { ?>
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0){
                     $(this).addClass("text-light bg-dark");
                 }
             });
@@ -88,8 +89,24 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     <?php echo $project["project_title"]; ?>
                                 </h4>
                                 <!-- Convert date into number of days and display as subtitle -->
-                                <h6 class="card-subtitle mb-2 text-secondary no-dark">Due on
-                                    <?php echo $project["due_date"]; ?>
+                                <h6 class="card-subtitle mb-2 text-secondary no-dark">
+                                    <?php $days = (strtotime($project["due_date"]) - time()) / (60 * 60 * 24);
+                                    if ($days < 0) {
+                                        echo "Overdue by " . abs($days) . " days";
+                                    } else if ($days == 0) {
+                                        echo "Due today";
+                                    } else if ($days == 1) {
+                                        echo "Due tomorrow";
+                                    } else if ($days >= 365) {
+                                        echo "Due in " . round($days/365) . " years";
+                                    } else if ($days >= 30) {
+                                        echo "Due in " . round($days/30) . " months";
+                                    } else if ($days >= 14) {
+                                        echo "Due in " . round($days/7) . " weeks";
+                                    } else {
+                                        echo "Due in " . $days . " days";
+                                    }
+                                    echo " on " . $project["due_date"]; ?>
                                 </h6>
                                 <?php if ($project["total_tasks"] > 0) {
                                     $completionPercentage = $project["completed_tasks"] / $project["total_tasks"] * 100;
@@ -112,50 +129,3 @@ while ($row = mysqli_fetch_assoc($result)) {
         </main>
     </div>
 </body>
-
-
-
-
-<!-- <div class="col col-md-3 mb-3 mb-sm-0">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Team 1</h4>
-                            <h6 class="card-subtitle mb-2 text-secondary">Due in 6 days</h6>
-                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="75"
-                                aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar" style="width: 75%"></div>
-                            </div>
-                            <p class="card-text">Team 1's progress</p>
-                            <a href="view_team_m.html" class="btn btn-primary stretched-link">View</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-md-3 mb-3 mb-sm-0">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Team 2</h4>
-                            <h6 class="card-subtitle mb-2 text-secondary">Due in 2 weeks</h6>
-                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="20"
-                                aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar" style="width: 20%"></div>
-                            </div>
-                            <p class="card-text">Team 2's progress</p>
-                            <a href="view_team_m.html" class="btn btn-primary stretched-link">View</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-md-3 mb-3 mb-sm-0">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title">Team 3</h4>
-                            <h6 class="card-subtitle mb-2 text-secondary">Due in 5 weeks</h6>
-                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="62"
-                                aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar" style="width: 62%"></div>
-                            </div>
-                            <p class="card-text">Team 3's progress</p>
-                            <a href="view_team_m.html" class="btn btn-primary stretched-link">View</a>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
