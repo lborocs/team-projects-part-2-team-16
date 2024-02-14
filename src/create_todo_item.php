@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 set_error_handler("handleError");
 function handleError($errno, $errstr)
 {
-    echo "<b>Error:</b> [$errno] $errstr";
+    echo "<script>Console.log('Error: [$errno] $errstr')</script>";
     die();
 }
 include "db_connection.php";
@@ -32,8 +32,9 @@ if (!$_POST) {
 }
 
 // Create new todo item with status 0
-$sql = "INSERT INTO ToDoItems (user_ID, title, due_date, status) VALUES (" . $user_ID . ", '" . $title . "', '" . $due_date . "', 0)";
-$result = mysqli_query($conn, $sql);
+$sql = "INSERT INTO ToDoItems (user_ID, title, due_date, status) VALUES (?, ?, ?, 0)";
+$params = array($user_ID, $title, $due_date);
+$result = mysqli_execute_query($conn, $sql, $params);
 if (!$result) {
     trigger_error("Error creating new todo item.");
 }

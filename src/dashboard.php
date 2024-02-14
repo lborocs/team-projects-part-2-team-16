@@ -1,7 +1,6 @@
 <?php
 	session_start();
 	if (!isset($_SESSION["role"])) {
-		echo "Test";
 		header('location: ./login.php');
 		//die();
 	} else if ($_SESSION["role"] == "Manager") {
