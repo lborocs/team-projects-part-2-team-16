@@ -1,5 +1,9 @@
+<!--This page works for the login.php page to either log the user in, or keep the enetred values appearing on screen whilst displaying an error.
+This prevents refreshing of page and allows user to not have to enter both values entirely again. The html returned by this page is displayed in the login.php
+page's "everything" div.-->
 <script>
   function createAcc() {
+    //redirects user to create account page
     window.location.href = "./create.php";
     return false;
   }
@@ -9,6 +13,7 @@
 
 <body class="text-center">
 <?php
+  //resets the session when user has logged out
   session_start();
   session_unset();
   session_destroy();
@@ -23,7 +28,10 @@
   }
   $errorMessage = '';
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    //we can be confident in this data as its already been processed to be in correct format by login.php page
+    //performs hash on password entered by user
     $HashedPassword = hash("sha256",structure_input($_POST["password"]));
+    //selects username entered by user
     $EnteredUsername = structure_input($_POST["username"]);
 
     include "db_connection.php";
@@ -32,6 +40,7 @@
       echo "Connection Error." ;
       exit;
     }
+    //selects user from database server-side
     $sql = "SELECT user_ID,role,icon,encrypted_pass,lightmode
             FROM   users
             WHERE  email ='".$EnteredUsername."'";
@@ -45,9 +54,12 @@
     $data = mysqli_fetch_assoc($result);
     if (mysqli_num_rows($result) == 0) {
       $errorMessage = 'Details Incorrect, please try again.';
+      //if no user with that username exists
     }else{
       if ($data["encrypted_pass"] == $HashedPassword){
+        //if our passwords match with username then log user in
         session_start();
+        //create session so used stays logged in between pages
         $_SESSION["user_ID"] = $data["user_ID"];
         $_SESSION["role"] = $data["role"];
         $_SESSION["icon"] = $data["icon"];
@@ -55,16 +67,20 @@
         $_SESSION["expiry"]  = date("'m-d-Y')",mktime(0, 0, 0, date("m"), date("d")+1, date("Y")));
 
         if(isset($_SESSION["role"])){
+          //if values are set, redirect user to dashboard page
           echo '<script>window.location.href = "./dashboard.php";</script>';
         }else{
           $errorMessage = 'Details Incorrect, please try again.';
+          //display error if not logged in
         }
       }else{
+        //display error if password incorect
         $errorMessage = 'Details Incorrect, please try again.';
       }
     }
   }
 ?>
+<!--Below is identical to the login page, bar one which is shown via comment.-->
 <main class="form-signin">
   <form id = "loginForm">
     <img class="mb-4" src="./logo.png" alt="" width="300" height="70" style="display: block;margin-left: auto;margin-right: auto;border-radius:4px;border:solid black 1px;">
@@ -86,6 +102,7 @@
   </form>
 </main>
 <?php
+//if login fails, keep the entered values on screen to user doesnt have to re-enter
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   echo '<script>document.getElementById("username").value = "'.$_POST["username"].'";</script>';
   echo '<script>document.getElementById("password").value = "'.$_POST["password"].'";</script>';
@@ -93,16 +110,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <script>
   username.addEventListener('keyup', function(event) {
-        // Check if the key pressed is Enter (key code 13)
         if (event.keyCode === 13) {
-            // Call the function to perform action
             login();
         }
     });
     password.addEventListener('keyup', function(event) {
-        // Check if the key pressed is Enter (key code 13)
         if (event.keyCode === 13) {
-            // Call the function to perform action
             login();
         }
     });

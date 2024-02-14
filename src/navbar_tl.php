@@ -1,3 +1,6 @@
+<!-- This is the team leader navigation bar displayed at the top of the majority of pages.
+		The settingsCSS class is used to allow the settingsAsync page to change navbar css without needing to reload the page. 
+	Below are links to bootstrap css and JS used for the gui -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
 	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -50,15 +53,19 @@
 
 <body style = "margin:0px; padding:0px;">
 <?php session_start();
+	//checks if session has expired
 	if($_SESSION["expiry"] >= date('m-d-Y')){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
+	//checks user is logged in with id
 	if(!isset($_SESSION["user_ID"])){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
+	//checks that role is team leader
 	if($_SESSION["role"] != "TL"){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
+	//checks lightmode values and provides css classes
 	if($_SESSION["lightmode"] == 1){
 		$colour = "text-light bg-dark";
 	}else{
@@ -85,7 +92,7 @@
 						<img src="./<?php echo $_SESSION["icon"];?>.png" id="pageIcon" alt="mdo" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small settingsCSS <?php echo $colour;?>" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_topic.php">Create New Topic...</a></li>
+						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_post.php">Create New Post...</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider ">

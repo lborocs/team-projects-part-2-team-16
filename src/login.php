@@ -1,3 +1,6 @@
+<!-- This page allows the user to type in their email and password to login. they can also access the create account page from
+here. However they need to enter an invite code manually to create an account this way. This page works with loginAsync.php to
+asynchronously return errors.-->
 <html>
 <html lang="en">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -54,6 +57,7 @@
   <link href="./signin.css" rel="stylesheet">
 </head>
 <script>
+  //sends user to create account page
   function createAcc() {
     window.location.href = "./create.php";
     return false;
@@ -63,23 +67,20 @@
 
 <body class="text-center">
 <?php
+//the following will delete all data stored relating to a previously logged in user.
   session_start();
   session_unset();
   session_destroy();
   session_write_close();
   setcookie(session_name(),'',0,'/');
   session_regenerate_id(true);
-  function structure_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-  }
   $errorMessage = '';
 
 ?>
+<!-- The following everything div is used to display errors with ajax without refreshing the page.-->
   <div id = "everything" class="container">
     <main class="form-signin">
+      <!-- Login form is used to check both fields have been entered. There is no submit action dedicated here-->
       <form id = "loginForm">
         <img class="mb-4" src="./logo.png" alt="" width="300" height="70" style="display: block;margin-left: auto;margin-right: auto;border-radius:4px;border:solid black 1px;">
 
@@ -93,7 +94,9 @@
           <input type="password" class="form-control" id="password" name = "password" placeholder="Password">
           <label for="floatingPassword">Password</label>
         </div>
+        <!-- emessage is used to display errors in red to user -->
         <div><p id = "eMessage" style = "color:red;"><?php echo  $errorMessage; ?></p></div>
+        <!--These two buttons are used to switch to create page or to submit the values inside the form (without submitting acutal form)-->
         <button class="w-100 btn btn-lg btn-primary" type="button" onclick="login()">Sign In </button>
         <button class="w-100 btn btn-lg btn-secondary" type="button" onclick="createAcc()" style="margin:1% 0%">Create
           Account</button>
@@ -104,6 +107,7 @@
 </body>
 <script>
   function login() {
+    //used to take entered values from user and create a post request
       var form = document.getElementById('loginForm');
 
       // Check if the form is valid
@@ -122,28 +126,25 @@
                   // Handle success
                   $('#everything').html(response); // Update displayed content
               },
-              error: function(xhr, status, error) {
-                  // Handle error
+              error: function(error) {
                   console.error(error); // Log error to the console
-                  $('#eMessage').text('Details Incorrect, please try again.');
+                  $('#eMessage').text('Details Incorrect, please try again.'); // display details are incorrect if ajax fails
               }
           });
       } else {
-          // Form is not valid, do nothing
+          // if the isn't valid, do nothing
           return false;
       }
     }
+    //the following is so that users can also attempt to login via the enter key
     username.addEventListener('keyup', function(event) {
-        // Check if the key pressed is Enter (key code 13)
+        // Check if the key pressed is 'Enter'
         if (event.keyCode === 13) {
-            // Call the function to perform action
             login();
         }
     });
     password.addEventListener('keyup', function(event) {
-        // Check if the key pressed is Enter (key code 13)
         if (event.keyCode === 13) {
-            // Call the function to perform action
             login();
         }
     });

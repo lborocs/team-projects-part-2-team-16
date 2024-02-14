@@ -41,7 +41,8 @@ A user must have a password which meets requiremetns, as well as an invite code 
           <!-- div below the form allowing user to enter each value, the form doesnt have a submit type or a submit button, to be
           explained later -->
           <form id="createForm" class="row g-3" >
-            <!-- each field activates its own function, when user types, to check the entered value is valid-->
+            <!-- each field activates its own function, when user types, to check the entered value is valid. You will see some inputs
+          also pass in their own current value into the function -->
             <div class="col-md-4">
               <label for="firstnameField" class="form-label">Firstname(s)</label>
               <input id="firstnameField" name="firstnameField" oninput=(checkName(this.value,true)) type="text" class="form-control"  required="">

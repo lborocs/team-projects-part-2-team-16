@@ -139,6 +139,7 @@ to be placed within the everything divider on the create page - so the users web
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <div class="m-0 border-0">
+  <!-- If the form is to submit, then activate the create function -->
   <form class="row g-3" onsubmit="create()">
     <div class="col-md-4">
       <label for="firstnameField" class="form-label">Firstname(s)</label>
@@ -173,6 +174,7 @@ to be placed within the everything divider on the create page - so the users web
     </div>
     <div class="col-md-6">
       <label for="codeField" class="form-label">Invite Code</label>
+      <!-- sets the value of the code form an invite link -->
       <input id = "codeField" name="codeField" oninput = "checkCode(this.value)" type="text" class="form-control" 
       required="" <?php  echo 'value="'; if (isset($_GET['code'])){echo $_GET['code'];};if (isset($_POST['codeField'])){echo $_POST['codeField'];}; echo '"'; if (isset($_GET['code'])){echo' readonly';} ?>>
       <div id = "codeStatus" class=""></div>
@@ -186,6 +188,8 @@ to be placed within the everything divider on the create page - so the users web
     </div>
     <script>
       function checkName(name,n) {
+        //this function checks if the entered name is currently valid.
+        //please check create.php for further explanation
         var isValid;
         if (n){
           var validCharsCheck = /^(([A-Za-z])||([A-Za-z])+([A-Za-z ])+([A-Za-z])){1,20}$/;
@@ -217,6 +221,8 @@ to be placed within the everything divider on the create page - so the users web
         }
       }
       function checkEmailValid(email) {
+        //this function checks if the entered email is currently valid.
+        //please check create.php for further explanation
         var validCharsCheck = /^(([A-Za-z0-9])||([A-Za-z0-9.-_]+[A-Za-z0-9])){1,20}$/;
         var isValid = validCharsCheck.test(email);
         var emailStatus = document.getElementById('emailStatus');
@@ -236,6 +242,8 @@ to be placed within the everything divider on the create page - so the users web
         }
       }
       function checkPasswordStrength(password) {
+        //this function checks if the entered password is currently valid.
+        //please check create.php for further explanation
         checkPasswordMatch();
         var uppercaseCheck = /[A-Z]/;
         var lowercaseCheck = /[a-z]/;
@@ -264,6 +272,8 @@ to be placed within the everything divider on the create page - so the users web
         }
       }
       function checkPasswordMatch() {
+        //this function checks if the entered password values are currently valid.
+        //please check create.php for further explanation
         var password1 = document.getElementById('password1field');
         var password2 = document.getElementById('password2field');
         var passwordStatus = document.getElementById('password2status');
@@ -283,6 +293,8 @@ to be placed within the everything divider on the create page - so the users web
         }
       }
       function checkCode(inviteCode) {
+        //this function checks if the entered code is currently valid.
+        //please check create.php for further explanation
         var codeFormat = /^[A-Z]{4}-[A-Z]{4}-[A-Z]{4}-[A-Z]{4}$/;
         var isValid = codeFormat.test(inviteCode);
         var codeStatus = document.getElementById('codeStatus');
@@ -302,6 +314,7 @@ to be placed within the everything divider on the create page - so the users web
         }
       }
       <?php
+      //if the code is set via GET then check that the code is valid 
         if (isset($_GET['code'])|isset($_POST['codeField'])){
           echo 'checkCode(document.getElementById("codeField").value);';
         }

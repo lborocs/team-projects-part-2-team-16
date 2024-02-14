@@ -9,16 +9,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Employee Dash</title>
-
 	<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
-
-
-
-	<!-- Bootstrap core CSS -->
 	<link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-	<!-- Favicons -->
 	<link rel="apple-touch-icon" href="/docs/5.0/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
 	<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
 	<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
@@ -47,24 +40,26 @@
 			cursor: pointer;
 		}
 	</style>
-
-
-	<!-- Custom styles for this template -->
 	<link href="./headers.css" rel="stylesheet">
 </head>
-
+<!-- This is the employee navigation bar displayed at the top of the majority of pages.
+		The settingsCSS class is used to allow the settingsAsync page to change navbar css without needing to reload the page. -->
 <body>
 	<?php session_start();
+	// collects session data and checks session expiry time
 	if($_SESSION["expiry"] >= date('m-d-Y')){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
 	if(!isset($_SESSION["user_ID"])){
+		//if someone isnt logged in then take them to login page
 		echo "<script>window.location.href='./login.php'</script>";
 	}
 	if($_SESSION["role"] != "Employee"){
+		//if someone is accessing the employee navbar and they arent an employee then take them to login
 		echo "<script>window.location.href='./login.php'</script>";
 	}
 	if($_SESSION["lightmode"] == 1){
+		//sets colours of navbar
 		$colour = "text-light bg-dark";
 	}else{
 		$colour = "";
@@ -89,7 +84,7 @@
 						<img src="./<?php echo $_SESSION["icon"];?>.png" alt="mdo" id="pageIcon" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small settingsCSS <?php echo $colour;?>" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_topic.php">Create New Topic...</a></li>
+						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_post.php">Create New Post...</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider ">

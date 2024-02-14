@@ -1,17 +1,22 @@
+<!-- This page works asynchronously alongaside the manageAsync.php page to provide managers with a view of all employees,
+as well as each employees role, their tasks set, the projects which they are a part of,
+total task hours and also allows the manager to chage role of and delete each user. 
+
+There are also filters on this page, to allow for different methods of sorting and filtering. Inlucidng filtering by role, and by name (via search bar)-->
 <?php 
 	session_start();
 	$ErrorMessage = "";
 	$userDeleted = "none";
 	include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
-	//Lightmode
+	//lightmode colour
 	if($_SESSION["lightmode"] == 1){
 		$colour = "text-light bg-dark";
 	}if($_SESSION["lightmode"] != 1){
 		$colour = "bg-white";
 	}
 	
-	//Tasks
+	//select data from the tasks and orders them by progress
 	$sql = "SELECT *
 			FROM tasks
 			ORDER BY progress ASC";
@@ -21,6 +26,7 @@
 		echo "Connection Error.";
 		exit;
 	}
+	//selects data to display on all users
 	$sql = "SELECT user_ID,forename,surname,email,role,icon
 		FROM users ORDER BY surname";
 	$result = mysqli_query($conn,$sql);
@@ -142,6 +148,8 @@
 </head>
 
 <body class = "<?php echo $colour;?>">
+	<!-- the following adds the manager navbar to the top of the screen, and if anyone other than a manager attempts to access this page
+	then they are logged out and returned to the login page. -->
 	<div style="margin:0px; padding:0px;"  class = "<?php echo $colour;?>">
 			<?php 
 				if(!isset($_SESSION["role"])){
@@ -169,6 +177,7 @@
 		<div class="dropdown align-items-right col-sm-1">
 			<button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdownMenuButton"
 				data-bs-toggle="dropdown">Sort By</button>
+				<!-- The following set is used to activate a sort by filter -->
 			<div class=" dropdown-menu <?php echo $colour;?>" aria-labelledby="sortDropdownMenuButton">
 				<button class="dropdown-item <?php echo $colour;?>" type="button" onclick="sortData('sortbyCountD')">Total Task Count (Desc)</button>
 				<button class="dropdown-item <?php echo $colour;?>" type="button" onclick="sortData('sortbyCountA')">Total Task Count (Asc)</button>
@@ -181,6 +190,7 @@
 		<div class="dropdown align-items-right col-sm-1">
 			<button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdownMenuButton"
 				data-bs-toggle="dropdown">Filter For</button>
+				<!-- The following set is used to activate a filter by role. Also removes filter -->
 			<div class=" dropdown-menu <?php echo $colour;?>" aria-labelledby="filterDropdownMenuButton">
 				<button class="dropdown-item <?php echo $colour;?>" type="button" onclick="filterData('filterManager')">Manager</button>
 				<button class="dropdown-item <?php echo $colour;?>" type="button" onclick="filterData('filterTL')">Team Leader</button>
@@ -190,12 +200,15 @@
 			</div>
 		</div>
 		<div class="col-sm-10">
+			<!-- The following set is used to search for an employee by name -->
 			<input id = 'searchbar' type="search" class="form-control" placeholder="Search Employees" oninput = "searchData()" aria-label="Search">
 		</div>
 
 	<script>
 		function searchData() {
+			//activated via typing in the search bar updated asynchronously
 			var data = {};
+			//used to keep fiters active
 			if(filters[0] == 1){
 				data.filterManager = 'filterManager';
 			}else if(filters[1] == 1){
@@ -203,7 +216,7 @@
 			}else if(filters[2] == 1){
 				data.filterEmployee = 'filterEmployee';
 			}
-			 
+			 //used to keep sorting acting
 			data.sortbyName = 'sortbyName';
 			if(sorting[0] == 1){
 				data.sortbyHoursD = 'sortbyHoursD';
@@ -214,7 +227,7 @@
 			}else if(sorting[3] == 1){
 				data.sortbyCountA = 'sortbyCountA';
 			}
-
+			//checks the value isnt blank
 			if(document.getElementById('searchbar').value != ''){
 				data.search = document.getElementById('searchbar').value;
 			}
@@ -224,22 +237,22 @@
 				method: 'POST',
 				data: data,
 				success: function(response) {
-					// Handle success
-					$('#displayedContent').html(response); // Update displayed content
+					$('#displayedContent').html(response); // change displayed content
 				},
-				error: function(xhr, status, error) {
-					// Handle error
-					console.error(error); // Log error to the console
+				error: function(error) {
+					console.error(error); // log error to the console
 				}
 			});
 
 		}
 
 		function sortData(sortOption) {
+			// activates the sorting version of fetchdata
 			fetchData(sortOption, null);
 		}
 
 		function filterData(filterOption) {
+			// activates the filter version of fetchdata
 			fetchData(null, filterOption);
 		}
 
@@ -257,7 +270,7 @@
 					data.setManager = optionsID.slice(1);
 				}
 			}
-			// Check which sorting option is selected and add it to the data object
+			// check which sorting option is selected and add it to the data object
 			if (sortOption === 'sortbyName') {
 				data.sortbyName = sortOption;
 			} else if (sortOption === 'sortbyCountA') {
@@ -308,24 +321,28 @@
 				data.search = search[0];
 			}
 
+			//passes data onto manageAsync
 			$.ajax({
 				url: 'manageAsync.php',
 				method: 'POST',
 				data: data,
 				success: function(response) {
-					// Handle success
-					$('#displayedContent').html(response); // Update displayed content
+					// handle success
+					$('#displayedContent').html(response); // update displayed content
 				},
 				error: function(xhr, status, error) {
 					// Handle error
-					console.error(error); // Log error to the console
+					console.error(error); // log error to the console
 				}
 			});
 
 		}
 		var optionsID;
+		//create a global optionsID variable so that it can be passed to manageAsync. This is the variable in which has been selected for a role change,
+		//or has been selected to be deleted
 		function onSelect(selected_id,selection){
 			if(selected_id == null){
+				//hides the confirmation message when the user presses the cross
 				if(selection == "emp"){
 					document.getElementById('empNotification').style.display = "none";
 				}else if(selection == "tl"){
@@ -336,8 +353,10 @@
 					document.getElementById('deletedNotification').style.display = "none";
 				}
 			}else if(selection == "delete"){
+				//sets the id to delete mode
 				optionsID = "D"+selected_id;
 			}else{ 
+				//sets the id to change permissions mode
 				if(selection == "emp"){
 					optionsID = "E"+selected_id;
 					document.getElementById('empNotification').style.display = "block";
@@ -348,10 +367,12 @@
 					optionsID = "M"+selected_id;
 					document.getElementById('mgrNotification').style.display = "block";
 				}
+				//calls the change permissions/delete version of fetchData
 				fetchData(null,null)
 			}
 		}
 		function deleteConfimred(){
+			//shows message to confirm when a deletion has successfully occured
 			document.getElementById('deletedNotification').style.display = "block";
 			fetchData(null,null)
 		}
@@ -363,6 +384,7 @@
 		</div>
 	</div>
 	<div class="b-example-divider  <?php echo $colour;?>"></div>
+	<!-- A series of all deletion/role change confirmation messages -->
 	<div class="alert alert-danger alert-dismissible fade show" role="alert" id = "deletedNotification" style = "display:none;">
         User Deleted.
         <button type="button" class="btn-close" aria-label="Close" onclick="onSelect(null,'del')"></button>
@@ -382,11 +404,14 @@
 <div id = "displayedContent">
 <?php
 
+//loop throuhg each requested user to display all details for them
 foreach ($result as $user){
+	//changes role from TL to team leader for formatting
 	if ($user['role'] == 'TL'){
 		$user['role'] = "Team Leader";
 	}
-	$count = $user['user_ID'];
+	$count = $user['user_ID']; //sets the count to the current user id so as to know which user has been selected for deletion etc
+	//starts to echo an accordion and formatted display of each users data. This take palce for every user in the reuest 
 	echo '
 	<div class="container accordion-item '.$colour.' text-dark" style="border-radius:5px;">
 		<div class="row employee">
@@ -453,6 +478,7 @@ foreach ($result as $user){
 				<div class="container-fluid px-0 " style = "margin:3px 0px 0px 0px;">
 					<div class="row flex-md-row horizontal-scroll flex-md-nowrap">';
 				mysqli_data_seek($resultInfo, 0);
+				//loop through and display tasks, along with colour code within a slider
 				$slider = [];
 				foreach ($resultInfo as $info) {
                     if ($user['user_ID'] == $info['user_ID']){
@@ -493,6 +519,7 @@ foreach ($result as $user){
                     }echo "'];</script>";
 ?>
 </div>
+<!-- Modal used to confirm deletion of user -->
 <div class="modal fade" id="exampleModalDefault" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" stule = "padding: 0px 2px;">
   <div class="modal-dialog">
     <div class="modal-content">
