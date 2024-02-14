@@ -1,14 +1,20 @@
+<!--This page works asynchronously with settingsAsync.php to provide the ability of account modificaiton to each user.
+In this page, a user can select from pre-set icons, change their password and choose between light and dark mode.
+
+Also, this page is responsible for the generation and viwing of personal invite codes, which can be given to users who want
+to join the system-->
 <?php
+	// start session
 	session_start();
 	$ErrorMessage = "";
-	$saved = "none";
+	$saved = "none"; //do not display saving confirmation
 	include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
 	function refreshLinks($conn){
-		mysqli_query($conn,"DELETE FROM activeInviteCodes WHERE expires < '".date("Y-m-d")."'");
+		mysqli_query($conn,"DELETE FROM activeInviteCodes WHERE expires < '".date("Y-m-d")."'"); // clear all invalid invite codes
 		$sql = "SELECT code,expires
 			FROM activeInviteCodes
-			WHERE authorID = ".$_SESSION['user_ID']." ORDER BY expires DESC";
+			WHERE authorID = ".$_SESSION['user_ID']." ORDER BY expires DESC"; // select users current invide codes and expiration dates
 			$codeResult = mysqli_query($conn,$sql);
 
 		if (!$codeResult) {

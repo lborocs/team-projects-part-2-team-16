@@ -81,7 +81,7 @@
 				<div class="dropdown text-end">
 					<a href="#" class="d-block link-dark text-decoration-none dropdown-toggle settingsCSS <?php echo $colour;?>" id="dropdownUser1"
 						data-bs-toggle="dropdown" aria-expanded="false">
-						<img src="./<?php echo $_SESSION["icon"];?>.png" alt="mdo" width="32" height="32" class="rounded-circle">
+						<img src="./<?php echo $_SESSION["icon"];?>.png" id="pageIcon" alt="mdo" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small settingsCSS <?php echo $colour;?>" aria-labelledby="dropdownUser1">
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_topic.php">Create New Topic...</a></li>

@@ -280,5 +280,5 @@
 				navbar[i].classList.add("bg-white", "text-dark");
            		navbar[i].classList.remove("text-light", "bg-dark");
 			}';
-		}
+		}echo 'document.getElementById("pageIcon").src = "./'.$_SESSION["icon"].'.png";';
 	?></script>
