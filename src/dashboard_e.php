@@ -8,32 +8,6 @@ function handleError($errno, $errstr)
     echo "<b>Error:</b> [$errno] $errstr";
     die();
 }
-include "db_connection.php";
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-if (!$conn) {
-    echo "Connection Error.";
-    die();
-}
-// Select tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress from tasks and join with project on project_ID where tasks.user_ID = $_SESSION["user_ID"] and tasks.progress = 0
-$sql = "SELECT tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress FROM tasks LEFT JOIN project ON tasks.project_ID = project.project_ID WHERE tasks.user_ID = " . $_SESSION["user_ID"] . " AND tasks.progress = 0";
-$result = mysqli_query($conn, $sql);
-if (mysqli_num_rows($result) == 0) {
-    $noIncompleteTasks = true;
-}
-$incompleteTasks = array();
-while ($row = mysqli_fetch_assoc($result)) {
-    $incompleteTasks[] = $row;
-}
-// Select completed tasks
-$sql = "SELECT tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress FROM tasks LEFT JOIN project ON tasks.project_ID = project.project_ID WHERE tasks.user_ID = " . $_SESSION["user_ID"] . " AND tasks.progress = 1";
-$result = mysqli_query($conn, $sql);
-if (mysqli_num_rows($result) == 0) {
-    $noCompleteTasks = true;
-}
-$completedTasks = array();
-while ($row = mysqli_fetch_assoc($result)) {
-    $completedTasks[] = $row;
-}
 
 ?>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -59,6 +33,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     .card:hover {
         box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
     }
+
 </style>
 
 <script>
@@ -80,8 +55,17 @@ while ($row = mysqli_fetch_assoc($result)) {
                     html += "<div class='card-body'>";
                     html += "<h4 class='card-title'>" + task["title"] + "</h4>";
                     html += "<h6>" + task["project_title"] + "</h6>";
-                    html += "<h6 class='card-subtitle mb-2 text-secondary'>Ongoing: Due " + task["due_date"] + "</h6>";
+                    if (task["progress"] == 0) {
+                        html += "<h6 class='card-subtitle mb-2 text-secondary'>Not Started: Due " + task["due_date"] + "</h6>";
+                    } else if (task["progress"] == 1) {
+                        html += "<h6 class='card-subtitle mb-2 text-secondary'>Ongoing: Due " + task["due_date"] + "</h6>";
+                    }
                     html += "<p class='card-text'>" + task["description"] + "</p>";
+                    if (task["progress"] == 0) {
+                        html += "<button type='button' class='btn btn-xs' onclick='startTask(" + task["task_ID"] + ")'><i class='bi-play-fill' style='font-size: 2em; color: #0d6efd;'></i></button>";
+                    } else if (task["progress"] == 1) {
+                        html += "<button type='button' class='btn btn-xs' onclick='uncompleteTask(" + task["task_ID"] + ")'><i class='bi-stop-fill' style='font-size: 2em; color: #0d6efd;'></i></button></button>";
+                    }
                     html += "<button type='submit' class='btn btn-primary' onclick='completeTask(" + task["task_ID"] + ")'>Mark as Complete</button>";
                     html += "</div>";
                     html += "</div>";
@@ -117,17 +101,26 @@ while ($row = mysqli_fetch_assoc($result)) {
     function setDarkMode() {
         <?php if ($colour == "text-light bg-dark") { ?>
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0){
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
                     $(this).addClass("text-light bg-dark");
                 }
             });
         <?php } ?>
     }
 
-    function completeTask(taskID) {
+    function startTask(taskID) {
         $.post("change_task_progress.php", {
             task_ID: taskID,
             progress: 1
+        }, function(response) {
+            getTasks();
+        });
+    }
+
+    function completeTask(taskID) {
+        $.post("change_task_progress.php", {
+            task_ID: taskID,
+            progress: 2
         }, function(response) {
             getTasks();
         });

@@ -23,7 +23,7 @@ if (!$_POST) {
     if (!isset($_POST["progress"])) {
         trigger_error("No progress in POST request.");
     }
-    if ($_POST["progress"] != 1 && $_POST["progress"] != 0) {
+    if ($_POST["progress"] != 1 && $_POST["progress"] != 0 && $_POST["progress"] != 2) {
         trigger_error("Invalid progress in POST request.");
     }
     $task_ID = $_POST["task_ID"];

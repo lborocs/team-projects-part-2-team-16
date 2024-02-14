@@ -20,15 +20,15 @@ if (!$_POST) {
     $user_ID = $_POST["user_ID"];
 }
 
-// Select tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress from tasks and join with project on project_ID where tasks.user_ID = $_SESSION["user_ID"] and tasks.progress = 0
-$sql = "SELECT tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress FROM tasks LEFT JOIN project ON tasks.project_ID = project.project_ID WHERE tasks.user_ID = " . $user_ID . " AND tasks.progress = 0";
+// Select incomplete tasks
+$sql = "SELECT tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress FROM tasks LEFT JOIN project ON tasks.project_ID = project.project_ID WHERE tasks.user_ID = " . $user_ID . " AND (tasks.progress = 0 OR tasks.progress = 1) ORDER BY tasks.due_date ASC";
 $result = mysqli_query($conn, $sql);
 $incompleteTasks = array();
 while ($row = mysqli_fetch_assoc($result)) {
     $incompleteTasks[] = $row;
 }
 // Select completed tasks
-$sql = "SELECT tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress FROM tasks LEFT JOIN project ON tasks.project_ID = project.project_ID WHERE tasks.user_ID = " . $user_ID . " AND tasks.progress = 1";
+$sql = "SELECT tasks.task_ID, tasks.title, project.project_title, tasks.due_date, tasks.description, tasks.progress FROM tasks LEFT JOIN project ON tasks.project_ID = project.project_ID WHERE tasks.user_ID = " . $user_ID . " AND tasks.progress = 2 ORDER BY tasks.due_date ASC";
 $result = mysqli_query($conn, $sql);
 $completedTasks = array();
 while ($row = mysqli_fetch_assoc($result)) {
