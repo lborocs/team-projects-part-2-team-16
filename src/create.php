@@ -1,3 +1,8 @@
+<!--
+This file, in conjunction with createAsync.php is responsible for the creation, verification and  storage of new accounts.
+A user will enter required details to create an account and either press create or cancel.
+A user must have a password which meets requiremetns, as well as an invite code - given to them by another user of the system.
+-->
 <html>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
@@ -10,137 +15,33 @@
 	</head>
 	<script>
 	  function cancel(){
+      //redirects page to login.php
 		  window.location.href = './login.php';
 	  };
 	</script>
 	<body>
   <?php
-  error_reporting(E_ALL);
-  ini_set('display_errors', '1');
-  set_error_handler("handleErrors");
-  function handleErrors($errno, $errstr, $errfl, $errln){
-          $errstr = addslashes($errstr);
-          echo $errstr;
-          die();
-  }
-  //end of error handling
-    function structure_input($data) {
-      $data = trim($data);
-      $data = stripslashes($data);
-      $data = htmlspecialchars($data);
-      return $data;
-    }
     $firstname = $surname = $email = $pass1 = $pass2 = $encryptedPassword = $code = $ErrorMessage = "";
     $accountCreated = "none";
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-      $valid = true;
-      $firstname = structure_input($_POST["firstnameField"]);
-      $surname = structure_input($_POST["surnameField"]);
-      $email = structure_input($_POST["emailField"]);
-      $pass1 = structure_input($_POST["password1field"]);
-      $pass2 = structure_input($_POST["password2field"]);
-      $code = structure_input($_POST["codeField"]);
-      //email check
-      if(preg_match('/^(([A-Za-z0-9])|([A-Za-z0-9.-_]+[A-Za-z0-9])){1,20}$/',$email)){
-        $email = $email."@make-it-all.co.uk";
-      }else{
-        $valid = false;
-        $ErrorMessage = "Error: Email format incorrect.";
-      }
-      //password checks
-      if($pass1 == $pass2){
-        if(str_contains(strtolower($pass1),strtolower($firstname))){
-          $valid = false;
-          $ErrorMessage = "Password must not contain firstname or secondname.";
-        }else if(str_contains(strtolower($pass1),strtolower($surname))){
-          $valid = false;
-          $ErrorMessage = "Password must not contain firstname or secondname.";
-        }
-        //regex for password
-        $uppercaseCheck = '/[A-Z]/';
-        $lowercaseCheck = '/[a-z]/';
-        $digitCheck = '/\d/';
-        $specialCharCheck = '/[!@#$%^&*(),.?":{}|<>]/';
-        $isUppercase = preg_match($uppercaseCheck,$pass1);
-        $isLowercase = preg_match($lowercaseCheck,$pass1);
-        $isDigit = preg_match($digitCheck,$pass1);
-        $isSpecialChar = preg_match($specialCharCheck,$pass1);
-        $isLengthValid = strlen($pass1) >= 8;
-        if($isUppercase && $isLowercase && $isDigit && $isSpecialChar && $isLengthValid){
-          $encryptedPassword = hash('sha256', $pass1);
-        }else{
-          $valid = false;
-          $ErrorMessage = "Passwords format incorrect.";
-        }
-        //
-      }else{
-        $valid = false;
-        $ErrorMessage = "Passwords must match.";
-      }
-      if(!preg_match("/^(([A-Za-z])|([A-Za-z])+([A-Za-z ])+([A-Za-z])){1,20}$/",$firstname)){
-        $valid = false;
-        $ErrorMessage = "Error: Firstname Format Invalid";
-      }else if(!preg_match("/^(([A-Za-z])|([A-Za-z-])+([A-Za-z])){1,20}$/",$surname)){
-        $valid = false;
-        $ErrorMessage = "Error: Surname Format Invalid";
-      }else if(!preg_match("/^[A-Z]{4}-[A-Z]{4}-[A-Z]{4}-[A-Z]{4}$/",$code)){
-        $valid = false;
-        $ErrorMessage = "Error: Invite Code Format Invalid";
-      }
-      //Decide what action to take
-      if($valid){
-        include "db_connection.php";
-        $conn = mysqli_connect($servername, $username, $password, $dbname);
-        if (!$conn) {
-          echo "Connection Error." ;
-          exit;
-        }
-        $sql = "SELECT expires
-                FROM   activeInviteCodes 
-                WHERE  code ='".$code."'";
-
-        $result = mysqli_query($conn,$sql);
-        if (!$result) {
-            echo "Connection Error.";
-            exit;
-        }
-      
-        if (mysqli_num_rows($result) == 0) {
-          $ErrorMessage = 'Code Invalid, please try again.';
-        }else{
-          mysqli_query($conn,"DELETE FROM activeInviteCodes WHERE code ='".$code."'");
-          $currentDate = date("Y-m-d");
-          $expiryDate = mysqli_fetch_assoc($result)["expires"];
-          if($currentDate <= $expiryDate){
-            $sql = "INSERT INTO users
-                VALUES (NULL,'".$email."','".$encryptedPassword."','grey','".$firstname."','".$surname."','Employee',0)";
-            $result = mysqli_query($conn,$sql);
-            if (!$result) {
-              echo "Connection Error.";
-              exit;
-            }
-            $accountCreated = "block";
-            $ErrorMessage = '';
-          }else{
-            $ErrorMessage = "Code used is outdated, please request a new one from a member of staff.";
-          }
-        }
-      }
-    }
   ?>
 	  <div class="bg-dark text-secondary px-4 py-5 text-center" style="margin:0px; padding:0px;">
 			<div class="py-5">
 			  <h1 class="display-5 fw-bold text-white">Welcome to Make-It-All.</h1>
 			</div>
 		</div>
+    <!-- everything id used with createAsync page -->
     <div id="everything">
       <div style = "padding:2%;">
+        <!-- div below is used to confirm to a user when an account has been successfuly created. toogled to display via $accountCreated -->
         <div class="alert alert-success alert-dismissible fade show" role="alert" style = "display:<?php echo $accountCreated; ?>;">
           Success! Account has been created. Welcome to make-it-all! <a href="./login.php" class="alert-link">Log in now.</a>. 
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div class="m-0 border-0">
+          <!-- div below the form allowing user to enter each value, the form doesnt have a submit type or a submit button, to be
+          explained later -->
           <form id="createForm" class="row g-3" >
+            <!-- each field activates its own function, when user types, to check the entered value is valid-->
             <div class="col-md-4">
               <label for="firstnameField" class="form-label">Firstname(s)</label>
               <input id="firstnameField" name="firstnameField" oninput=(checkName(this.value,true)) type="text" class="form-control"  required="">
@@ -174,19 +75,24 @@
             </div>
             <div class="col-md-6">
               <label for="codeField" class="form-label">Invite Code</label>
+              <!-- inputs code from link, locks input field to avoid mistyping over code -->
               <input id = "codeField" name="codeField" oninput = "checkCode(this.value)" type="text" class="form-control" 
               required="" <?php  echo 'value="'; if (isset($_GET['code'])){echo $_GET['code'];};if (isset($_POST['codeField'])){echo $_POST['codeField'];}; echo '"'; if (isset($_GET['code'])|isset($_POST['codeField'])){echo' readonly';} ?>>
               <div id = "codeStatus" class=""></div>
             </div>
-            <div class="col-md-12 align-content-center" style="width:100%;">
-              <p style = "color:red;"><?php echo $ErrorMessage; ?></p>
+            <!-- used to dislay any errors which the user may need to know -->
+            <div class="col-md-12 align-content-center"  style="width:100%;">
+              <p style = "color:red;" id = "eMessage"><?php echo $ErrorMessage; ?></p>
             </div>
             <div class="col-md-12 align-content-center" style="width:100%;">
+            <!-- buttons bellow used to return to login(via cancel()) or to trigure the create function -->
               <button class="btn btn-primary" style="width:47%; margin:0% 1%" type="button" onclick="create()">Create Account</button>
               <button class="btn btn-secondary" style="width:47%; margin:0% 1%" type="button" onclick = "cancel()">Cancel</button>
             </div>
             <script>
               function checkName(name,n) {
+                //checks format of names entered locally (whilst typing)
+                //n value used to switch between checking password # 1 or 2
                 var isValid;
                 if (n){
                   var validCharsCheck = /^(([A-Za-z])||([A-Za-z])+([A-Za-z ])+([A-Za-z])){1,20}$/;
@@ -199,6 +105,7 @@
                   var nameStatus = document.getElementById('surnameStatus');
                   var nameField = document.getElementById('surnameField');
                 }
+                //responds to user via confirmation/error messages
                 if(nameField.value == ""){
                   nameStatus.textContent = '';
                   nameStatus.className = '';
@@ -218,10 +125,12 @@
                 }
               }
               function checkEmailValid(email) {
+                //checks format of email/username entered locally (whilst typing)
                 var validCharsCheck = /^(([A-Za-z0-9])||([A-Za-z0-9.-_]+[A-Za-z0-9])){1,20}$/;
                 var isValid = validCharsCheck.test(email);
                 var emailStatus = document.getElementById('emailStatus');
                 var emailField = document.getElementById('emailField');
+                //responds to user via confirmation/error messages
                 if(emailField.value == ""){
                   emailStatus.textContent = '';
                   emailStatus.className = '';
@@ -237,11 +146,14 @@
                 }
               }
               function checkPasswordStrength(password) {
+                //checks strength of password entered locally (whilst typing)
                 checkPasswordMatch();
+                //creates regex for each requirement
                 var uppercaseCheck = /[A-Z]/;
                 var lowercaseCheck = /[a-z]/;
                 var digitCheck = /\d/;
                 var specialCharCheck = /[!@#$%^&*(),.?":{}|<>]/;
+                //checks against regex, shown above
                 var isUppercase = uppercaseCheck.test(password);
                 var isLowercase = lowercaseCheck.test(password);
                 var isDigit = digitCheck.test(password);
@@ -250,6 +162,7 @@
                 var passwordStatus = document.getElementById('password1status');
                 var passwordField = document.getElementById('password1field');
 
+                //changes the status of elements to respond to user.
                 if(passwordField.value == ""){
                   passwordStatus.textContent = '';
                   passwordStatus.className = '';
@@ -265,10 +178,12 @@
                 }
               }
               function checkPasswordMatch() {
+                //checks passwords match entered locally (whilst typing)
                 var password1 = document.getElementById('password1field');
                 var password2 = document.getElementById('password2field');
                 var passwordStatus = document.getElementById('password2status');
 
+                //checks format of passwords entered locally (whilst typing)
                 if(password2.value == ""){
                   passwordStatus.textContent = '';
                   passwordStatus.className = '';
@@ -284,10 +199,12 @@
                 }
               }
               function checkCode(inviteCode) {
+                //checks format of invite code when entered.
                 var codeFormat = /^[A-Z]{4}-[A-Z]{4}-[A-Z]{4}-[A-Z]{4}$/;
                 var isValid = codeFormat.test(inviteCode);
                 var codeStatus = document.getElementById('codeStatus');
                 var codeField = document.getElementById('codeField');
+                //responds to user via error/confirmation messages
                 if(codeField.value == ""){
                   codeStatus.textContent = '';
                   codeStatus.className = '';
@@ -302,7 +219,7 @@
                   codeField.className = 'form-control is-invalid';
                 }
               }
-              <?php
+              <?php // used to check code that is entered via get, to show if code format is wrong (link therefore wrong)
                 if (isset($_GET['code'])|isset($_POST['codeField'])){
                   echo 'checkCode(document.getElementById("codeField").value);';
                 }
@@ -321,6 +238,7 @@
       if (form.checkValidity()) {
           // Form is valid, proceed with creating account
           var data = {};
+          //set data for POST via ajax
           data.firstnameField = document.getElementById('firstnameField').value;
           data.surnameField = document.getElementById('surnameField').value;
           data.emailField = document.getElementById('emailField').value;
@@ -334,16 +252,17 @@
               method: 'POST',
               data: data,
               success: function(response) {
-                  // Handle success
-                  $('#everything').html(response); // Update displayed content
+                  // if ajax succeeds then replace evrything in html via post
+                  document.getElementById('eMessage').innerText = ''; //clear errorMessage
+                  $('#everything').html(response); // update displayed content
               },
-              error: function(xhr, status, error) {
-                  // Handle error
-                  console.error(error); // Log error to the console
+              error: function(error) {
+                  console.error(error); // log any errors
               }
           });
       } else {
-          // Form is not valid, do nothing
+          // if the is invalid, do nothing
+          document.getElementById('eMessage').innerText = 'Pleaes fill in all fields.';
           return false;
       }
     }
