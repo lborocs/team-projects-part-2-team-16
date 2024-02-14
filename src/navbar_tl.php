@@ -92,7 +92,7 @@
 						<img src="./<?php echo $_SESSION["icon"];?>.png" id="pageIcon" alt="mdo" width="32" height="32" class="rounded-circle">
 					</a>
 					<ul class="dropdown-menu text-small settingsCSS <?php echo $colour;?>" aria-labelledby="dropdownUser1">
-						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_topic.php">Create New Topic...</a></li>
+						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./create_post.php">Create New Post...</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php">Settings</a></li>
 						<li>
 							<hr class="dropdown-divider ">
