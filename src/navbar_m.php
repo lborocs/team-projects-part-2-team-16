@@ -1,3 +1,6 @@
+<!-- This is the manager navigation bar displayed at the top of the majority of pages.
+		The settingsCSS class is used to allow the settingsAsync page to change navbar css without needing to reload the page. 
+	Below are links to bootstrap css and JS used for the gui -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
 	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -47,18 +50,19 @@
 	<link href="./headers.css" rel="stylesheet">
 </head>
 
-
 <body>
 	<?php session_start();
+	//check if session has expired
 	if($_SESSION["expiry"] >= date('m-d-Y')){
 		echo "<script>window.location.href='./login.php'</script>";
 	}
+	//check if user_id is set
 	if(!isset($_SESSION["user_ID"])){
 		echo "<script>window.location.href='./login.php'</script>";
-	}
+	}// checks role is manager
 	if($_SESSION["role"] != "Manager"){
 		echo "<script>window.location.href='./login.php'</script>";
-	}
+	}//sets colour accordingly
 	if($_SESSION["lightmode"] == 1){
 		$colour = "text-light bg-dark";
 	}else{
@@ -88,7 +92,7 @@
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./manage.php">Manage Employees</a></li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./settings.php" onclick="settings()">Settings</a></li>
 						<li>
-							<hr class="dropdown-divider ">
+							<hr class="dropdown-divider bg-secondary">
 						</li>
 						<li><a class="dropdown-item settingsCSS <?php echo $colour;?>" href="./login.php">Sign out</a></li>
 					</ul>
