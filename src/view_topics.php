@@ -5,6 +5,7 @@
     <title>Topics</title>
 
     <link rel="stylesheet" type="text/css" href="topics.css">
+    <link rel="icon" type="image/x-icon" href="./logo.ico">
 
 
     <meta charset="UTF-8">
@@ -155,6 +156,7 @@ include "db_connection.php";
 
 <script>
 
+//window.location.href = window.location.pathname;
 
 function AsyncSearch() {
         var searchInput = $("#IDsearch").val();
@@ -164,8 +166,9 @@ function AsyncSearch() {
                 type: "POST",
                 url: "asynctopics.php",
                 data: {
-                    search: searchInput
-                },
+                    search: searchInput,
+                    asyncUSER_ID: "<?php echo $_SESSION["user_ID"]; ?>",
+                    asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>" },
                 success: function (response) {
                     $("#async").find(".this-div").html(response);
                 },
@@ -184,7 +187,9 @@ function AsyncSearch() {
                type: "POST",
                url: "asynctopics.php",
                data:
-                {   sortby: sortby },
+                {   sortby: sortby, 
+                    asyncUSER_ID: "<?php echo $_SESSION["user_ID"]; ?>",
+                    asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>" },
 
                success:
                 function (response){
@@ -204,13 +209,9 @@ function AsyncSearch() {
 <div  id="async" class="con1">
 <div class="this-div">
 <?php
-$sqlTopics = "SELECT topic.topic_ID, topic.title, topic.views, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
-$resultTopics = mysqli_query($conn, $sqlTopics);
 
-while ($resultA = mysqli_fetch_array($resultTopics)) {
-
-
-        echo '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+function TopicList($resultA) {
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
@@ -223,7 +224,61 @@ while ($resultA = mysqli_fetch_array($resultTopics)) {
         </div>
         </div>
         <br>';
+}
+
+function TopicChecker($resultA, $conn) {
+    if (($resultA['project_ID'] !== null)){
+        $prjTEST = $resultA['project_ID'];
+        $sqlProjectCheck = "SELECT project_ID FROM project";
+        $resultProjectCheck = mysqli_query($conn, $sqlProjectCheck);
+        while($ProjectID_LIST = mysqli_fetch_assoc($resultProjectCheck)){
+            if (($ProjectID_LIST['project_ID'] == $prjTEST)) {
+                if(($_SESSION["role"] == "Manager")){
+                    echo TopicList($resultA);
+                } 
+                else {
+                $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST";
+                $resultProject = mysqli_query($conn, $sqlProject);
+                    while($UserID_LIST = mysqli_fetch_assoc($resultProject)){
+                        if (($UserID_LIST['user_ID'] == $_SESSION["user_ID"])) {
+                             echo TopicList($resultA);
+                                break;
+                        }
+            }
+        }
+                
+            }
+        }
+        
+    } else {
+        echo TopicList($resultA);
+    }
+}
+
+if(isset($_GET['NavbarTopic'])){
+    $searchInput = $_GET['NavbarTopic'];
+    $Topic_search = '%' . $searchInput . '%';
+
+    $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE '$Topic_search' GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
+    $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
     
+            TopicChecker($resultA, $conn);
+
+        }
+}
+
+
+else{
+$sqlTopics = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
+$resultTopics = mysqli_query($conn, $sqlTopics);
+
+while ($resultA = mysqli_fetch_array($resultTopics)) {
+    
+    TopicChecker($resultA, $conn);
+
+}
 }
 ?>
 
