@@ -13,6 +13,9 @@
   width: 198px;
   border-radius: 3px;
  }
+ .title{
+  transform: translate(24%);
+ }
  .edit{
   max-width: 21%;
   position: absolute;
@@ -33,6 +36,14 @@
         font-size: 3.5rem;
       }
     }
+    body{
+            display: flex;
+            flex-direction: column;
+        }
+        .HeightShown{
+            flex: 1;
+            min-height: 80vh;
+        }
   </style>
   <link href="./headers.css" rel="stylesheet">
 </head>
@@ -57,6 +68,8 @@
     })
 </script>
 
+<div class="HeightShown">
+
 <body>
 
   <?php
@@ -66,10 +79,14 @@ include "db_connection.php";
       echo "Connection Error." ;
     }
 
-  $Current_Topic = $_GET['Post_topic_ID'];
-  
-    
+    $Current_Topic = $_GET['Post_topic_ID'];
     $INT_ID = (int)$Current_Topic;
+
+    $sqlTopicName = "SELECT title FROM topics WHERE topic_ID = $INT_ID";
+    $resultTN = mysqli_query($conn, $sqlTopicName);
+    $TopicArray = mysqli_fetch_assoc($resultTN);
+    $TopicTitle = $TopicArray['title'];
+
     ?>
 
 
@@ -103,8 +120,11 @@ include "db_connection.php";
 				$dashview = "link-dark";
 				include "./navbar_e.php";
 			}
+    
 		?>
-
+<div class = "title col-xs-6 col-sm-6 col-md-4 my-4" >
+  <h1><?php echo "Topic: " . $TopicTitle; ?></h1>
+</div>
 <div class="input-group mb-3 Search con2">
 
 <input id="IDsearch" type="text" name="IDsearch" class="form-control" placeholder="Enter Post:" aria-label="Text input with dropdown button">
@@ -150,8 +170,11 @@ if($_SESSION["role"] == "Manager"){
 
 function deletetopic() {
 
-  document.getElementById("TopicDeletion").submit();
-  
+  if (confirm('Are you sure you want to delete this topic?')) {
+    document.getElementById("TopicDeletion").submit();
+} else {
+    return;
+} 
 }
 
 </script>
@@ -272,7 +295,7 @@ echo '
 ?>
   </div>
   </div>
-
+</div>
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
         style="padding-left: 25px; padding-right: 25px;">
         <p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
