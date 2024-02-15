@@ -54,6 +54,15 @@
                 font-size: 3.5rem;
             }
         }
+        body{
+            display: flex;
+            flex-direction: column;
+        }
+        .HeightShown{
+            flex: 1;
+            min-height: 80vh;
+        }
+        
     </style>
 
 
@@ -83,7 +92,7 @@
 </script>
 
 <body>
-
+<div class="HeightShown">
 <?php
 include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -285,6 +294,7 @@ while ($resultA = mysqli_fetch_array($resultTopics)) {
     </div>
     </div>
 
+</div>
 
     <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
         style="padding-left: 25px; padding-right: 25px;">
