@@ -38,12 +38,7 @@
         }
         if (isset($_POST["taskBuffer"])) {
             $tasksJson = json_decode($_POST["taskBuffer"], true);
-            if ($tasksJson == null) {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        } 
 
         // include "db_connection.php";
         // $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -57,6 +52,7 @@
             $conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
         } catch (PDOException $e) {
             echo "<script type='text/javascript'>alert('Failed to connect to database');</script>";
+            return false;
         }
 
         $result = $conn->query("SELECT max(project_ID) FROM project");
@@ -67,19 +63,33 @@
             $projID = $maxID[0] + 1;
         }
 
-        $stmt = $conn->prepare("INSERT into project (project_ID, team_leader, project_title, due_date, description)
+        $proj_create_stmt = $conn->prepare("INSERT into project (project_ID, team_leader, project_title, due_date, description)
                                  values (:projID, :projLeader, :projTitle, DATE :projDate, :projDescription);");
-        $stmt->bindParam(':projID', $projID, PDO::PARAM_INT);
-        $stmt->bindParam(':projLeader', $projLeader, PDO::PARAM_INT);
-        $stmt->bindParam(':projTitle', $projTitle, PDO::PARAM_STR);
-        $stmt->bindParam(':projDate', $projDate, PDO::PARAM_STR);
-        $stmt->bindParam(':projDescription', $projDescription, PDO::PARAM_STR);
+        $proj_create_stmt->bindParam(':projID', $projID, PDO::PARAM_INT);
+        $proj_create_stmt->bindParam(':projLeader', $projLeader, PDO::PARAM_INT);
+        $proj_create_stmt->bindParam(':projTitle', $projTitle, PDO::PARAM_STR);
+        $proj_create_stmt->bindParam(':projDate', $projDate, PDO::PARAM_STR);
+        $proj_create_stmt->bindParam(':projDescription', $projDescription, PDO::PARAM_STR);
         // mysqli_query($conn, $projInsertQuery);
-        if (!$stmt->execute())  {
+        if (!$proj_create_stmt->execute())  {
             echo "<script>alert('request unsucessful');</script>";
             header("location: dashboard.php");
         }
-        
+
+        $result = $conn->query("SELECT max(topic_ID) FROM topics");
+        $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
+        if ($maxID == null) {
+            $topicID = 1;
+        } else {
+            $topicID = $maxID[0] + 1;
+        }
+        $date = date("Y-m-d");
+        $create_topic_stmt = $conn->prepare("INSERT INTO topics (topic_ID, title, Date, views, project_ID) VALUES (:topicID, :title, DATE :date, 0, :project_ID)");
+        $create_topic_stmt->bindParam(':topicID', $topicID, PDO::PARAM_INT);
+        $create_topic_stmt->bindParam(':title', $projTitle, PDO::PARAM_STR);
+        $create_topic_stmt->bindParam(':date', $date, PDO::PARAM_STR);
+        $create_topic_stmt->bindParam(':project_ID', $projID, PDO::PARAM_INT);
+        $create_topic_stmt->execute();  
 
         $result = $conn->query("SELECT max(task_ID) FROM tasks");
         $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
@@ -89,7 +99,10 @@
             $taskID = $maxID[0] + 1;
         }
         // task json format: {ID: maxID+1, title: taskTitle, description: taskdescription, hours: taskmanhours, duedate: taskduedate, empID: taskempID, empName: taskempName};
-
+        if (!$tasksJson) {
+            header("location: dashboard.php");
+            die();
+        }
         for ($i=0; $i <= count($tasksJson); $i++) { 
             $task = $tasksJson[$i];
 
@@ -161,11 +174,7 @@
             if (!$stmt->execute())  {
                 echo "<script type='text/javascript'>alert('request unsucesfull');</script>";
             }
-            $taskID++;
-            
-            // mysqli_query($conn, $taskInsertQuery);
-
-            
+            $taskID++;   
         }
 
         header("location: dashboard.php");
@@ -532,61 +541,61 @@ $(document).ready(function() {
 
         let newCard = document.createElement("div");
         newCard.classList.add("col-12", "col-md-4", "col-lg-3", "mb-3", "mb-md-0");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {newCard.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {newCard.classList.add("text-light", "bg-dark")}
 
         let cardBody = document.createElement("div");
         cardBody.classList.add("card", "card-body", "taskcard");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {cardBody.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {cardBody.classList.add("text-light", "bg-dark")}
         cardBody.style.marginLeft = "10px";
 
         let cardTitle = document.createElement("h5");
         cardTitle.innerHTML = task.title;
         cardTitle.classList.add("card-title");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {cardTitle.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {cardTitle.classList.add("text-light", "bg-dark")}
         cardBody.appendChild(cardTitle);
 
         let cardDesc = document.createElement("p");
         cardDesc.innerHTML = task.description;
         cardDesc.classList.add("card-text");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {cardDesc.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {cardDesc.classList.add("text-light", "bg-dark")}
         cardBody.appendChild(cardDesc);
 
         let cardEmp = document.createElement("h6");
         cardEmp.innerHTML = task.empName;
         cardEmp.classList.add("card-title");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {cardEmp.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {cardEmp.classList.add("text-light", "bg-dark")}
         cardBody.appendChild(cardEmp);
 
         let cardHours = document.createElement("p");
         cardHours.classList.add("card-text", "mb-0", "mt-auto");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {cardHours.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {cardHours.classList.add("text-light", "bg-dark")}
         let smallText2 = document.createElement("small");
         smallText2.classList.add("text-muted");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {smallText2.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {smallText2.classList.add("text-light", "bg-dark")}
         smallText2.innerHTML = "Task Length: " + task.hours + " hour(s)";
         cardHours.appendChild(smallText2);
         cardBody.appendChild(cardHours);
 
         let cardDue = document.createElement("p");
         cardDue.classList.add("card-text");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {cardDue.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {cardDue.classList.add("text-light", "bg-dark")}
         let smallText1 = document.createElement("small");
         smallText1.classList.add("text-muted");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {smallText1.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {smallText1.classList.add("text-light", "bg-dark")}
         smallText1.innerHTML = "Due: " + task.duedate;
         cardDue.appendChild(smallText1);
         cardBody.appendChild(cardDue);
 
         let buttonsDiv = document.createElement("div");
         buttonsDiv.classList.add("row");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {buttonsDiv.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?> ) {buttonsDiv.classList.add("text-light", "bg-dark")}
 
         let editButton = document.createElement("button");
         editButton.innerHTML = "Edit";
         editButton.type = "button";
         editButton.onclick = function() {editTask(task.ID)}
         editButton.classList.add("btn", "btn-warning", "col-6");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {editButton.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {editButton.classList.add("text-light", "bg-dark")}
         buttonsDiv.appendChild(editButton);
 
         let deleteButton = document.createElement("button");
@@ -594,7 +603,7 @@ $(document).ready(function() {
         deleteButton.type = "button";
         deleteButton.onclick = function() {removeTask(task.ID)};
         deleteButton.classList.add("btn", "btn-danger", "col-6");
-        if (<?php echo $_SESSION["lightmode"] == 1 ?>) {deleteButton.classList.add("text-light", "bg-dark")}
+        if (<?php echo $_SESSION["lightmode"] ? 'true' : 'false' ?>) {deleteButton.classList.add("text-light", "bg-dark")}
         buttonsDiv.appendChild(deleteButton);
 
         cardBody.appendChild(buttonsDiv);
