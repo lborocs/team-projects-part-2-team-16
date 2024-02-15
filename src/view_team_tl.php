@@ -7,7 +7,7 @@
 		exit;
 	}
 	
-	//WILL THIS CREATE ERROR IF USER DOESNT LEAD TEAMS? (I dont think so, but  should be tested) -------------------------------------------------------
+	//WILL THIS CREATE ERROR IF USER DOESNT LEAD TEAMS? (I dont think so, but should be tested) -------------------------------------------------------
 	//gets the information of the projects that the user leads
 	$result = $conn->query("SELECT project_ID, project_title, due_date FROM  project where team_leader =".$_SESSION["user_ID"]);
 	if (!$result) {
@@ -23,51 +23,31 @@
 	echo "<script>console.log(1)</script>";
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		echo "<script>console.log(2)</script>";
-		//POST VARIABLES SEEMS TO BE EMPTY
 		$title = $_POST["tasktitle"];
 		$desc = $_POST["taskdesc"];
 		$dateInput = $_POST["duedate"];
-        $projIdInt = intval($currentProjectID);
-		// echo "<script>console.log(".$title.")</script>";
-		// echo "<script>console.log('v')</script>";
-		// echo "<script>console.log(".$dateInput.")</script>";
-		// echo "<script>console.log('^')</script>";
+		$projIdInt = intval($currentProjectID);
 		$hours = intval($_POST["manhours"]);
-        $user_ID = intval($_POST["user_ID"]);
-        echo "got vars";
-		// $dateObj = DateTime::createFromFormat("d/m/Y", $dateInput);
-		// echo "<script>console.log('Date v')</script>";
-		// echo "<script>console.log(".$dateObj.")</script>";
-		// echo "<script>console.log('Date ^')</script>";
-		//echo $dateObj->format("Y-m-d");
-		// $result = $conn->query("SELECT MAX(task_ID) FROM tasks");
-		// $taskID = $result->fetch(PDO::FETCH_ASSOC)["task_ID"] + 1;							//creates a new ID for the new task
-        $result = $conn->query("SELECT max(task_ID) FROM tasks");
-        $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
-        if ($maxID == null) {
+		$user_ID = intval($_POST["user_ID"]);
+		$result = $conn->query("SELECT MAX(task_ID) FROM tasks");
+		$maxID = $result->fetch(PDO::FETCH_NUM)[0];
+		if ($maxID == null) {
             $taskID = 1;
         } else {
-            $taskID = $maxID[0] + 1;
+            $taskID = $maxID + 1;
         }
-        echo "got ID: $taskID";
+		
 		//adds task to database
-		// if (!mysqli_query($conn, "INSERT INTO tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours)
-		// 							VALUES (".$taskID.",".$_SESSION["user_ID"].",".$currentProjectID.",'".$title."','".$desc."','".$date."',".$hours.")")) {
-		// 	echo "<script>alert('request unsucessful');</script>";
-		// }
-        $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
+		$stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
                                         VALUES (:ID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
-        $stmt->bindParam(':ID', $taskID, PDO::PARAM_INT);
+		$stmt->bindParam(':ID', $taskID, PDO::PARAM_INT);
         $stmt->bindParam(':empID', $user_ID, PDO::PARAM_INT);
         $stmt->bindParam(':projectID', $projIdInt, PDO::PARAM_INT);
         $stmt->bindParam(':title', $title, PDO::PARAM_STR);
         $stmt->bindParam(':description', $desc, PDO::PARAM_STR);
         $stmt->bindParam(':date', $dateInput, PDO::PARAM_STR);
         $stmt->bindParam(':hours', $hours, PDO::PARAM_INT);
-        
-        echo "bind params";
-
-        if ($stmt->execute())  {
+		if ($stmt->execute())  {
             header("location: dashboard.php");
             die();
         } else {
@@ -215,22 +195,22 @@
 												data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
 												onclick="stopProp(event)">+ Assign task </button>
 											<form method="post" action="" class="dropdown-menu p-4 pt-3" style="width:256;" onclick="stopProp(event)">
-                                                <input type="hidden" name="user_ID" value='.$currentUserID.'>
+												<input type="hidden" name="user_ID" value='.$currentUserID.'>
 												<div class="mb-2">
 													<label for="tasktitle-'.$numOfUsersAdded.'" class="form-label">Task Title</label>
-													<input type="text" class="form-control" id="tasktitle-'.$numOfUsersAdded.'" name="tasktitle">
+													<input type="text" class="form-control" id="tasktitle-'.$numOfUsersAdded.'" name="tasktitle" required>
 												</div>
 												<div class="mb-2">
 													<label for="taskdesc-'.$numOfUsersAdded.'" class="form-label">Task Description</label>
-													<textarea class="form-control" id="taskdesc-'.$numOfUsersAdded.'" name="taskdesc"></textarea>
+													<textarea class="form-control" id="taskdesc-'.$numOfUsersAdded.'" name="taskdesc" required></textarea>
 												</div>
 												<div class="mb-2">
 													<label for="manhours-'.$numOfUsersAdded.'" class="form-label">Estimated Man Hours</label>
-													<input type="number" class="form-control" id="manhours-'.$numOfUsersAdded.'" name="manhours">
+													<input type="number" class="form-control" id="manhours-'.$numOfUsersAdded.'" name="manhours" required>
 												</div>
 												<div class="mb-3">
 													<label for="duedate-'.$numOfUsersAdded.'" class="form-label">Due Date</label>
-													<input type="date" class="form-control" id="duedate-'.$numOfUsersAdded.'" name="duedate" placeholder="DD/MM/YYYY">
+													<input type="date" class="form-control" id="duedate-'.$numOfUsersAdded.'" name="duedate" placeholder="DD/MM/YYYY" required>
 												</div>
 												<button type="submit" class="btn btn-primary">Assign Task</button>
 											</form>
@@ -263,6 +243,12 @@
 				echo 'task-completed';
 			}
 			echo '">
+						<a href="./create_task.php?edit_ID='.$task[0].'" class="position-absolute top-0 end-0">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-pencil-square position-absolute top-0 end-0" viewBox="0 0 16 16">
+								<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+								<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+							</svg>
+						</a>
 						<h5 class="card-title">'.$task[4].'</h5>
 						<p class="card-text mb-0">'.$task[5].'</p>
 						<p class="card-text mb-0 mt-auto"><small class="text-muted">Task length: '.$task[7].' hours</small></p>
