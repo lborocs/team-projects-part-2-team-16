@@ -44,7 +44,7 @@ function createPost() {
                     $topicID = $maxID[0] + 1;
                 }
                 // create the topic with new ID
-                $create_topic_stmt = $conn->prepare("INSERT INTO topics (topic_ID, title, Date, views, posts) VALUES (:topicID, :title, DATE :date, 1, 1)");
+                $create_topic_stmt = $conn->prepare("INSERT INTO topics (topic_ID, title, Date, views) VALUES (:topicID, :title, DATE :date, 1)");
                 $create_topic_stmt->bindParam(':topicID', $topicID, PDO::PARAM_INT);
                 $create_topic_stmt->bindParam(':title', $newTopic, PDO::PARAM_STR);
                 $create_topic_stmt->bindParam(':date', $date, PDO::PARAM_STR);
@@ -54,13 +54,17 @@ function createPost() {
                 }
             }
         } else if (isset($_POST["hiddentopicsearch"])){
-            $topicID = $_POST["hiddentopicsearch"];
+            if (is_numeric($_POST["hiddentopicsearch"])) {
+                $topicID = $_POST["hiddentopicsearch"];
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
     }  else {
         return false;
-    }
+    }   
 
     $result = $conn->query("SELECT max(post_ID) FROM posts");
     $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
@@ -78,7 +82,6 @@ function createPost() {
             $fileTmpName = $file["tmp_name"];
             $fileType = strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
             $fileHash = uniqid();
-            // $fileType = 'jpg';
             if (!isset($_FILES['imageInput']['error']) || is_array($_FILES['imageInput']['error'])) {
                 echo "<script type='text/javascript'>alert('Error within image file, post created without image.');</script>";
                 throw new RuntimeException("error within image", 1);
@@ -120,20 +123,163 @@ function createPost() {
     if (!$create_post_stmt->execute()) {
         return false;
     } else {
-        if ($imageUploaded) {
-            echo "<script type='text/javascript'>alert('psot created without image');</script>";
-        }
-        header("location: view_posts.php?Post_topic_ID=$topicID");
+        header("location: get_ind_post.php?POST_ID=$postID");
         return true;
     }
+}
+function get_edit_post() {
+    try {
+        include "db_connection.php";
+        $conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+    } catch (PDOException $e) {
+        echo "<script type='text/javascript'>alert('Failed to connect to database');</script>";
+        return false;
+    }
 
-} 
+    $getPostQuery = $conn->prepare("SELECT * FROM posts where post_ID = :post_ID");
+    $getPostQuery->bindParam(":post_ID", $_GET["edit_ID"], PDO::PARAM_INT);
+    if(!$getPostQuery->execute()) {
+        header("location:  ");
+    }
+    return $getPostQuery->fetch(PDO::FETCH_ASSOC);
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+function editPost() {
+    try {
+        include "db_connection.php";
+        $conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+    } catch (PDOException $e) {
+        echo "<script type='text/javascript'>alert('Failed to connect to database');</script>";
+        return false;
+    }
+
+    if (isset($_POST["postTitle"])) {
+        $title = $_POST["postTitle"];
+        if (strlen($title) > 255) {
+            echo "<script type='text/javascript'>alert('title.');</script>";
+            return false;
+        }
+    } else {
+        return false;
+    }
+    if (isset($_POST["postBody"])) {
+        $body = $_POST["postBody"];
+        if (strlen($body) > 1000) {
+            echo "<script type='text/javascript'>alert('body.');</script>";
+            return false;
+        }
+    } else {
+        return false;
+    }
+
+    if (isset($_POST["isNewTopic"])){
+        if ($_POST["isNewTopic"]) {
+            if (isset($_POST["newTopicInput"])){
+                $newTopic = $_POST["newTopicInput"];
+                $result = $conn->query("SELECT max(topic_ID) FROM topics");
+                $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
+                if ($maxID == null) {
+                    $topicID = 1;
+                } else {
+                    $topicID = $maxID[0] + 1;
+                }
+                // create the topic with new ID
+                $create_topic_stmt = $conn->prepare("INSERT INTO topics (topic_ID, title, Date, views, posts) VALUES (:topicID, :title, DATE :date, 1, 1)");
+                $create_topic_stmt->bindParam(':topicID', $topicID, PDO::PARAM_INT);
+                $create_topic_stmt->bindParam(':title', $newTopic, PDO::PARAM_STR);
+                $create_topic_stmt->bindParam(':date', $date, PDO::PARAM_STR);
+
+                if (!$create_topic_stmt->execute()) {
+                    return false;
+                }
+            }
+        } else if (isset($_POST["hiddentopicsearch"])){
+            if (is_numeric($_POST["hiddentopicsearch"])) {
+                $topicID = intval($_POST["hiddentopicsearch"]);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }  else {
+        return false;
+    }
+
+    $imageUploaded = false;
+    if (isset($_FILES["imageInput"]) && $_POST['imageChanged'] == 1){
+        try {
+            $file = $_FILES["imageInput"];
+            $fileName = $file["name"];
+            $fileTmpName = $file["tmp_name"];
+            $fileType = strtolower(pathinfo($fileName,PATHINFO_EXTENSION));
+            $fileHash = uniqid();
+            if (!isset($_FILES['imageInput']['error']) || is_array($_FILES['imageInput']['error'])) {
+                echo "<script type='text/javascript'>alert('Error within image file, post created without image.');</script>";
+                throw new RuntimeException("error within image", 1);
+            }
+            if (false === array_search($fileType, array('jpg', 'jpeg', 'png', 'gif'))) {
+                echo "<script type='text/javascript'>alert('Image file too large, post created without image.');</script>";
+                throw new RuntimeException("file foramt not accepted", 2);
+            }
+            if ($file['size'] > 500000) {
+                echo "<script type='text/javascript'>alert('Image file too large, post created without image.');</script>";
+                throw new RuntimeException("image too large", 3);
+            }
+            $destination = "postImageUploads/$fileHash.$fileType";
+            // $destination = "postImageUploads/" . $fileName;
+            if (move_uploaded_file($fileTmpName, $destination)) {
+                echo "file uploaded";
+                $imageUploaded = true;
+            } else {
+                echo "file upload failed";
+            }
+        } catch (RuntimeException $e) {
+            echo "<script type='text/javascript'>alert('Issue with image file, post created without image.');</script>";
+        }
+        
+    } else {
+    }
+    $postID = intval($_POST["edit_ID"]); 
+
+    if ($imageUploaded) {
+        $edit_post_stmt = $conn->prepare("UPDATE posts SET topic_ID = :topic_ID, title = :title, content = :content, img_url = :img_url where post_ID = :post_ID");
+        $edit_post_stmt->bindParam(":img_url", $destination, PDO::PARAM_STR);
+    } else {
+        // $edit_post_stmt = $conn->prepare("UPDATE posts SET topic_ID = :topic_ID, title = :title, content = :content where post_ID = :postID");
+        $edit_post_stmt = $conn->prepare("UPDATE posts SET topic_ID = :topic_ID, title = :title, content = :content where post_ID = :post_ID");
+    }
+
+
+    $edit_post_stmt->bindParam(":post_ID", $postID, PDO::PARAM_INT);
+    $edit_post_stmt->bindParam(":topic_ID", $topicID, PDO::PARAM_INT);
+    $edit_post_stmt->bindParam(":title", $title, PDO::PARAM_STR);
+    $edit_post_stmt->bindParam(":content", $body, PDO::PARAM_STR);
+    
+
+    if (!$edit_post_stmt->execute()) {
+        return false;
+    } else {
+        header("location: get_ind_post.php?POST_ID=$postID");
+        return true;
+    }
+}
+
+if (isset($_POST["submitButton"])) {
     if (!createPost()) {
         echo "<script type='text/javascript'>alert('Failed to create the post, invalid data entered.');</script>";        
     }
-}
+} else if (isset($_POST["confirmEditButton"])) {
+    if (!editPost()) {
+        echo "<script type='text/javascript'>alert('Failed to create the post, invalid data entered.');</script>";        
+    }
+} else if (isset($_GET["edit_ID"])) {
+    $editingPost = get_edit_post();
+    $editPostTitle = $editingPost["title"];
+    $editPostcontent = $editingPost["content"];
+    $editPostUrl = $editingPost["img_url"];
+    $editPostTopic = $editingPost["topic_ID"];
+} 
 
 ?>
 
@@ -220,19 +366,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
 
     <main class="container">
-        <h1 class="my-5">Create Post</h1>
+        
+        <h1 class="my-5"><?php if (isset($editingPost)) {echo "Edit Post";} else {echo "Create Post";}?></h1>
         <div class="d-flex flex-wrap">
             <form class="col-md-8" autocomplete="off" method="post" action="#" enctype="multipart/form-data">
                 <div class="form-group row">
                     <label for="postTitle" class="col-auto-2 col-form-label" style="margin-left: 0px; margin-right: 0px;">Title</label>
                     <div class="col-auto-10">
-                        <input type="title" class="form-control" id="postTitle" name="postTitle" placeholder="..." required>
+                        <input type="text" class="form-control" id="postTitle" name="postTitle" placeholder="..." required
+                        value="<?php if (isset($editingPost)) {echo $editPostTitle;}?>">
                     </div>
                 </div>
 
                 <div class="form-group row" style="margin-left: 0px; margin-right: 0px;">
                     <label for="postBody" style="padding-left: 0px;">Body</label>
-                    <textarea name="postBody" class="form-control" id="postBody" rows="10" placeholder="..." required></textarea>
+                    <textarea name="postBody" class="form-control" id="postBody" rows="10" placeholder="..." required><?php if (isset($editingPost)) {echo $editPostcontent;} else {echo null;} ?></textarea>
                 </div>
 
                 <br>
@@ -240,12 +388,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="form-group">
                     <label for="imageInput">Include a picture? (Optional)</label>
                     <input name="imageInput" type="file" class="form-control" id="imageInput" accept=".png,.jpg,.jpeg,.ico" onchange=displayImage(this)>
+                    <input type="hidden" name="imageChanged" id="imageChanged" value=0>
                 </div>
 
-                <div id="imageContainer" style="margin: 10px auto; display: none; width: 50%">
+                <div id="imageContainer" style="margin: 10px auto; display: <?php if (isset($editingPost) && $editingPost["img_url"] != "null") {echo "block";} else {echo "none";} ?>; width: 50%">
                     <p style="margin: 5px;"><b><u>Image Preview</u></b></p>
                     <div style="border: 10px solid #797676; border-radius: 17px; text-align: center;">
-                        <img id="imageDisplay" src="#" alt="gfdbdfasbdfsb" style="height:auto; width: 100%">
+                        <img id="imageDisplay" alt="failed to display image" style="height:auto; width: 100%"
+                            src="<?php if (isset($editingPost)) {echo $editPostUrl;} else {echo "#";} ?>">
                     </div>
                 </div>
                     
@@ -275,6 +425,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 foreach ($topicArray as $topic) {
                                     echo "<li id='topic_li_$i' onmousedown='setSearch(\"topic\", \"topic_li_$i\")'>$topic[0]</li>";
                                     echo "<input type='hidden' id='id_topic_li_$i' value='$topic[1]'>";
+                                    if (isset($editingPost)) {
+                                        if ($editingPost["topic_ID"] == $topic[1]) {
+                                            $setTopicTo = $i;
+                                        }
+                                    }
                                     $i++;
                                 }
                                 ?>
@@ -293,24 +448,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <div class="form-group row">
                     <div class="col-sm-10">
-                        <button id="submitButton" type="submit" class="btn btn-primary disabled">Publish</button>
+                        <?php
+                        if (!isset($editingPost)) {
+                            echo '<button id="submitButton" name="submitButton" type="submit" class="btn btn-primary disabled">Publish</button>';
+                        } else {
+                            echo "<input type='hidden' name='edit_ID' value=$_GET[edit_ID]>";
+                            echo '<button id="submitButton" name="confirmEditButton" type="submit" class="btn btn-primary disabled">Confirm Edit</button>';
+                        }
+                        ?>
                     </div>
                 </div>
             </form>
 
-            <!-- <div class="list-group col-md-2">
-                <h5>Similar posts</h5>
-                <a href="./view_ind_post_m.html"
-                    class="list-group-item list-group-item-action list-group-item-primary">Example Q1</a>
-                <a href="./view_ind_post_m.html"
-                    class="list-group-item list-group-item-action list-group-item-secondary">Example Q2</a>
-                <a href="./view_ind_post_m.html"
-                    class="list-group-item list-group-item-action list-group-item-primary">Example Q3</a>
-                <a href="./view_ind_post_m.html"
-                    class="list-group-item list-group-item-action list-group-item-secondary">Example Q4</a>
-                <a href="./view_ind_post_m.html"
-                    class="list-group-item list-group-item-action list-group-item-primary">Example Q5</a>
-            </div> -->
+            
         </div>
     </main>
 
@@ -338,6 +488,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script>
 
     function displayImage(obj) {
+        document.getElementById("imageChanged").value = 1;
         if (obj.files && obj.files[0]) {
             document.getElementById("imageContainer").style.display = "block";
             document.getElementById("imageDisplay").src = URL.createObjectURL(obj.files[0]);
@@ -384,7 +535,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (document.getElementById("isNewTopic").value == 0) {
             document.getElementById("newTopicInput").style.display = "block";
             document.getElementById("submitButton").classList.remove("disabled");
-            document.getElementById('topicsearch').disabled = true;;
+            document.getElementById('topicsearch').disabled = true;
             document.getElementById("isNewTopic").value = 1;
             document.getElementById("isNewTopic").innerHTML = "Cancel";
         } else {
@@ -394,7 +545,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             document.getElementById("isNewTopic").value = 0;
             document.getElementById("isNewTopic").innerHTML = "Create New Topic";
         }
-
-
     }
+
+    <?php if (isset($editingPost)) {echo "setSearch('topic', 'topic_li_$setTopicTo')";}?>
+    
 </script>
