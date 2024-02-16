@@ -8,81 +8,118 @@ If the user is adding a task while viewing a team, $projectID must be defined:
 $projectID : the current project ID if viewing a project
 */
 
-function create_task($projectID,$conn) {
-	if (isset($_POST["employee"])){		//checks if employee id is valid
-		$empID = $_POST["employee"];
-		if (!is_numeric($empID)) {
-			return "Invalid employee";
-		} else {
-			$empID = intval($empID);
+function validate_title_desc() {
+    if (isset($_POST["title"])){		//checks if title is valid
+		if (strlen($_POST["title"]) > 255) {
+			return [false, "Invalid task title"];
 		}
 	} else {
-		return "Invalid employee";
-	}
-	if ($projectID == null) {
-		if (isset($_POST["project"])) {			//checks if project id is valid
-			$projectID = $_POST["project"];
-			if (!is_numeric($projectID)) {
-				return "Invalid project";
-			} else {
-				if ($_SESSION["role"] == "Manager") {
-					$projectID = intval($projectID);
-				} else if ($_SESSION["role"] == "TL") {		//checks if team leader leads the input team
-					$result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"].";");
-					$projectsLeadByUser = $result->fetchAll(PDO::FETCH_NUM);
-					$teamValidated = false;
-					foreach($projectLeadsByUser as $row) {
-						if ($row[0] == $projectID) {
-							$teamValidated = true;
-							$projectID = intval($projectID);
-							break;
-						}
-					}
-					if (!$teamValidated) {
-						return "Team leader does not have permission to make changes to given team";
-					}
-				}
-			}
-		} else {
-			return "Invalid project";
-		}
-	}
-	if (isset($_POST["title"])){		//checks if title is valid
-		$title = $_POST["title"];
-		if (strlen($title) > 255) {
-			return "Invalid task title";
-		}
-	} else {
-		return "Invalid task title";
+		return [false, "Invalid task title"];
 	}
 	if (isset($_POST["description"])) {				//checks if description is valid
-		$description = $_POST["description"];
-		if (strlen($description) > 1000) {
-			return "Invalid task description";
+		if (strlen($_POST["description"]) > 1000) {
+			return [false, "Invalid task description"];
 		}
 	} else {
-		return "Invalid task description";
+		return [false, "Invalid task description"];
 	}
-	if (isset($_POST["date"])) {		//checks if due date is valid
-		$date = $_POST["date"];
-		if (!date_create_from_format("Y-m-d", $date)) {
-			return "Invalid due date";
+    return [true, ""];
+}
+
+function validate_project($projectID, $conn) {  //checks if project id is valid
+    if ($projectID == null) {
+        if (isset($_POST["project"])) {
+            $projectID = $_POST["project"];
+        } else {
+            return [false, "Invalid project"];
+        }
+    } 
+    			
+    if (!is_numeric($projectID)) {
+        return [false, "Invalid project"];
+    } else {
+        if ($_SESSION["role"] == "Manager") {
+            return [true, ""];
+        } else if ($_SESSION["role"] == "TL") {		//checks if team leader leads the input team
+            $result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"].";");
+            $projectsLeadByUser = $result->fetchAll(PDO::FETCH_NUM);
+            foreach($projectsLeadByUser as $row) {
+                if ($row[0] == $projectID) {
+                    return [true, ""];
+                }
+            }
+        }
+        return [false, "Team leader does not have permission to make changes to given team"];
+    }
+    
+	
+}
+
+function validate_date_time() {
+    if (isset($_POST["date"])) {		//checks if due date is valid
+		if (!date_create_from_format("Y-m-d", $_POST["date"])) {
+			return [false, "Invalid due date"];
 		}
 	} else {
-		$errorMsg = "Invalid due date";
-		return "Invalid due date";
+		return [false, "Invalid due date"];
 	}
 	if (isset($_POST["manhours"])) {	//checks if man hours of task is valid
-		$hours = $_POST["manhours"];
-		if (!is_numeric($hours) and $hours > -1) {
-			return "Invalid man hours for task";
+		if (!is_numeric($_POST["manhours"]) && $_POST["manhours"] > -1) {
+			return [false, "Invalid man hours for task"];
 		}else {
-			$hours = intval($hours);
+            return [true, ""];
 		}
 	} else {
-		$errorMsg = "Invalid man hours for task";
-		return "Invalid man hours for task";
+		return [false, "Invalid man hours for task"];
 	}
+}
+
+function validate_user() {
+    if (isset($_POST["employee"])){		//checks if employee id is valid
+		if (!is_numeric($_POST["employee"])) {
+			return "Invalid employee";
+		} else {
+			return [true, ""];
+		}
+	} else {
+		return [false, "Invalid employee"];
+	}
+}
+
+
+function create_task($projectID,$conn) {
+    // check will always be an array will 2 elements, a bool for if the entry was valid and a string with an error message or empty string if entry is valid
+    $check = validate_user();
+	if (!$check[0]) {
+        echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+        return;
+    }
+	$empID = intval($_POST["employee"]);
+
+    $check = validate_date_time();
+	if (!$check[0]) {
+        echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+        return;
+    }
+    $date = $_POST["date"];
+    $hours = intval($_POST["manhours"]);
+
+    $check = validate_project($projectID, $conn);
+	if (!$check[0]) {
+        echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+        return;
+    }
+	$projectID = intval($projectID ?? $_POST['project']);
+
+    $check = validate_title_desc();
+	if (!$check[0]) {
+        echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+        return;
+    }
+	$title = $_POST["title"];
+    $description = $_POST["description"];
+
+
 	//get a unique id for task
 	$result = $conn->query("SELECT max(task_ID) FROM tasks");
 	$maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
@@ -111,11 +148,4 @@ function create_task($projectID,$conn) {
 	}
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	$projectID = $projectID ?? null;
-	$errorMsg = create_task($projectID,$conn);
-	if (!$errorMsg == "") {
-		echo "<script>alert('Failed to create the task. One of your input violated input requirments: $errorMsg');</script>";
-	}
-}
 ?>
