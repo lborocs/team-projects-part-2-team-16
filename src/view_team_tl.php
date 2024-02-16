@@ -1,5 +1,6 @@
 <?php
 //TO DO: ADD A PROJECT DESCRIPTION
+	include "add_task.php";
 
 	try {
 		include "db_connection.php";
@@ -26,7 +27,7 @@
 	//adds task to database
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$projectID = intval($currentProjectID);
-		include "add_task.php";
+		create_task($projectID, $conn);
 	}
 	
 	//BETTER ERROR MESSAGE? -------------------------------------------------------------------------------------------------------------------------
