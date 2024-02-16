@@ -20,7 +20,15 @@ if (isset($_POST["replyInput"])) {
     }
 	$date = date("Y-m-d");
 	$userID = intval($_SESSION["user_ID"]);
-	$postID = intval($_GET["POST_ID"]);
+	if (isset($_GET["POST_ID"])) {
+		if (is_numeric($_GET["POST_ID"])) {
+			$postID = intval($_GET["POST_ID"]);
+		} else {
+			header("location: dashboard.php");
+		}
+	} else {
+		header("location: dashboard.php");
+	}
 
 	$replyQuery = $conn->prepare("INSERT INTO response (response_ID, user_ID, post_ID, content, Date) values (:response_ID, :user_ID, :post_ID, :content, Date :date)");
 	$replyQuery->bindParam(":response_ID", $response_ID, PDO::PARAM_INT);
@@ -30,16 +38,31 @@ if (isset($_POST["replyInput"])) {
 	$replyQuery->bindParam(":date", $date, PDO::PARAM_STR);
 	$replyQuery->execute();
 }
+
 if (isset($_POST['deleteID'])) {
-	$ID = intval($_POST['deleteID']);
-	$delQuery = $conn->prepare("delete from posts where post_ID = :post_ID;");
-	$delQuery->bindParam(":post_ID", $ID, PDO::PARAM_INT);
-	$delQuery->execute();
-	$delQuery = $conn->prepare("delete from response where post_ID = :post_ID;");
-	$delQuery->bindParam(":post_ID", $ID, PDO::PARAM_INT);
-	$delQuery->execute();
-	header("location: ./view_topics.php");
+	if (is_numeric($_POST['deleteID'])) {
+		$ID = intval($_POST['deleteID']);
+		$result = $conn->query("select * from posts where post_ID = $ID");
+		$delpost = $result->fetch(PDO::FETCH_ASSOC);
+		if ($delpost['user_ID'] == $_SESSION["user_ID"]){
+			$delQuery = $conn->query("delete from posts where post_ID = $ID;");
+			$delQuery = $conn->query("delete from response where post_ID = $ID;");
+			header("location: ./view_topics.php");
+		}
+	}
 }
+
+if (isset($_POST['deleteRplyID'])) {
+	if (is_numeric($_POST['deleteRplyID'])) {
+		$rplyID = intval($_POST['deleteRplyID']);
+		$result = $conn->query("select * from response where response_ID = $rplyID");
+		$rply = $result->fetch(PDO::FETCH_ASSOC);
+		if ($rply['user_ID'] == $_SESSION['user_ID']) {
+			$conn->query("delete from response where response_ID = $rplyID");
+		}
+	} 
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -54,9 +77,11 @@ if (isset($_POST['deleteID'])) {
 	<style>
 		.entry-box {
 			background-color: white;
-			border: 1px solid #000;
-			border-radius: 15px;
-			padding: 10px 15px;
+			/* border: 1px solid #000; */
+			border-bottom: 1px solid #a3a3a3;
+			border-top: 1px solid #a3a3a3;
+			/* border-radius: 15px; */
+			padding: 0px 15px;
 		}
 
 		.row-tenth-height {
@@ -153,11 +178,17 @@ if (isset($_POST['deleteID'])) {
 	if (isset($_GET["POST_ID"])) {
 		if (is_numeric($_GET["POST_ID"])) {
 			$ID = intval($_GET["POST_ID"]);
-			$getPostQuery = $conn->prepare("select * from posts, users where post_ID = :post_ID and posts.user_ID = users.user_ID");
-			$getPostQuery->bindParam(":post_ID", $ID, PDO::PARAM_INT);
-			$getPostQuery->execute();
+			// get the post
+			$getPostQuery = $conn->query("select * from posts, users where post_ID = $ID and posts.user_ID = users.user_ID");
 			$post = $getPostQuery->fetch(PDO::FETCH_ASSOC);
 
+			// update views
+			$newViews = $post['views'] + 1;
+			$post['views'] ++;
+			$updateSql = "UPDATE posts SET views = $newViews WHERE post_ID = $ID";
+			$conn->query($updateSql);
+			
+			// get replies
 			$getRepliesQuery = $conn->prepare("select * from response, users where post_ID = :post_ID and response.user_ID = users.user_ID order by response.Date DESC");
 			$getRepliesQuery->bindParam(":post_ID", $ID, PDO::PARAM_INT);
 			$getRepliesQuery->execute();
@@ -170,7 +201,7 @@ if (isset($_POST['deleteID'])) {
 	}
 	?>
 
-	<div class="container" style="height: 10vh;">
+	<div class="container" style="border-left: 1px solid #dee2e6;border-right: 1px solid #dee2e6;padding: 10px 20px;">
 		<button type="button" style="margin-top: 10px"class="btn btn-dark" onclick="window.location.href='view_posts.php?Post_topic_ID=<?php echo $post['topic_ID'];?>;'">Back</button>
 		<div class="container">
 			<div class="row entry-box my-4">
@@ -192,7 +223,7 @@ if (isset($_POST['deleteID'])) {
 						</small></p>
 					</div>
 				</div>
-				<div class="row" style="border-bottom: 1px solid #ccc">
+				<div class="row" style="border-bottom: 1px solid #ccc; padding-bottom: 11px;">
 					<?php
 					if ($post["img_url"] != null && $post["img_url"] != "null") {
 						echo "<p class='col-sm-6 col-12 vertical-line'>".$post["content"]."</p>";
@@ -228,6 +259,19 @@ if (isset($_POST['deleteID'])) {
 				echo "<div class='col'>";
 				echo "<p class='response-number'><small>".$rply["forename"]." ".$rply["surname"]."</small></p>";
 				echo "<p>".$rply["content"]."</p>";
+				
+				if ($rply['user_ID'] == $_SESSION['user_ID']) {
+					$rplyID = $rply['response_ID'];
+					echo "
+					<form action='' method='post' id='delRplyForm'>
+					<div class='row' style='border-top: 1px solid #ccc;'>
+					<p style='color: #636b74; display: flex; justify-content: right;'>
+					<span type='button' onclick='document.getElementById(\"delRplyForm\").submit()' style='margin-left: 10px;'>delete</span>
+					</p>
+					<input type='hidden' name='deleteRplyID' value=$rplyID>
+					</div>
+					</form>";
+				}
 				echo "</div></div>";
 			}
 			?>
@@ -242,22 +286,22 @@ if (isset($_POST['deleteID'])) {
 
 
 		</div>
-		<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
-			style="padding-left: 25px; padding-right: 25px;">
-			<p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
-
-			<a href="/"
-				class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-				<img src="logo.png" alt="mdo" width="200" height="50">
-				</svg>
-			</a>
-
-			<div class="justify-content-end">
-				<p>Phone: 01509 888999</p>
-				<p>Email: king@make‐it‐all.co.uk</p>
-			</div>
-		</footer>
 	</div>
+	<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+		style="padding-left: 25px; padding-right: 25px;">
+		<p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
+
+		<a href="/"
+			class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+			<img src="logo.png" alt="mdo" width="200" height="50">
+			</svg>
+		</a>
+
+		<div class="justify-content-end">
+			<p>Phone: 01509 888999</p>
+			<p>Email: king@make‐it‐all.co.uk</p>
+		</div>
+	</footer>
 </body>
 
 </html>
