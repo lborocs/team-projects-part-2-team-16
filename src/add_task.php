@@ -1,8 +1,8 @@
 <?php
-/*Verifies inputs for adding a task and adds the task to the database, takes the user to dashboard if successful
+/*Functions for verifying inputs for a task and adding the task to the database (takes the user to dashboard if successful)
 POST data should have names: employee, title, description, date, manhours, (optional) project
 
-PDO object $conn must be defined before including this file. A session must be created to get the user ID.
+PDO object $conn should be defined before using functions in this file. A session must be created to get the user ID.
 
 If the user is adding a task while viewing a team, $projectID must be defined:
 $projectID : the current project ID if viewing a project
@@ -34,7 +34,7 @@ function validate_project($projectID, $conn) {  //checks if project id is valid
             return [false, "Invalid project"];
         }
     } 
-    			
+    
     if (!is_numeric($projectID)) {
         return [false, "Invalid project"];
     } else {
@@ -51,8 +51,6 @@ function validate_project($projectID, $conn) {  //checks if project id is valid
         }
         return [false, "Team leader does not have permission to make changes to given team"];
     }
-    
-	
 }
 
 function validate_date_time() {
@@ -85,7 +83,6 @@ function validate_user() {
 		return [false, "Invalid employee"];
 	}
 }
-
 
 function create_task($projectID,$conn) {
     // check will always be an array will 2 elements, a bool for if the entry was valid and a string with an error message or empty string if entry is valid
