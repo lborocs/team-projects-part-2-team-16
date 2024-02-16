@@ -3,19 +3,38 @@
 function TopicList($resultA) {
 
     return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
-    onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">
-    <div style="display: inline-block; width: 100%">
-        <p>' . $resultA["title"] . '</p>
-        <div style="float: right;height: 20px;position: relative;">
-            <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
-                <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
-                <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
-            </span>
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
+            <p>' . $resultA["title"] . '</p>
+            <div style="height: 20px;position: relative;">
+                <span style="display: inline-block; font-size: 17px;position: absolute; left: -15px;width: 220px;bottom: 15px;">
+                    Specific Project Topic
+                </span>
+                <span style="display: inline-block; font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                    <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
+                    <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                </span>
+            </div>
         </div>
-    </div>
-</div>
-<br>'; 
+        </div>
+        <br>';
 
+}
+
+function NonProject($resultA) {
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
+            <p>' . $resultA["title"] . '</p>
+            <div style="float: right;height: 20px;position: relative;">
+                <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                    <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
+                    <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                </span>
+            </div>
+        </div>
+        </div>
+        <br>';
 }
 
 function TopicChecker($resultA, $conn) {
@@ -38,10 +57,21 @@ function TopicChecker($resultA, $conn) {
                 $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST";
                 $resultProject = mysqli_query($conn, $sqlProject);
                     while($UserID_LIST = mysqli_fetch_assoc($resultProject)){
+                        if($ROLL_ID == "TL"){
+                            $sqlTL = "SELECT team_leader FROM project WHERE project_ID = $prjTEST";
+                            $resultTL = mysqli_query($conn, $sqlTL);
+                            while($TLID_LIST = mysqli_fetch_assoc($resultTL)){
+                                if($USERS_ID == $TLID_LIST["team_leader"]){
+                                    echo TopicList($resultA);
+                                    break 2;
+                                } 
+                            }
+                        }else{
                         if (($UserID_LIST['user_ID'] == $USERS_ID)) {
                              echo TopicList($resultA);
                                 break;
                         }
+                    }
             }
         }
                 
@@ -49,7 +79,7 @@ function TopicChecker($resultA, $conn) {
         }
         
     } else {
-        echo TopicList($resultA);
+        echo NonProject($resultA);
     }
 }
 
@@ -68,11 +98,12 @@ if (isset($_POST['search'])) {
     $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE '$Topic_search' GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
     $Result = mysqli_query($conn, $sql);
         
-        while($resultA = mysqli_fetch_array($Result)){
+    while($resultA = mysqli_fetch_array($Result)){
     
-            TopicChecker($resultA, $conn);    
-        }
-
+        TopicChecker($resultA, $conn);    
+    }
+    
+    
 }
 
 elseif (isset($_POST['sortby'])){
@@ -123,6 +154,17 @@ switch($PHPID){
             TopicChecker($resultA, $conn);     
         }
 
+        break;
+
+    case "Project":
+        $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE topic.project_ID IS NOT NULL GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.project_ID";
+        $Result = mysqli_query($conn, $sql);
+        
+        while($resultA = mysqli_fetch_array($Result)){
+        
+            TopicChecker($resultA, $conn);     
+        }
+    
         break;
 
     default:
