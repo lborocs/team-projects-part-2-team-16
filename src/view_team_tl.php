@@ -1,15 +1,17 @@
 <?php
+//TO DO: ADD A PROJECT DESCRIPTION
+
 	try {
 		include "db_connection.php";
 		$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
 	} catch (PDOException $e) {
-		echo "connection to database error";
-		exit;
+		echo "<script>alert('Failed to connect to database');</script>";
+		exit();
 	}
 	
 	//WILL THIS CREATE ERROR IF USER DOESNT LEAD TEAMS? (I dont think so, but should be tested) -------------------------------------------------------
 	//gets the information of the projects that the user leads
-	$result = $conn->query("SELECT project_ID, project_title, due_date FROM  project where team_leader =".$_SESSION["user_ID"]);
+	$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM  project where team_leader =".$_SESSION["user_ID"]);
 	if (!$result) {
 		echo "Connection Error.";
 		exit;
@@ -20,39 +22,11 @@
 		exit;
 	}
 	$currentProjectID = $projectsArray[0]["project_ID"];
-	echo "<script>console.log(1)</script>";
+	
+	//adds task to database
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
-		echo "<script>console.log(2)</script>";
-		$title = $_POST["tasktitle"];
-		$desc = $_POST["taskdesc"];
-		$dateInput = $_POST["duedate"];
-		$projIdInt = intval($currentProjectID);
-		$hours = intval($_POST["manhours"]);
-		$user_ID = intval($_POST["user_ID"]);
-		$result = $conn->query("SELECT MAX(task_ID) FROM tasks");
-		$maxID = $result->fetch(PDO::FETCH_NUM)[0];
-		if ($maxID == null) {
-            $taskID = 1;
-        } else {
-            $taskID = $maxID + 1;
-        }
-		
-		//adds task to database
-		$stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
-                                        VALUES (:ID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
-		$stmt->bindParam(':ID', $taskID, PDO::PARAM_INT);
-        $stmt->bindParam(':empID', $user_ID, PDO::PARAM_INT);
-        $stmt->bindParam(':projectID', $projIdInt, PDO::PARAM_INT);
-        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-        $stmt->bindParam(':description', $desc, PDO::PARAM_STR);
-        $stmt->bindParam(':date', $dateInput, PDO::PARAM_STR);
-        $stmt->bindParam(':hours', $hours, PDO::PARAM_INT);
-		if ($stmt->execute())  {
-            header("location: dashboard.php");
-            die();
-        } else {
-            echo "<script type='text/javascript'>alert('request unsucesfull');</script>";
-        }
+		$projectID = intval($currentProjectID);
+		include "add_task.php";
 	}
 	
 	//BETTER ERROR MESSAGE? -------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +129,7 @@
 	<div id="page-header">
 		<div class="d-flex" style="align-items:center;">
 			<div class="p-2">
-				<h1><strong><?php echo $projectsArray[0]["project_title"]; //project name?></strong></h1>
+				<h1><strong><?php echo $projectsArray[0]["project_title"];?></strong></h1>
 			</div>
 			<div class="flex-grow-1 p-2">
 				<div class="progress" style="width: 28%; height: 10px; float:right;">
@@ -169,6 +143,9 @@
 				<small class="text-muted" style="float:right;"><?php echo $teamCompletedTasks.' of '.$totalTeamTasks;?></small>
 			</div>
 		</div>
+	</div>
+	<div class="mb-5">
+		<?php echo $projectsArray[0]["description"];?>
 	</div>
 	<div class="accordion">
 		<?php
@@ -195,14 +172,14 @@
 												data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
 												onclick="stopProp(event)">+ Assign task </button>
 											<form method="post" action="" class="dropdown-menu p-4 pt-3" style="width:256;" onclick="stopProp(event)">
-												<input type="hidden" name="user_ID" value='.$currentUserID.'>
+												<input type="hidden" value='.$currentUserID.' name="employee">
 												<div class="mb-2">
 													<label for="tasktitle-'.$numOfUsersAdded.'" class="form-label">Task Title</label>
-													<input type="text" class="form-control" id="tasktitle-'.$numOfUsersAdded.'" name="tasktitle" required>
+													<input type="text" class="form-control" id="tasktitle-'.$numOfUsersAdded.'" name="title" required>
 												</div>
 												<div class="mb-2">
 													<label for="taskdesc-'.$numOfUsersAdded.'" class="form-label">Task Description</label>
-													<textarea class="form-control" id="taskdesc-'.$numOfUsersAdded.'" name="taskdesc" required></textarea>
+													<textarea class="form-control" id="taskdesc-'.$numOfUsersAdded.'" name="description" required></textarea>
 												</div>
 												<div class="mb-2">
 													<label for="manhours-'.$numOfUsersAdded.'" class="form-label">Estimated Man Hours</label>
@@ -210,7 +187,7 @@
 												</div>
 												<div class="mb-3">
 													<label for="duedate-'.$numOfUsersAdded.'" class="form-label">Due Date</label>
-													<input type="date" class="form-control" id="duedate-'.$numOfUsersAdded.'" name="duedate" placeholder="DD/MM/YYYY" required>
+													<input type="date" class="form-control" id="duedate-'.$numOfUsersAdded.'" name="date" placeholder="DD/MM/YYYY" required>
 												</div>
 												<button type="submit" class="btn btn-primary">Assign Task</button>
 											</form>

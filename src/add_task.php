@@ -27,12 +27,20 @@ function create_task($projectID,$conn) {
 			} else {
 				if ($_SESSION["role"] == "Manager") {
 					$projectID = intval($projectID);
-				} else if ($_SESSION["role"] == "TL") {
+				} else if ($_SESSION["role"] == "TL") {		//checks if team leader leads the input team
 					$result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"].";");
 					$projectsLeadByUser = $result->fetchAll(PDO::FETCH_NUM);
-					//for each project thats returned, check if at least one of these projects is equal to $projectID
-					//james double check this part because i am so tired and i dont know if this will work
-					$projectID = intval($projectID);
+					$teamValidated = false;
+					foreach($projectLeadsByUser as $row) {
+						if ($row[0] == $projectID) {
+							$teamValidated = true;
+							$projectID = intval($projectID);
+							break;
+						}
+					}
+					if (!$teamValidated) {
+						return "Team leader does not have permission to make changes to given team";
+					}
 				}
 			}
 		} else {
