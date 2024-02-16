@@ -1,7 +1,4 @@
 <?php
-//TO DO: ADD A PROJECT DESCRIPTION
-	include "add_task.php";
-
 	try {
 		include "db_connection.php";
 		$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
@@ -26,6 +23,7 @@
 	
 	//adds task to database
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
+		include "add_task.php";
 		$projectID = intval($currentProjectID);
 		create_task($projectID, $conn);
 	}
