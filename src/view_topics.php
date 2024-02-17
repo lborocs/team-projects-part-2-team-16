@@ -143,7 +143,7 @@ include "db_connection.php";
 
 
     <button type="button" class="btn btn-primary input-group mb-3 createPost conButton"
-        onclick="window.location.href='./create_post.php';">Create Topic</button>
+        onclick="window.location.href='./create_post.php';">Create Post</button>
 
 
 
