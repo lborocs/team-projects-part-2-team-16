@@ -1,4 +1,5 @@
 <?php
+// get session variables and connect to db
 session_start();
 try {
 	include "db_connection.php";
@@ -8,16 +9,16 @@ try {
 	header("location: view_topics.php");
 }
 
+// if the user is trying to reply the post
 if (isset($_POST["replyInput"])) {
-	
-
-	$result = $conn->query("SELECT max(response_ID) FROM response");
+	$result = $conn->query("SELECT max(response_ID) FROM response"); // gets an incremented ID for the new response
     $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
     if ($maxID == null) {
         $response_ID = 1;
     } else {
         $response_ID = $maxID[0] + 1;
     }
+
 	$date = date("Y-m-d");
 	$userID = intval($_SESSION["user_ID"]);
 	if (isset($_GET["POST_ID"])) {
@@ -30,6 +31,7 @@ if (isset($_POST["replyInput"])) {
 		header("location: dashboard.php");
 	}
 
+	// uses PDO prepare to coutneract sql injection attempts
 	$replyQuery = $conn->prepare("INSERT INTO response (response_ID, user_ID, post_ID, content, Date) values (:response_ID, :user_ID, :post_ID, :content, Date :date)");
 	$replyQuery->bindParam(":response_ID", $response_ID, PDO::PARAM_INT);
 	$replyQuery->bindParam(":user_ID", $userID, PDO::PARAM_INT);
@@ -39,12 +41,14 @@ if (isset($_POST["replyInput"])) {
 	$replyQuery->execute();
 }
 
+// if the user is trying to delete the post
 if (isset($_POST['deleteID'])) {
 	if (is_numeric($_POST['deleteID'])) {
 		$ID = intval($_POST['deleteID']);
 		$result = $conn->query("select * from posts where post_ID = $ID");
 		$delpost = $result->fetch(PDO::FETCH_ASSOC);
-		if ($delpost['user_ID'] == $_SESSION["user_ID"]){
+		// ensures only managers and the origional poster can delete posts
+		if ($delpost['user_ID'] == $_SESSION["user_ID"] || $_SESSION["role"] == "Manager"){
 			$delQuery = $conn->query("delete from posts where post_ID = $ID;");
 			$delQuery = $conn->query("delete from response where post_ID = $ID;");
 			header("location: ./view_topics.php");
@@ -52,12 +56,14 @@ if (isset($_POST['deleteID'])) {
 	}
 }
 
+// deletes replys
 if (isset($_POST['deleteRplyID'])) {
 	if (is_numeric($_POST['deleteRplyID'])) {
 		$rplyID = intval($_POST['deleteRplyID']);
 		$result = $conn->query("select * from response where response_ID = $rplyID");
 		$rply = $result->fetch(PDO::FETCH_ASSOC);
-		if ($rply['user_ID'] == $_SESSION['user_ID']) {
+		// ensures only managers and the origional poster can delete posts
+		if ($rply['user_ID'] == $_SESSION['user_ID'] || $_SESSION["role"] == "Manager") {
 			$conn->query("delete from response where response_ID = $rplyID");
 		}
 	} 
@@ -72,15 +78,14 @@ if (isset($_POST['deleteRplyID'])) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Post</title>
-	<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7Rxnatzjc6, DSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> -->
+	<link rel="icon" type="image/x-icon" href="./logo.ico">
+	<meta name="theme-color" content="#7952b3">
+	
 	<style>
 		.entry-box {
 			background-color: white;
-			/* border: 1px solid #000; */
 			border-bottom: 1px solid #a3a3a3;
 			border-top: 1px solid #a3a3a3;
-			/* border-radius: 15px; */
 			padding: 0px 15px;
 		}
 
@@ -119,40 +124,29 @@ if (isset($_POST['deleteRplyID'])) {
 		.max-height-100 {
 			max-height: 18vh;
 		}
+
+		.bd-placeholder-img {
+			font-size: 1.125rem;
+			text-anchor: middle;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+		}
+
+		@media (min-width: 768px) {
+			.bd-placeholder-img-lg {
+				font-size: 3.5rem;
+			}
+		}
+
+		.dropdown-item {
+			cursor: pointer;
+		}
 	</style>
-
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Post</title>
-		<link rel="icon" type="image/x-icon" href="./logo.ico">
-		<meta name="theme-color" content="#7952b3">
-
-
-		<style>
-			.bd-placeholder-img {
-				font-size: 1.125rem;
-				text-anchor: middle;
-				-webkit-user-select: none;
-				-moz-user-select: none;
-				user-select: none;
-			}
-
-			@media (min-width: 768px) {
-				.bd-placeholder-img-lg {
-					font-size: 3.5rem;
-				}
-			}
-
-			.dropdown-item {
-				cursor: pointer;
-			}
-		</style>
-	</head>
-
 </head>
 
 <body>
+	<!-- loads the header -->
 	<?php
 	if (!isset($_SESSION["role"])) {
 		echo "<script>window.location.href='./login.php'</script>";
@@ -175,6 +169,7 @@ if (isset($_POST['deleteRplyID'])) {
 		header("location: dashboard.php");
 	}
 
+	// checks if the post ID is set and then loads the post and reply from the DB
 	if (isset($_GET["POST_ID"])) {
 		if (is_numeric($_GET["POST_ID"])) {
 			$ID = intval($_GET["POST_ID"]);
@@ -202,9 +197,12 @@ if (isset($_POST['deleteRplyID'])) {
 	?>
 
 	<div class="container" style="border-left: 1px solid #dee2e6;border-right: 1px solid #dee2e6;padding: 10px 20px;">
+		<!-- back to posts button -->
 		<button type="button" style="margin-top: 10px"class="btn btn-dark" onclick="window.location.href='view_posts.php?Post_topic_ID=<?php echo $post['topic_ID'];?>;'">Back</button>
 		<div class="container">
+			<!-- post container -->
 			<div class="row entry-box my-4">
+				<!-- meta info row (user name, vierws, date, profile pic...) -->
 				<div class="row" style="border-bottom: 1px solid #ccc; margin-bottom: 10px">
 					<div class="col-1 vertical-line d-flex justify-content-center align-items-center">
 						<img src=<?php echo "./" . $post["icon"] . ".png";?> alt="User Icon" class="img-fluid max-width-100 max-height-100 rounded-circle" style="margin: 5px;">
@@ -223,6 +221,7 @@ if (isset($_POST['deleteRplyID'])) {
 						</small></p>
 					</div>
 				</div>
+				<!-- content row (text and image)-->
 				<div class="row" style="border-bottom: 1px solid #ccc; padding-bottom: 11px;">
 					<?php
 					if ($post["img_url"] != null && $post["img_url"] != "null") {
@@ -235,6 +234,7 @@ if (isset($_POST['deleteRplyID'])) {
 				</div>
 
 				<?php
+				// echos buttons for editing and deleting the post if the user is the origional poster or a manager
 				if ($_SESSION["role"] == "Manager" || $_SESSION["user_ID"] == $post["user_ID"]) {
 					$postID = $post["post_ID"];
 					echo "
@@ -254,13 +254,14 @@ if (isset($_POST['deleteRplyID'])) {
 			<h2><?php echo count($replies) ?> Replies</h2>
 
 			<?php
+			// echos a div for each reply, with a button to delete the reply if the user is the origional poster or a manager
 			foreach ($replies as $rply) {
 				echo "<div class='row entry-box my-4 response-row'>";
 				echo "<div class='col'>";
 				echo "<p class='response-number'><small>".$rply["forename"]." ".$rply["surname"]."</small></p>";
 				echo "<p>".$rply["content"]."</p>";
 				
-				if ($rply['user_ID'] == $_SESSION['user_ID']) {
+				if ($rply['user_ID'] == $_SESSION['user_ID'] || $_SESSION["role"] == "Manager") {
 					$rplyID = $rply['response_ID'];
 					echo "
 					<form action='' method='post' id='delRplyForm'>
@@ -276,6 +277,7 @@ if (isset($_POST['deleteRplyID'])) {
 			}
 			?>
 			
+			<!-- reply input -->
 			<form action="" method="post">
 				<div class="input-group">
 					<input name="replyInput" type="text" class="form-control rounded" placeholder="Type reply here..." required 
