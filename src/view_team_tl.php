@@ -1,25 +1,12 @@
 <?php
-	try {
-		include "db_connection.php";
-		$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
-	} catch (PDOException $e) {
-		echo "<script>alert('Failed to connect to database');</script>";
-		exit();
-	}
-	
-	//WILL THIS CREATE ERROR IF USER DOESNT LEAD TEAMS? (I dont think so, but should be tested) -------------------------------------------------------
 	//gets the information of the projects that the user leads
 	$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM  project where team_leader =".$_SESSION["user_ID"]);
 	if (!$result) {
-		echo "Connection Error.";
+		echo "<script>alert('Failed to connect to database');</script>";
 		exit;
 	}
-	$projectsArray = $result->fetchAll(PDO::FETCH_ASSOC);
-	if (count($projectsArray) > 1) {
-		echo "Team leader leads ".count($projectsArray)." teams, not yet implemented. User ID: ".$_SESSION["user_ID"];
-		exit;
-	}
-	$currentProjectID = $projectsArray[0]["project_ID"];
+	$projectData = $result->fetch(PDO::FETCH_ASSOC);
+	$currentProjectID = $projectData["project_ID"];
 	
 	//adds task to database
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -28,14 +15,13 @@
 		create_task($projectID, $conn);
 	}
 	
-	//BETTER ERROR MESSAGE? -------------------------------------------------------------------------------------------------------------------------
 	//gets the list of tasks for the returned project, orders tasks first by user ID to group user tasks together,
 	//then by task progress in order of: in progress, incomplete, complete
 	$result = $conn->query("SELECT tasks.task_ID,tasks.user_ID,users.forename,users.surname,tasks.title,tasks.description,
 		tasks.due_date,tasks.est_hours,tasks.progress FROM tasks INNER JOIN users ON tasks.user_ID = users.user_ID 
 		WHERE tasks.project_ID = ".$currentProjectID." ORDER BY tasks.user_ID, (CASE progress WHEN 1 THEN 1 WHEN 0 THEN 2 ELSE 3 END)");
 	if (!$result) {
-		echo "Connection Error.";
+		echo "<script>alert('Failed to connect to database');</script>";
 		exit;
 	}
 	$taskArray = $result->fetchAll(PDO::FETCH_NUM);
@@ -67,6 +53,10 @@
 		#page-header {
 			padding: 2rem 1rem;
 			margin-bottom: 1rem;
+		}
+		
+		#project-desc {
+			padding: 0rem 1.5rem;
 		}
 		
 		.accordion-button:not(.collapsed) {
@@ -121,15 +111,6 @@
 			border: 2px solid #ffa8a8;
 			margin: 2%;
 		}
-
-		body{
-            display: flex;
-            flex-direction: column;
-        }
-        .HeightShown{
-            flex: 1;
-            min-height: 80vh;
-        }
 	</style>
 </head>
 <body>
@@ -137,7 +118,7 @@
 	<div id="page-header">
 		<div class="d-flex" style="align-items:center;">
 			<div class="p-2">
-				<h1><strong><?php echo $projectsArray[0]["project_title"];?></strong></h1>
+				<h1><strong><?php echo $projectData["project_title"];?></strong></h1>
 			</div>
 			<div class="flex-grow-1 p-2">
 				<div class="progress" style="width: 28%; height: 10px; float:right;">
@@ -152,8 +133,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="mb-5">
-		<?php echo $projectsArray[0]["description"];?>
+	<div class="mb-5" id="project-desc">
+		<?php echo $projectData["description"];?>
 	</div>
 	<div class="accordion">
 		<?php
@@ -245,22 +226,7 @@
 		?>
 	</div>		<?php //closes div class="accordion" ?>
 </div>			<?php //closes div id="page-content" ?>
-<!-- add to-do list -->
-<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
-        style="padding-left: 25px; padding-right: 25px;">
-        <p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
 
-        <a href="/"
-            class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <img src="./logo.png" alt="mdo" width="200" height="50">
-            </svg>
-        </a>
-
-        <div class="justify-content-end">
-            <p>Phone: 01509 888999</p>
-            <p>Email: king@make-it-all.co.uk</p>
-        </div>
-    </footer>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
@@ -276,5 +242,4 @@ function stopProp(event) {
 }
 </script>
 </body>
-
 </html>
