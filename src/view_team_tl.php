@@ -121,6 +121,15 @@
 			border: 2px solid #ffa8a8;
 			margin: 2%;
 		}
+
+		body{
+            display: flex;
+            flex-direction: column;
+        }
+        .HeightShown{
+            flex: 1;
+            min-height: 80vh;
+        }
 	</style>
 </head>
 <body>
@@ -208,8 +217,8 @@
 									<div class="row flex-md-row horizontal-scroll flex-md-nowrap">';
 			}
 			//adds task to user's list of tasks
-			echo '<div class="col-12 col-md-3 mb-3 mb-md-0">
-					<div class="card card-body h-100 taskcard ';
+			echo 						'<div class="col-12 col-md-3 mb-3 mb-md-0">
+											<div class="card card-body h-100 taskcard ';
 			//css class for task
 			if ($task[8] == 0) {
 				echo 'task-incomplete';
@@ -219,26 +228,39 @@
 				echo 'task-completed';
 			}
 			echo '">
-						<a href="./create_task.php?edit_ID='.$task[0].'" class="position-absolute top-0 end-0">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-pencil-square position-absolute top-0 end-0" viewBox="0 0 16 16">
-								<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-								<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-							</svg>
-						</a>
-						<h5 class="card-title">'.$task[4].'</h5>
-						<p class="card-text mb-0">'.$task[5].'</p>
-						<p class="card-text mb-0 mt-auto"><small class="text-muted">Task length: '.$task[7].' hours</small></p>
-						<p class="card-text"><small class="text-muted">Due: '.$task[6].'</small></p>
-					</div>
-				</div>';
+												<a href="./create_task.php?edit_ID='.$task[0].'" class="position-absolute top-0 end-0">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="grey" class="bi bi-pencil-square position-absolute top-0 end-0" viewBox="0 0 16 16">
+														<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+														<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+													</svg>
+												</a>
+												<h5 class="card-title">'.$task[4].'</h5>
+												<p class="card-text mb-0">'.$task[5].'</p>
+												<p class="card-text mb-0 mt-auto"><small class="text-muted">Task length: '.$task[7].' hours</small></p>
+												<p class="card-text"><small class="text-muted">Due: '.$task[6].'</small></p>
+											</div>
+										</div>';
 		}
 		echo '</div></div></div></div></div>';		//ends accordion for final team member
 		?>
-	  
-	  
-	</div>
+	</div>		<?php //closes div class="accordion" ?>
+</div>			<?php //closes div id="page-content" ?>
 <!-- add to-do list -->
-<!-- add footer -->
+<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+        style="padding-left: 25px; padding-right: 25px;">
+        <p class="col-md-4 mb-0 text-body-secondary">© The Make It All Company</p>
+
+        <a href="/"
+            class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <img src="./logo.png" alt="mdo" width="200" height="50">
+            </svg>
+        </a>
+
+        <div class="justify-content-end">
+            <p>Phone: 01509 888999</p>
+            <p>Email: king@make-it-all.co.uk</p>
+        </div>
+    </footer>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
@@ -254,4 +276,5 @@ function stopProp(event) {
 }
 </script>
 </body>
+
 </html>
