@@ -227,7 +227,6 @@ foreach ($taskArray as $task) {
 			?>
 		</div> <?php //closes div class="accordion" 
 				?>
-		<?php include "todo_list.php"; ?>
 	</div> <?php //closes div id="page-content" 
 			?>
 

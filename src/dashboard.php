@@ -2,7 +2,7 @@
 session_start();
 if (!isset($_SESSION["role"])) {
 	header('location: ./login.php');
-	//die();
+	die();
 } else if ($_SESSION["role"] == "Manager") {
 	$taskcreate = "link-dark";
 	$topicview = "link-dark";
