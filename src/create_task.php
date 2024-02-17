@@ -224,6 +224,8 @@
         try {
             $conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
             create_task(null, $conn);
+            header("location: dashboard.php");
+		    die();
         } catch (PDOException $e) {
             echo "<script type='text/javascript'>alert('Failed to connect to database');</script>";
             return false;
