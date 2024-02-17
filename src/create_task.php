@@ -3,6 +3,8 @@
     include "db_connection.php";
     include "add_task.php";
     
+    // this function now in seperate file
+
     // function create_task() {
     //     if (isset($_POST["employee"])){
     //         $empID = $_POST["employee"];
@@ -103,6 +105,7 @@
     //     }
     // }
 
+    // gets the task to be edited from the DB
     function get_edit_task() {
         try {
             include "db_connection.php";
@@ -120,6 +123,7 @@
         return $getTaskQuery->fetch(PDO::FETCH_ASSOC);
     }
 
+    // validates and then commits the changes made to an already existing task
     function editTask() {
         try {
             include "db_connection.php";
@@ -129,6 +133,7 @@
             return false;
         }
 
+        // validation functions defined in add_task.php 
         if (!isset($_POST["edit_ID"])) {
             return; 
         } else if (!is_numeric($_POST["edit_ID"])) {
@@ -175,6 +180,7 @@
         }
     }
 
+    // validates permissions and then deletes a task
     function deleteTask() {
         try {
             include "db_connection.php";
@@ -194,6 +200,7 @@
             if($conn->query("delete from tasks where task_ID = $task_ID") === false) {
                 echo "<script type='text/javascript'>alert('failed to delete the task, an unexpected error occured');</script>";
             }
+        // if the user attempting to delete the task is a team leader they have to be the leader of the projet the task is assigned to 
         } else if ($_SESSION["role"] == "TL") {
             $project_query = $conn->query("select project_ID from tasks where task_ID = $task_ID");
             $result = $project_query->fetch(PDO::FETCH_ASSOC)["project_ID"];
@@ -273,6 +280,7 @@
     <link rel="stylesheet" href="./searchable_dropdown.css">
 </head>
 
+<!-- adds dark mode classes to all elements if dark mode enabled -->
 <script>
     <?php
     if($_SESSION["lightmode"] == 1){
@@ -295,7 +303,7 @@
 
 <body>
     <?php
-    
+    // loads the header if the user has the right perms
     if (!isset($_SESSION["role"])) {
         echo "<script>window.location.href='./login.php'</script>";
     } else if ($_SESSION["role"] == "Manager") {
@@ -309,15 +317,16 @@
         $taskview = "link-dark";
         $dashview = "link-dark";
         include "./navbar_tl.php";
+    } else {
+        header("location: dashboard.php");
     }
     ?>
-
-
 
     <main class="container" style="margin:auto; flex: 70%;">
         <h1 class="my-5"><?php if (isset($editingTask)) {echo "Edit";} else {echo "Assign";}?> Task</h1>
         <form autocomplete="off" method="post" action="">
 
+            <!-- title input -->
             <div class="form-group row">
                 <label for="title" class="col-auto-2 col-form-label" style="margin-left: 0px; margin-right: 0px;">Task Name</label>
                 <div>
@@ -325,11 +334,13 @@
                 </div>
             </div>
 
+            <!-- description  input -->
             <div class="form-group row" style="margin-left: 0px; margin-right: 0px;">
                 <label for="description" style="padding-left: 0px;">Task Description</label>
                 <textarea class="form-control" id="description" name="description" rows="10" placeholder="..." maxlength="1000" required><?php if (isset($editingTask)) {echo $editTaskDesc;}?></textarea>
             </div>
 
+            <!-- task length in hours and due date input -->
             <div style="display: flex;">
                 <div style="flex-direction: row;">
                     <label for="manhours">Estimated Man Hours</label>
@@ -353,13 +364,17 @@
                 echo "Connection Error.";
                 exit;
             }
+            // if a new task is being created, echos the drop down menu to select the project it will be assigned to.
+            // the project of tasks being edited cannot be changed
             if (!isset($editingTask)) {
+                // there is the text input that displays the name of the selected project, and a hidden input which holds the ID for computational use
                 echo "<label class='mr-sm-2' for='projectsearch'>Select Project</label>
                 <br>
                 <div class='dropdown'>
                 <input type='text' placeholder='Search..' id='projectsearch' class='searchbox form-control' style='width: 250px' onkeyup='filterFunction(\"project\")' required>
                 <input type='hidden' id='hiddenprojectsearch' name='project' required>";   
                 
+                // managers can assign tasks to any project, team leader have to be leading the project.
                 if ($_SESSION["role"] == "Manager") {
                     $sql = "SELECT project_title, project_ID FROM  project";
                 }
@@ -377,6 +392,7 @@
                 
                 echo "<div id='projectDropdown' class='dropdown-content' style='width: 250px'>";
                 
+                // for each project a list element is echoed to display the project name and a hidden input which holds the project ID, linked with their ID's
                 $i = 0;
                 foreach ($projectsArray as $project) {
                     echo "<li id='project_li_$i' onmousedown='setSearch(\"project\", \"project_li_$i\")'>$project[0]</li>";
@@ -387,7 +403,7 @@
             }
             ?>
 
-
+            <!-- the drop down to select the user the task will be assigned to, works the same way as the project drop down -->
             <label for="empsearch">Assign to Staff Member</label>
             <br>
             <div class="dropdown">
@@ -422,7 +438,9 @@
                     ?>
                 </div>
             </div>
-
+            
+            <!-- the confirm buttons, if a new task is being created, one button is created to confirm the task creation. 
+                if a task is being edited then two are echod, one to confirm changes one to delete the task -->
             <div class="form-group row">
                 <div class="col-sm-10">
                     <?php
@@ -458,13 +476,11 @@
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
-
 
     <script>
-        // searchable drop downs
+        // searchable drop down functions
+
+        // filters the displayed results in the dropdown based on what the user has typed in the input
         function filterFunction(dropdown) {
             document.getElementById(dropdown + 'search').classList.add("is-invalid");
             document.getElementById(dropdown + 'search').classList.remove("is-valid");
@@ -486,6 +502,7 @@
             }
         }
 
+        // when a list element in the drop down is selected, set the text input and hidden input to the corresponding project title and ID
         function setSearch(dropdown, id) {
             document.getElementById('hidden' + dropdown + 'search').value = document.getElementById('id_' + id).value;
             document.getElementById(dropdown + 'search').value = document.getElementById(id).innerHTML;
@@ -495,6 +512,7 @@
             document.getElementById("submitButton").classList.remove("disabled");
         }
 
+        // if the task is being edited rather than created, use the setSearch function to pre set the emp drop down 
         <?php if (isset($editingTask)) {echo "setSearch('emp', 'emp_li_$setEmpTo')";}?>
     </script>
 
