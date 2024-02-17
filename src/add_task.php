@@ -138,8 +138,7 @@ function create_task($projectID,$conn) {
 	$stmt->bindParam(':hours', $hours, PDO::PARAM_INT);
 	
 	if ($stmt->execute())  {
-		header("location: dashboard.php");
-		die();
+		return;
 	} else {
 		echo "<script>alert('request unsucessful');</script>";
 	}
