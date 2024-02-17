@@ -509,7 +509,11 @@
             document.getElementById(dropdown + 'search').classList.add("is-valid");
             document.getElementById(dropdown + 'search').classList.remove("is-invalid");
             document.getElementById(dropdown + 'Dropdown').classList.remove("show");
-            document.getElementById("submitButton").classList.remove("disabled");
+            if (document.getElementById("empsearch").classList.contains("is-valid")) {
+                if (document.getElementById("projectsearch").classList.contains("is-valid")) {
+                    document.getElementById("submitButton").classList.remove("disabled");
+                }
+            }
         }
 
         // if the task is being edited rather than created, use the setSearch function to pre set the emp drop down 
