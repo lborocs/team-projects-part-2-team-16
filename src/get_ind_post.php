@@ -143,7 +143,29 @@ if (isset($_POST['deleteRplyID'])) {
 			cursor: pointer;
 		}
 	</style>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
 </head>
+
+<script>
+    <?php
+    if($_SESSION["lightmode"] == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark");
+                }
+            });
+        }
+    })
+</script>
 
 <body>
 	<!-- loads the header -->
