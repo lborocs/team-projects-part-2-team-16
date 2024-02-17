@@ -104,7 +104,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     } else if ($days >= 14) {
                                         echo "Due in " . round($days/7) . " weeks";
                                     } else {
-                                        echo "Due in " . $days . " days";
+                                        echo "Due in " . round($days) . " days";
                                     }
                                     echo " on " . $project["due_date"]; ?>
                                 </h6>
