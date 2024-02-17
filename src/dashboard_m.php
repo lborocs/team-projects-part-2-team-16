@@ -15,8 +15,9 @@ if (!$conn) {
     die();
 }
 
-// Select count of number of tasks with progress 1 and count total number (including uncompleted) of tasks, due_date group by project_ID, join project on project_ID and get the project_title and due_date and first 15 characters of description if exists
-$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 15) as description, COUNT(CASE WHEN progress = 1 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID ORDER BY project.due_date ASC;";
+// Select all projects and count the total number of tasks vs completed tasks. 
+// Get around one line of description to avoid overflow.
+$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 33) as description, COUNT(CASE WHEN progress = 1 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID ORDER BY project.due_date ASC;";
 $result = mysqli_execute_query($conn, $sql);
 if (mysqli_num_rows($result) == 0) {
     echo "No projects found.";
@@ -58,7 +59,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     $(document).ready(function() {
         <?php if ($colour == "text-light bg-dark") { ?>
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0){
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
                     $(this).addClass("text-light bg-dark");
                 }
             });
@@ -67,6 +68,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 </script>
 
 <body>
+    <!-- Have content fill the view height of the window -->
     <div class="min-vh-100">
         <main class="container">
             <div class="row py-4">
@@ -98,11 +100,11 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     } else if ($days == 1) {
                                         echo "Due tomorrow";
                                     } else if ($days >= 365) {
-                                        echo "Due in " . round($days/365) . " years";
+                                        echo "Due in " . round($days / 365) . " years";
                                     } else if ($days >= 30) {
-                                        echo "Due in " . round($days/30) . " months";
+                                        echo "Due in " . round($days / 30) . " months";
                                     } else if ($days >= 14) {
-                                        echo "Due in " . round($days/7) . " weeks";
+                                        echo "Due in " . round($days / 7) . " weeks";
                                     } else {
                                         echo "Due in " . round($days) . " days";
                                     }
@@ -111,6 +113,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                                 <?php if ($project["total_tasks"] > 0) {
                                     $completionPercentage = $project["completed_tasks"] / $project["total_tasks"] * 100;
                                 } else {
+                                    // Avoid division by zero
                                     $completionPercentage = 0;
                                 }
                                 ?>
@@ -118,8 +121,16 @@ while ($row = mysqli_fetch_assoc($result)) {
                                     <div class="progress-bar no-dark" style="width: <?php echo $completionPercentage; ?>%"></div>
                                 </div>
                                 <p class="card-text">
-                                    <?php echo $project["description"]; ?>
+                                    <?php if ($project["description"] == "") {
+                                        echo "No description available.";
+                                    } else if (strlen($project["description"]) > 32) {
+                                        // If description is too long, add '...'
+                                        echo $project["description"] . "...";
+                                    } else {
+                                        echo $project["description"];
+                                    } ?>
                                 </p>
+                                <!-- Link to individual project page -->
                                 <a href="view_team.php?project_ID=<?php echo $project["project_ID"]; ?>" class="btn btn-primary stretched-link">View</a>
                             </div>
                         </div>
