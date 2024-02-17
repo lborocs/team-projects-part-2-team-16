@@ -51,7 +51,7 @@
 	<link href="./headers.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 	<?php session_start();
 	//check if session has expired
 	if($_SESSION["expiry"] >= date('m-d-Y')){

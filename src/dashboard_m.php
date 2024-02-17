@@ -68,75 +68,74 @@ while ($row = mysqli_fetch_assoc($result)) {
 </script>
 
 <body>
-    <!-- Have content fill the view height of the window -->
-    <div class="min-vh-100">
-        <main class="container">
-            <div class="row py-4">
-                <div class="col">
-                    <h1>Dashboard</h1>
-                </div>
-                <div class="col">
-                    <div class="d-flex justify-content-end">
-                        <a href="./create_project.php" class="btn btn-primary">Create New Project</a>
-                    </div>
+    <main class="container">
+        <div class="row py-4">
+            <div class="col">
+                <h1>Dashboard</h1>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-end">
+                    <a href="./create_project.php" class="btn btn-primary">Create New Project</a>
                 </div>
             </div>
+        </div>
 
-            <div class="row flex-column flex-md-row">
-                <?php foreach ($array as $project) { ?>
-                    <div class="col col-md-3 mb-3 mb-sm-0">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">
-                                    <?php echo $project["project_title"]; ?>
-                                </h4>
-                                <!-- Convert date into number of days and display as subtitle -->
-                                <h6 class="card-subtitle mb-2 text-secondary no-dark">
-                                    <?php $days = (strtotime($project["due_date"]) - time()) / (60 * 60 * 24);
-                                    if ($days < 0) {
-                                        echo "Overdue by " . abs($days) . " days";
-                                    } else if ($days == 0) {
-                                        echo "Due today";
-                                    } else if ($days == 1) {
-                                        echo "Due tomorrow";
-                                    } else if ($days >= 365) {
-                                        echo "Due in " . round($days / 365) . " years";
-                                    } else if ($days >= 30) {
-                                        echo "Due in " . round($days / 30) . " months";
-                                    } else if ($days >= 14) {
-                                        echo "Due in " . round($days / 7) . " weeks";
-                                    } else {
-                                        echo "Due in " . round($days) . " days";
-                                    }
-                                    echo " on " . $project["due_date"]; ?>
-                                </h6>
-                                <?php if ($project["total_tasks"] > 0) {
-                                    $completionPercentage = $project["completed_tasks"] / $project["total_tasks"] * 100;
+        <div class="row flex-column flex-md-row">
+            <?php foreach ($array as $project) { ?>
+                <div class="col col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                <?php echo $project["project_title"]; ?>
+                            </h4>
+                            <!-- Convert date into number of days and display as subtitle -->
+                            <h6 class="card-subtitle mb-2 text-secondary no-dark">
+                                <?php $days = (strtotime($project["due_date"]) - time()) / (60 * 60 * 24);
+                                if (ceil($days) == -1) {
+                                    echo "Overdue by 1 day";
+                                } else if (ceil($days) < 0) {
+                                    echo "Overdue by " . abs(ceil($days)) . " days";
+                                } else if (ceil($days) == 0) {
+                                    echo "Due today";
+                                } else if (ceil($days) == 1) {
+                                    echo "Due tomorrow";
+                                } else if ($days >= 365) {
+                                    echo "Due in " . ceil($days / 365) . " years";
+                                } else if ($days >= 30) {
+                                    echo "Due in " . ceil($days / 30) . " months";
+                                } else if ($days >= 14) {
+                                    echo "Due in " . ceil($days / 7) . " weeks";
                                 } else {
-                                    // Avoid division by zero
-                                    $completionPercentage = 0;
+                                    echo "Due in " . ceil($days) . " days";
                                 }
-                                ?>
-                                <div class="progress border no-dark" role="progressbar" aria-label="Completion Percentage" aria-valuenow="<?php echo $completionPercentage; ?>" aria-valuemin="0" aria-valuemax="100">
-                                    <div class="progress-bar no-dark" style="width: <?php echo $completionPercentage; ?>%"></div>
-                                </div>
-                                <p class="card-text">
-                                    <?php if ($project["description"] == "") {
-                                        echo "No description available.";
-                                    } else if (strlen($project["description"]) > 32) {
-                                        // If description is too long, add '...'
-                                        echo $project["description"] . "...";
-                                    } else {
-                                        echo $project["description"];
-                                    } ?>
-                                </p>
-                                <!-- Link to individual project page -->
-                                <a href="view_team.php?project_ID=<?php echo $project["project_ID"]; ?>" class="btn btn-primary stretched-link">View</a>
+                                echo " on " . $project["due_date"]; ?>
+                            </h6>
+                            <?php if ($project["total_tasks"] > 0) {
+                                $completionPercentage = $project["completed_tasks"] / $project["total_tasks"] * 100;
+                            } else {
+                                // Avoid division by zero
+                                $completionPercentage = 0;
+                            }
+                            ?>
+                            <div class="progress border no-dark" role="progressbar" aria-label="Completion Percentage" aria-valuenow="<?php echo $completionPercentage; ?>" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar no-dark" style="width: <?php echo $completionPercentage; ?>%"></div>
                             </div>
+                            <p class="card-text">
+                                <?php if ($project["description"] == "") {
+                                    echo "No description available.";
+                                } else if (strlen($project["description"]) > 32) {
+                                    // If description is too long, add '...'
+                                    echo $project["description"] . "...";
+                                } else {
+                                    echo $project["description"];
+                                } ?>
+                            </p>
+                            <!-- Link to individual project page -->
+                            <a href="view_team.php?project_ID=<?php echo $project["project_ID"]; ?>" class="btn btn-primary stretched-link">View</a>
                         </div>
                     </div>
-                <?php } ?>
-            </div>
-        </main>
-    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </main>
 </body>
