@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<html class = "<?php echo $colour;?>">
+
 <head>
     <title>Topics</title>
 
@@ -39,7 +41,6 @@
     <link rel="icon" href="/docs/5.0/assets/img/favicons/favicon.ico">
     <meta name="theme-color" content="#7952b3">
 
-
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;
@@ -65,34 +66,17 @@
         
     </style>
 
-
-
-    <link href="./headers.css" rel="stylesheet">
+ <link href="./headers.css" rel="stylesheet">
 
 </head>
 
-<script>
-    <?php
-    if($_SESSION["lightmode"] == 1){
-		$colour = "text-light bg-dark";
-	}else{
-		$colour = "";
-	}
-    ?>
-    
-    $(document).ready(function() {
-        if ("<?php echo $colour ?>" == "text-light bg-dark") {
-            $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
-                    $(this).addClass("text-light bg-dark");
-                }
-            });
-        }
-    })
-</script>
 
-<body>
+
+<body">
 <div class="HeightShown">
+
+
+
 <?php
 include "db_connection.php";
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -129,7 +113,7 @@ include "db_connection.php";
 				include "./navbar_e.php";
 			}
 		?>
-
+<div class = " <?php echo $colour;?>"> 
 <div class="input-group mb-3 Search con2">
 
 <input id="IDsearch" type="text" name="IDsearch" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
@@ -149,9 +133,12 @@ include "db_connection.php";
 <li>
     <button name="View" class="dropdown-item" type="button" onclick="change('View')">Views</button>
 </li>
+<li>
+    <button name="Project" class="dropdown-item" type="button" onclick="change('Project')">Projects Only</button>
+</li>
 </ul>
 </div>
-
+</div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 
@@ -177,7 +164,8 @@ function AsyncSearch() {
                 data: {
                     search: searchInput,
                     asyncUSER_ID: "<?php echo $_SESSION["user_ID"]; ?>",
-                    asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>" },
+                    asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>" ,
+                    asyncCOLOR: "<?php echo $_SESSION["lightmode"]; ?>"},
                 success: function (response) {
                     $("#async").find(".this-div").html(response);
                 },
@@ -198,7 +186,8 @@ function AsyncSearch() {
                data:
                 {   sortby: sortby, 
                     asyncUSER_ID: "<?php echo $_SESSION["user_ID"]; ?>",
-                    asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>" },
+                    asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>",
+                    asyncCOLOR: "<?php echo $_SESSION["lightmode"]; ?>"},
 
                success:
                 function (response){
@@ -224,6 +213,25 @@ function TopicList($resultA) {
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
+            <div style="height: 20px;position: relative;">
+                <span style="display: inline-block; font-size: 17px;position: absolute; left: -15px;width: 220px;bottom: 15px;">
+                    Specific Project Topic
+                </span>
+                <span style="display: inline-block; font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                    <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
+                    <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
+                </span>
+            </div>
+        </div>
+        </div>
+        <br>';
+}
+
+function NonProject($resultA) {
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+        onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
+        <div style="display: inline-block; width: 100%">
+            <p>' . $resultA["title"] . '</p>
             <div style="float: right;height: 20px;position: relative;">
                 <span style="font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
                     <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
@@ -235,6 +243,7 @@ function TopicList($resultA) {
         <br>';
 }
 
+
 function TopicChecker($resultA, $conn) {
     if (($resultA['project_ID'] !== null)){
         $prjTEST = $resultA['project_ID'];
@@ -244,14 +253,27 @@ function TopicChecker($resultA, $conn) {
             if (($ProjectID_LIST['project_ID'] == $prjTEST)) {
                 if(($_SESSION["role"] == "Manager")){
                     echo TopicList($resultA);
-                } 
+                }
                 else {
                 $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST";
                 $resultProject = mysqli_query($conn, $sqlProject);
                     while($UserID_LIST = mysqli_fetch_assoc($resultProject)){
-                        if (($UserID_LIST['user_ID'] == $_SESSION["user_ID"])) {
-                             echo TopicList($resultA);
+                        if($_SESSION["role"] == "TL"){
+                            $sqlTL = "SELECT team_leader FROM project WHERE project_ID = $prjTEST";
+                            $resultTL = mysqli_query($conn, $sqlTL);
+                            while($TLID_LIST = mysqli_fetch_assoc($resultTL)){
+                                if($_SESSION["user_ID"] == $TLID_LIST["team_leader"]){
+                                    echo TopicList($resultA);
+                                    break 2;
+                                } 
+                            }
+                        }
+                        else  {
+                            if (($UserID_LIST['user_ID'] == $_SESSION["user_ID"])){
+                                echo TopicList($resultA);
                                 break;
+                            }
+                             
                         }
             }
         }
@@ -260,7 +282,7 @@ function TopicChecker($resultA, $conn) {
         }
         
     } else {
-        echo TopicList($resultA);
+        echo NonProject($resultA);
     }
 }
 
@@ -313,7 +335,25 @@ while ($resultA = mysqli_fetch_array($resultTopics)) {
     </footer>
 
 
-
+<script>
+    <?php
+    if($_SESSION["lightmode"] == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark border-light");
+                }
+            });
+        }
+    })
+</script>
 </body>
 
 

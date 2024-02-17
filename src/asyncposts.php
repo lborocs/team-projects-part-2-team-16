@@ -1,4 +1,26 @@
 <?php 
+
+if (isset($_POST['asyncCOLOR'])) {
+  $COLOR = $_POST['asyncCOLOR'];
+}
+
+function PostList($resultA) {
+
+  $PIC = setpic($resultA["img_url"]);
+
+  return '<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+          <div class="card mx-auto">
+          <img src="' . $PIC . '"
+          class="card_img" alt="...">
+          <div class="card-body" style="height: 68px; overflow: hidden;">
+          <p class="card-text mb-0">' . $resultA["title"] . '</p>
+          <a class="stretched-link" href="./view_ind_post_m.php?POST_ID=' . $resultA["post_ID"] . '"></a>
+          </div>
+          </div>
+          </div>'; 
+
+}
+
 include "db_connection.php";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
@@ -26,19 +48,8 @@ if (isset($_POST['search'])) {
   
   while($resultA = mysqli_fetch_array($Result)){
 
-    $PIC = setpic($resultA["img_url"]);
+    echo PostList($resultA);    
 
-    echo '
-        <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-        <div class="card mx-auto">
-        <img src="' . $PIC . '"
-          class="card_img" alt="...">
-        <div class="card-body" style="height: 68px; overflow: hidden;">
-          <p class="card-text mb-0">' . $resultA["title"] . '</p>
-          <a class="stretched-link" href="./view_ind_post_m.php?POST_ID=' . $resultA["post_ID"] . '"></a>
-          </div>
-          </div>
-    </div>';  
   
 }
 
@@ -56,19 +67,9 @@ switch($PHPID){
     $Result = mysqli_query($conn, $sql);
     
     while($resultA = mysqli_fetch_array($Result)){
-      $PIC = setpic($resultA["img_url"]);
 
-    echo '
-    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-    <div class="card mx-auto">
-        <img src="' . $PIC . '"
-          class="card_img" alt="...">
-        <div class="card-body" style="height: 68px; overflow: hidden;">
-          <p class="card-text mb-0">' . $resultA["title"] . '</p>
-          <a class="stretched-link" href="./view_ind_post_m.php?POST_ID=' . $resultA["post_ID"] . '"></a>
-          </div>
-          </div>
-    </div>';
+      echo PostList($resultA);    
+
     
     }
       
@@ -81,19 +82,9 @@ switch($PHPID){
     $Result = mysqli_query($conn, $sql);
     
     while($resultA = mysqli_fetch_array($Result)){
-      $PIC = setpic($resultA["img_url"]);
     
-    echo '
-    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-    <div class="card mx-auto">
-        <img src="' . $PIC . '"
-          class="card_img" alt="...">
-        <div class="card-body" style="height: 68px; overflow: hidden;">
-          <p class="card-text mb-0">' . $resultA["title"] . '</p>
-          <a class="stretched-link" href="./view_ind_post_m.php?POST_ID=' . $resultA["post_ID"] . '"></a>
-          </div>
-          </div>
-    </div>';
+      echo PostList($resultA);    
+
     
     }
         
@@ -104,21 +95,10 @@ switch($PHPID){
     $sql = "SELECT title, content, img_url, post_ID  FROM posts WHERE topic_ID = $INT_ID ORDER BY views DESC";
     $Result = mysqli_query($conn, $sql);
     
-    while($resultA = mysqli_fetch_array($Result)){
-      $PIC = setpic($resultA["img_url"]);
-      
+    while($resultA = mysqli_fetch_array($Result)){      
     
-    echo '
-    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-    <div class="card mx-auto">
-        <img src="' . $PIC . '"
-          class="card_img" alt="...">
-        <div class="card-body" style="height: 68px; overflow: hidden;">
-          <p class="card-text mb-0">' . $resultA["title"] . '</p>
-          <a class="stretched-link" href="./view_ind_post_m.php?POST_ID=' . $resultA["post_ID"] . '"></a>
-          </div>
-          </div>
-    </div>';
+      echo PostList($resultA);    
+
     
     }
         
@@ -131,19 +111,9 @@ switch($PHPID){
   $Result = mysqli_query($conn, $sql);
   
   while($resultA = mysqli_fetch_array($Result)){
-    $PIC = setpic($resultA["img_url"]);
   
-  echo '
-  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-  <div class="card mx-auto">
-      <img src="' . $PIC . '"
-        class="card_img" alt="...">
-      <div class="card-body" style="height: 68px; overflow: hidden;">
-        <p class="card-text mb-0">' . $resultA["title"] . '</p>
-        <a class="stretched-link" href="./view_ind_post_m.php?POST_ID=' . $resultA["post_ID"] . '"></a>
-        </div>
-        </div>
-  </div>';
+    echo PostList($resultA);    
+
   
   }
       
@@ -152,3 +122,22 @@ switch($PHPID){
 
 ?>
 
+<script>
+    <?php
+    if($COLOR == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark border-light");
+                }
+            });
+        }
+    })
+</script>

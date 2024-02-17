@@ -48,26 +48,6 @@
   <link href="./headers.css" rel="stylesheet">
 </head>
 
-<script>
-    <?php
-    if($_SESSION["lightmode"] == 1){
-		$colour = "text-light bg-dark";
-	}else{
-		$colour = "";
-	}
-    ?>
-    
-    $(document).ready(function() {
-        if ("<?php echo $colour ?>" == "text-light bg-dark") {
-            $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
-                    $(this).addClass("text-light bg-dark");
-                }
-            });
-        }
-    })
-</script>
-
 <div class="HeightShown">
 
 <body>
@@ -204,7 +184,8 @@ function AsyncSearch() {
                 url: "asyncposts.php",
                 data: {
                     search: searchInput,
-                    asyncINT_ID: "<?php echo $INT_ID; ?>" },
+                    asyncINT_ID: "<?php echo $INT_ID; ?>" ,
+                    asyncCOLOR: "<?php echo $_SESSION["lightmode"]; ?>"},
                 success: function (response) {
                     $("#async").find(".this-div").html(response);
                 },
@@ -224,7 +205,8 @@ function change(sortby)
             url: "asyncposts.php",
             data:
              {   sortby: sortby,
-                 asyncINT_ID: "<?php echo $INT_ID; ?>" },
+                 asyncINT_ID: "<?php echo $INT_ID; ?>" ,
+                 asyncCOLOR: "<?php echo $_SESSION["lightmode"]; ?>"},
 
             success:
              function (response){
@@ -312,4 +294,23 @@ echo '
         </div>
     </footer>
 
+    <script>
+    <?php
+    if($_SESSION["lightmode"] == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark border-light");
+                }
+            });
+        }
+    })
+</script>
 </body>

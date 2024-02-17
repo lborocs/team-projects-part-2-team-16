@@ -1,5 +1,9 @@
 <?php 
 
+if (isset($_POST['asyncCOLOR'])) {
+    $COLOR = $_POST['asyncCOLOR'];
+}
+
 function TopicList($resultA) {
 
     return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
@@ -181,3 +185,22 @@ switch($PHPID){
 }
 
 ?>
+<script>
+    <?php
+    if($COLOR == 1){
+		$colour = "text-light bg-dark";
+	}else{
+		$colour = "";
+	}
+    ?>
+    
+    $(document).ready(function() {
+        if ("<?php echo $colour ?>" == "text-light bg-dark") {
+            $("*").each(function() {
+                if ($(this).hasClass("no-dark") == false) {
+                    $(this).addClass("text-light bg-dark border-light");
+                }
+            });
+        }
+    })
+</script>
