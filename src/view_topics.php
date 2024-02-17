@@ -113,12 +113,12 @@ include "db_connection.php";
 				include "./navbar_e.php";
 			}
 		?>
-<div class = " <?php echo $colour;?>"> 
+<div> 
 <div class="input-group mb-3 Search con2">
 
 <input id="IDsearch" type="text" name="IDsearch" class="form-control" placeholder="Enter Topic:" aria-label="Text input with dropdown button">
 
-<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sort By</button>
+<button class="btn btn-outline-secondary dropdown-toggle lightB" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sort By</button>
 
 <ul class="dropdown-menu dropdown-menu-end">
 <li>
@@ -152,8 +152,6 @@ include "db_connection.php";
 
 <script>
 
-//window.location.href = window.location.pathname;
-
 function AsyncSearch() {
         var searchInput = $("#IDsearch").val();
 
@@ -167,7 +165,7 @@ function AsyncSearch() {
                     asyncROLE_ID: "<?php echo $_SESSION["role"]; ?>" ,
                     asyncCOLOR: "<?php echo $_SESSION["lightmode"]; ?>"},
                 success: function (response) {
-                    $("#async").find(".this-div").html(response);
+                    $("#async").html(response);
                 },
                 error: function (e) {
                     console.error('Error');
@@ -192,7 +190,7 @@ function AsyncSearch() {
                success:
                 function (response){
 
-                   $("#async").find(".this-div").html(response); 
+                   $("#async").html(response); 
                 },
                error:
                 function (e){                  
@@ -205,19 +203,18 @@ function AsyncSearch() {
 </script>
 
 <div  id="async" class="con1">
-<div class="this-div">
 <?php
 
 function TopicList($resultA) {
-    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl lightB"
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
             <div style="height: 20px;position: relative;">
-                <span style="display: inline-block; font-size: 17px;position: absolute; left: -15px;width: 220px;bottom: 15px;">
-                    Specific Project Topic
+                <span style="display: inline-block; font-size: 17px;position: absolute; left: -70px;width: 220px;bottom: 15px; ">
+                    Project
                 </span>
-                <span style="display: inline-block; font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                <span style="display: inline-block; font-size: 17px;position: absolute;right: 0px;width: 220px;bottom: 15px;">
                     <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
                     <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
                 </span>
@@ -228,7 +225,7 @@ function TopicList($resultA) {
 }
 
 function NonProject($resultA) {
-    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl lightB"
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
@@ -292,12 +289,16 @@ if(isset($_GET['NavbarTopic'])){
 
     $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE '$Topic_search' GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
     $Result = mysqli_query($conn, $sql);
-        
-        while($resultA = mysqli_fetch_array($Result)){
-    
-            TopicChecker($resultA, $conn);
 
+    if(mysqli_num_rows($Result) > 0){
+        while($resultA = mysqli_fetch_array($Result)){
+            TopicChecker($resultA, $conn);
         }
+    } else {
+        echo "Sorry no avalible results for: " . $searchInput;
+    }
+        
+    
 }
 
 
@@ -312,8 +313,6 @@ while ($resultA = mysqli_fetch_array($resultTopics)) {
 }
 }
 ?>
-
-    </div>
     </div>
 
 </div>
@@ -347,13 +346,12 @@ while ($resultA = mysqli_fetch_array($resultTopics)) {
     $(document).ready(function() {
         if ("<?php echo $colour ?>" == "text-light bg-dark") {
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
-                    $(this).addClass("text-light bg-dark border-light");
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
+                    $(this).addClass("text-light bg-dark");
                 }
             });
+            $(".lightB").addClass("border-light");
         }
     })
 </script>
 </body>
-
-

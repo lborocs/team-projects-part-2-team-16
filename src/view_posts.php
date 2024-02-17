@@ -8,13 +8,13 @@
   <link rel="icon" type="image/x-icon" href="./logo.ico">
 
   <style>
-    .card_img {
+  .card_img {
   height: 175px;
   width: 198px;
   border-radius: 3px;
  }
  .title{
-  transform: translate(24%);
+  transform: translate(8%);
  }
  .edit{
   max-width: 21%;
@@ -102,7 +102,7 @@ include "db_connection.php";
 			}
     
 		?>
-<div class = "title col-xs-6 col-sm-6 col-md-4 my-4" >
+<div class = "title col-xl my-4" >
   <h1><?php echo "Topic: " . $TopicTitle; ?></h1>
 </div>
 <div class="input-group mb-3 Search con2">
@@ -187,7 +187,7 @@ function AsyncSearch() {
                     asyncINT_ID: "<?php echo $INT_ID; ?>" ,
                     asyncCOLOR: "<?php echo $_SESSION["lightmode"]; ?>"},
                 success: function (response) {
-                    $("#async").find(".this-div").html(response);
+                    $("#async").html(response);
                 },
                 error: function (e) {
                     console.error('Error');
@@ -210,7 +210,7 @@ function change(sortby)
 
             success:
              function (response){
-                $("#async").find(".this-div").html(response); 
+                $("#async").html(response); 
 
              },
             error:
@@ -223,8 +223,7 @@ function change(sortby)
 
 </script>
 
-  <div id="async" class="container con1">
-  <div class="row mx-auto this-div">
+  <div id="async" class="container con1 row mx-auto">
 
 <?php
 
@@ -275,7 +274,7 @@ echo '
     
 
 ?>
-  </div>
+
   </div>
 </div>
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
@@ -306,7 +305,7 @@ echo '
     $(document).ready(function() {
         if ("<?php echo $colour ?>" == "text-light bg-dark") {
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
                     $(this).addClass("text-light bg-dark border-light");
                 }
             });
