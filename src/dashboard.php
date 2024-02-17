@@ -28,13 +28,14 @@
 		
 		include "./navbar_tl.php";
 		if ($numOfProjectLeads == 0) {
-			echo "Team leader leads no teams, not yet implemented. User ID: ".$_SESSION["user_ID"];
+			echo "<p style='text-align:center;margin: 5rem 2rem'>You currently do not lead any teams.</p>";
 		} else if ($numOfProjectLeads == 1) {
 			include "./view_team_tl.php";
 		} else {
-			echo "Team leader leads ".$numOfProjectLeads." teams, not yet implemented. User ID: ".$_SESSION["user_ID"];
+			include "./view_many_teams_tl.php";
 			exit;
 		}
+		//include to-do list
 		include "./footer.php";
 	
 	} else if ($_SESSION["role"] == "Employee") {
@@ -42,5 +43,6 @@
 		$dashview = "border-bottom border-primary link-primary";
 		include "./navbar_e.php";
 		include "./dashboard_e.php";
+		//include to-do list
 	}
 ?>
