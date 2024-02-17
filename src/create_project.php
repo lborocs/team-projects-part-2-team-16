@@ -1,7 +1,8 @@
 <?php
     session_start();
+    include "add_task.php";
 
-    function create_post() {
+    function create_project() {
         if (isset($_POST["proj_title"])) {
             $projTitle = $_POST["proj_title"];
             if (strlen($projTitle) > 255) {
@@ -70,7 +71,6 @@
         $proj_create_stmt->bindParam(':projTitle', $projTitle, PDO::PARAM_STR);
         $proj_create_stmt->bindParam(':projDate', $projDate, PDO::PARAM_STR);
         $proj_create_stmt->bindParam(':projDescription', $projDescription, PDO::PARAM_STR);
-        // mysqli_query($conn, $projInsertQuery);
         if (!$proj_create_stmt->execute())  {
             echo "<script>alert('request unsucessful');</script>";
             header("location: dashboard.php");
@@ -103,63 +103,86 @@
             header("location: dashboard.php");
             die();
         }
-        for ($i=0; $i <= count($tasksJson); $i++) { 
+        for ($i=0; $i < count($tasksJson); $i++) { 
             $task = $tasksJson[$i];
+            $check = validate_title_desc($task["title"], $task["description"]);
+            if (!$check[0]) {
+                echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+                return;
+            }
+            $title = $task["title"];
+            $description = $task["description"];
 
-            if (isset($task["title"])){
-                $title = $task["title"];
-                if (strlen($title) > 255) {
-                    echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                    continue;
-                }
-            } else {
-                echo "<script type='text/javascript'>alert('Failed to create a task, invalid data entered');</script>";
-                continue;
+            $check = validate_date_time($task["duedate"], $task["hours"]);
+            if (!$check[0]) {
+                echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+                return;
             }
-            if (isset($task["empID"])){
-                $empID = $task["empID"];
-                if (!is_numeric($empID)) {
-                    echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                    continue;
-                } else {
-                    $empID = intval($empID);
-                }
-            } else {
-                echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                continue;
+            $date = $task["duedate"];
+            $hours = intval($task["hours"]);
+
+            $check = validate_user($task["empID"]);
+            if (!$check[0]) {
+                echo "<script>alert('Failed to create the task. One of your input violated input requirments: ".$check[1]."');</script>";
+                return;
             }
-            if (isset($task["description"])) {
-                $description = $task["description"];
-                if (strlen($description) > 1000) {
-                    echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                    continue;
-                }
-            } else {
-                echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                continue;
-            }
-            if (isset($task["duedate"])) {
-                $date = $task["duedate"];
-                if (!date_create_from_format("Y-m-d", $date)) {
-                    echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                    continue;
-                }
-            } else {
-                echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                continue; 
-            }
-            if (isset($task["hours"])) {
-                $hours = $task["hours"];
-                if (!is_numeric($hours)) {
-                    echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                    continue;
-                }else {
-                    $hours = intval($hours);
-                }
-            } else {
-                echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-                continue;
-            }
+            $empID = intval($task["empID"]);
+
+
+            // if (isset($task["title"])){
+            //     $title = $task["title"];
+            //     if (strlen($title) > 255) {
+            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //         continue;
+            //     }
+            // } else {
+            //     echo "<script type='text/javascript'>alert('Failed to create a task, invalid data entered');</script>";
+            //     continue;
+            // }
+            // if (isset($task["empID"])){
+            //     $empID = $task["empID"];
+            //     if (!is_numeric($empID)) {
+            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //         continue;
+            //     } else {
+            //         $empID = intval($empID);
+            //     }
+            // } else {
+            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //     continue;
+            // }
+            // if (isset($task["description"])) {
+            //     $description = $task["description"];
+            //     if (strlen($description) > 1000) {
+            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //         continue;
+            //     }
+            // } else {
+            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //     continue;
+            // }
+            // if (isset($task["duedate"])) {
+            //     $date = $task["duedate"];
+            //     if (!date_create_from_format("Y-m-d", $date)) {
+            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //         continue;
+            //     }
+            // } else {
+            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //     continue; 
+            // }
+            // if (isset($task["hours"])) {
+            //     $hours = $task["hours"];
+            //     if (!is_numeric($hours)) {
+            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //         continue;
+            //     }else {
+            //         $hours = intval($hours);
+            //     }
+            // } else {
+            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
+            //     continue;
+            // }
 
             $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
                                         VALUES (:taskID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
@@ -182,7 +205,7 @@
     }
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (!create_post()) {
+        if (!create_project()) {
             echo "<script type='text/javascript'>alert('Failed to create the task. One of your input violated input requirments');</script>";
         }
     }
@@ -302,8 +325,8 @@ $(document).ready(function() {
                 <br>
                 <div class="dropdown">
                     <input type="text" placeholder="Search.." id="TLsearch" class="searchbox form-control"
-                        onkeyup="filterFunction('TL')" style="width:250px;">
-                    <input type="hidden" id="hiddenTLsearch" name="proj_leader">
+                        onkeyup="filterFunction('TL')" style="width:250px;" required>
+                    <input type="hidden" id="hiddenTLsearch" name="proj_leader" required>
                     <?php
                     include "db_connection.php";
                     $conn = mysqli_connect($servername, $username, $password, $dbname);
