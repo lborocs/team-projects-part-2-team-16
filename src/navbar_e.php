@@ -45,7 +45,7 @@
 </head>
 <!-- This is the employee navigation bar displayed at the top of the majority of pages.
 		The settingsCSS class is used to allow the settingsAsync page to change navbar css without needing to reload the page. -->
-<body>
+<body class="d-flex flex-column min-vh-100">
 	<?php session_start();
 	// collects session data and checks session expiry time
 	if($_SESSION["expiry"] >= date('m-d-Y')){

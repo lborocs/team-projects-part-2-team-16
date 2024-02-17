@@ -9,6 +9,7 @@ if (!isset($_SESSION["role"])) {
 	$dashview = "border-bottom border-primary link-primary";
 	include "./navbar_m.php";
 	include "./dashboard_m.php";
+	include "./footer.php";
 } else if ($_SESSION["role"] == "TL") {
 	$topicview = "link-dark";
 	$taskcreate = "link-dark";
@@ -34,12 +35,11 @@ if (!isset($_SESSION["role"])) {
 		include "./view_many_teams_tl.php";
 		exit;
 	}
-	//include to-do list
 	include "./footer.php";
 } else if ($_SESSION["role"] == "Employee") {
 	$topicview = "link-dark";
 	$dashview = "border-bottom border-primary link-primary";
 	include "./navbar_e.php";
 	include "./dashboard_e.php";
-	//include to-do list
+	include "./footer.php";
 }

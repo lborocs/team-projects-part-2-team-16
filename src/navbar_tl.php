@@ -52,7 +52,7 @@
 </head>
 
 
-<body style = "margin:0px; padding:0px;">
+<body class="d-flex flex-column min-vh-100" style = "margin:0px; padding:0px;">
 <?php session_start();
 	//checks if session has expired
 	if($_SESSION["expiry"] >= date('m-d-Y')){
