@@ -1,28 +1,36 @@
 <?php
-/*Functions for verifying inputs for a task and adding the task to the database (takes the user to dashboard if successful)
+/*Verifies inputs for adding a task and adds the task to the database, takes the user to dashboard if successful
 POST data should have names: employee, title, description, date, manhours, (optional) project
 
-PDO object $conn should be defined before using functions in this file. A session must be created to get the user ID.
+PDO object $conn must be defined before including this file. A session must be created to get the user ID.
 
 If the user is adding a task while viewing a team, $projectID must be defined:
 $projectID : the current project ID if viewing a project
 */
 
-function validate_title_desc() {
-    if (isset($_POST["title"])){		//checks if title is valid
-		if (strlen($_POST["title"]) > 255) {
-			return [false, "Invalid task title"];
+function validate_title_desc($title=null, $desc=null) {
+	if ($title == null) {
+		if (isset($_POST["title"])) {		//checks if title is valid
+			$title = $_POST["title"];
+		} else {
+			return [false, "Invalid task title, not set"];
 		}
-	} else {
-		return [false, "Invalid task title"];
 	}
-	if (isset($_POST["description"])) {				//checks if description is valid
-		if (strlen($_POST["description"]) > 1000) {
+	if (strlen($title) > 255) {
+		return [false, "Invalid task title, too long"];
+	}
+	
+	if ($desc == null) {
+		if (isset($_POST["description"])) {				//checks if description is valid
+			$desc = $_POST["description"];
+		} else {
 			return [false, "Invalid task description"];
 		}
-	} else {
+	}
+	if (strlen($desc) > 1000) {
 		return [false, "Invalid task description"];
 	}
+	
     return [true, ""];
 }
 
@@ -34,7 +42,7 @@ function validate_project($projectID, $conn) {  //checks if project id is valid
             return [false, "Invalid project"];
         }
     } 
-    
+    			
     if (!is_numeric($projectID)) {
         return [false, "Invalid project"];
     } else {
@@ -51,38 +59,52 @@ function validate_project($projectID, $conn) {  //checks if project id is valid
         }
         return [false, "Team leader does not have permission to make changes to given team"];
     }
+    
+	
 }
 
-function validate_date_time() {
-    if (isset($_POST["date"])) {		//checks if due date is valid
-		if (!date_create_from_format("Y-m-d", $_POST["date"])) {
+function validate_date_time($date=null, $hours=null) {
+	if ($date == null) {
+		if (isset($_POST["date"])) {		//checks if due date is valid
+			$date = $_POST["date"];
+		} else {
 			return [false, "Invalid due date"];
 		}
-	} else {
+	}
+	if (!date_create_from_format("Y-m-d", $date)) {
 		return [false, "Invalid due date"];
 	}
-	if (isset($_POST["manhours"])) {	//checks if man hours of task is valid
-		if (!is_numeric($_POST["manhours"]) && $_POST["manhours"] > -1) {
+	
+	if ($hours == null) {
+		if (isset($_POST["manhours"])) {	//checks if man hours of task is valid
+			$hours = $_POST["manhours"];
+		} else {
 			return [false, "Invalid man hours for task"];
-		}else {
-            return [true, ""];
 		}
-	} else {
+	}
+	if (!is_numeric($hours) && $hours > -1) {
 		return [false, "Invalid man hours for task"];
+	}else {
+		return [true, ""];
+	}
+	
+}
+
+function validate_user($userID=null) {
+	if ($userID == null) {
+		if (isset($_POST["employee"])){		//checks if employee id is valid
+			$userID = $_POST["date"];
+		} else {
+			return [false, "Invalid employee"];
+		}
+	}
+	if (!is_numeric($userID)) {
+		return "Invalid employee";
+	} else {
+		return [true, ""];
 	}
 }
 
-function validate_user() {
-    if (isset($_POST["employee"])){		//checks if employee id is valid
-		if (!is_numeric($_POST["employee"])) {
-			return "Invalid employee";
-		} else {
-			return [true, ""];
-		}
-	} else {
-		return [false, "Invalid employee"];
-	}
-}
 
 function create_task($projectID,$conn) {
     // check will always be an array will 2 elements, a bool for if the entry was valid and a string with an error message or empty string if entry is valid
