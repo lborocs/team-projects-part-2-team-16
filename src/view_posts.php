@@ -27,18 +27,25 @@ $INT_ID = (int)$Current_Topic;
 function TopicChecker($resultA, $conn)
 {
     if ($resultA['project_ID'] !== null) {
+		if ($_SESSION["role"] == "Manager") {
+			return;
+		}
         $prjTEST = $resultA['project_ID'];
-        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST AND user_ID = $_SESSION["user_ID"]";
+        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST AND user_ID = ".$_SESSION["user_ID"];
         $resultProject = mysqli_query($conn, $sqlProject);
-        $UserID_LIST = mysqli_fetch_assoc($resultProject)
-        if ($_SESSION["role"] == "Employee") {
-        if ($UserID_LIST['user_ID'] != $_SESSION["user_ID"]) {
-            header("Location: view_topics.php");
-            break;
-                }
-            }
-        }
-      }
+        if (mysqli_fetch_assoc($resultProject)) {
+			return;
+		} elseif ($_SESSION["role"] == "TL") {
+			$sqlProject = "SELECT team_leader FROM project WHERE project_id = $prjTEST";
+			$projectLeader = mysqli_query($conn, $sqlProject);
+			if ($projectLeader == $_SESSION["user_ID"]) {
+				return;
+			}
+		} else {
+			header("Location: view_topics.php");
+			exit();
+		}
+    }
 
 $sqlTopics = "SELECT project_ID FROM topics WHERE topic_ID = $INT_ID";
 $resultTopics = mysqli_query($conn, $sqlTopics);
