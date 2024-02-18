@@ -18,6 +18,7 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
   echo "Connection Error.";
 }
+session_start();
 
 // Obtain the topic ID that the posts are in to be able to display them
 $Current_Topic = $_GET['Post_topic_ID'];
@@ -27,29 +28,17 @@ function TopicChecker($resultA, $conn)
 {
     if ($resultA['project_ID'] !== null) {
         $prjTEST = $resultA['project_ID'];
-        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST";
+        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST AND user_ID = $_SESSION["user_ID"]";
         $resultProject = mysqli_query($conn, $sqlProject);
-        while ($UserID_LIST = mysqli_fetch_assoc($resultProject)) {
-            if ($_SESSION["role"] == "TL") {
-                $sqlTL = "SELECT team_leader FROM project WHERE project_ID = $prjTEST";
-                $resultTL = mysqli_query($conn, $sqlTL);
-                while ($TLID_LIST = mysqli_fetch_assoc($resultTL)) {
-                    // If they are the team leader in charge then they will be able to view that topic relating to the project
-                    if ($_SESSION["user_ID"] != $TLID_LIST["team_leader"]) {
-                        header("Location: view_topics.php");
-                        break 2;
-                    }
-                }
-            } else {
-                // If they are an employee on the project then they will be able to view that topic relating to the project
-                if ($UserID_LIST['user_ID'] != $_SESSION["user_ID"]) {
-                    header("Location: view_topics.php");
-                    break;
+        $UserID_LIST = mysqli_fetch_assoc($resultProject)
+        if ($_SESSION["role"] == "Employee") {
+        if ($UserID_LIST['user_ID'] != $_SESSION["user_ID"]) {
+            header("Location: view_topics.php");
+            break;
                 }
             }
         }
-    }
-}
+      }
 
 $sqlTopics = "SELECT project_ID FROM topics WHERE topic_ID = $INT_ID";
 $resultTopics = mysqli_query($conn, $sqlTopics);
@@ -69,7 +58,7 @@ $TopicTitle = $TopicArray['title'];
 
 <?php
 // Navbar displayed depending on whos logged in
-session_start();
+
 if (!isset($_SESSION["role"])) {
   echo "<script>window.location.href='./login.php'</script>";
 } else if ($_SESSION["role"] == "Manager") {
