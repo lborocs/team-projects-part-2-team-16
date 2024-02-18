@@ -1,14 +1,70 @@
 <?php
-//gets the information of the projects that the user leads
-$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM  project where team_leader =" . $_SESSION["user_ID"]);
+session_start();
+if ($_SESSION["role"] == "TL") {
+	if (isset($_GET["project_ID"])) {		//TL leads many teams, a team was selected
+		//connect to database
+		try {
+			include "db_connection.php";
+			$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+		} catch (PDOException $e) {
+			echo "<script>alert('Failed to connect to database');</script>";
+			exit();
+		}
+		//check if the user leads the given team
+		
+		$currentProjectID = $_GET["project_ID"];
+		echo "<script>console.log('is this running');</script>";
+		$result = $conn->query("SELECT team_leader FROM project WHERE project_ID = $currentProjectID");
+		$queryResult = $result->fetch(PDO::FETCH_NUM);
+		if (!$queryResult) {
+			echo "<script>alert('Project not found');</script>";
+			exit();
+		}
+		$selectedTL = $queryResult[0];
+		if (!$selectedTL == $_SESSION["user_ID"]) {
+			echo "<script>alert('You do not have permission to view this project');</script>";
+			exit();
+		}
+		include "./navbar_tl.php";
+	} elseif (isset($numOfProjectLeads)) {	//has been called from dashboard.php, TL leads 1 team
+		$result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"]);
+		$currentProjectID = $result->fetch(PDO::FETCH_NUM)[0];
+	} else {	//user removed GET data from URL
+		echo "<script>alert('No project was specified');</script>";
+		exit();
+	}
+} elseif ($_SESSION["role"] == "Manager" and isset($_GET["project_ID"])) {
+	//connect to database
+	try {
+		include "db_connection.php";
+		$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+	} catch (PDOException $e) {
+		echo "<script>alert('Failed to connect to database');</script>";
+		exit();
+	}
+	$currentProjectID = $_GET["project_ID"];
+	//check if the given project exists
+	$result = $conn->query("SELECT team_leader FROM project WHERE project_ID = $currentProjectID;");
+	$queryResult = $result->fetch(PDO::FETCH_NUM);
+	if (!$queryResult) {
+		echo "<script>alert('Project not found');</script>";
+		exit();
+	}
+	include "./navbar_m.php";
+} else {
+	echo "<script>alert('Invalid page access');</script>";
+	exit();
+}
+
+//gets the information of the selected project
+$result = $conn->query("SELECT project_title, due_date, description FROM project where project_ID = $currentProjectID");
 if (!$result) {
 	echo "<script>alert('Failed to connect to database');</script>";
 	exit;
 }
 $projectData = $result->fetch(PDO::FETCH_ASSOC);
-$currentProjectID = $projectData["project_ID"];
 
-//adds task to database
+//adds task to database if assign task was used using this page
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	include "add_task.php";
 	$projectID = intval($currentProjectID);
@@ -56,7 +112,7 @@ foreach ($taskArray as $task) {
 			margin-bottom: 1rem;
 		}
 
-		#project-desc {
+		#project-desc, #project-date {
 			padding: 0rem 1.5rem;
 		}
 
@@ -113,6 +169,18 @@ foreach ($taskArray as $task) {
 			margin: 2%;
 		}
 	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		<?php if ($colour == "text-light bg-dark") { ?>
+			$("*").each(function() {
+				if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
+					$(this).addClass("text-light bg-dark");
+				}
+			});
+		<?php } ?>
+	})
+	</script>
 </head>
 
 <body>
@@ -123,8 +191,8 @@ foreach ($taskArray as $task) {
 					<h1><strong><?php echo $projectData["project_title"]; ?></strong></h1>
 				</div>
 				<div class="flex-grow-1 p-2">
-					<div class="progress" style="width: 28%; height: 10px; float:right;">
-						<div class="progress-bar" role="progressbar" <?php echo 'style="width: ' . (($teamCompletedTasks / $totalTeamTasks) * 100) . '%;" aria-valuenow="' . (($teamCompletedTasks / $totalTeamTasks) * 100) . '"';
+					<div class="progress no-dark" style="width: 28%; height: 10px; float:right;">
+						<div class="progress-bar no-dark" role="progressbar" <?php echo 'style="width: ' . (($teamCompletedTasks / $totalTeamTasks) * 100) . '%;" aria-valuenow="' . (($teamCompletedTasks / $totalTeamTasks) * 100) . '"';
 																		//progress bar for team
 																		?> aria-valuemin="0" aria-valuemax="100"></div>
 					</div>
@@ -133,6 +201,9 @@ foreach ($taskArray as $task) {
 					<small class="text-muted" style="float:right;"><?php echo $teamCompletedTasks . ' of ' . $totalTeamTasks; ?></small>
 				</div>
 			</div>
+		</div>
+		<div id="project-date">
+			<?php echo $projectData["due_date"]; ?>
 		</div>
 		<div class="mb-5" id="project-desc">
 			<?php echo $projectData["description"]; ?>
@@ -184,8 +255,8 @@ foreach ($taskArray as $task) {
 										</div>
 									</div>
 								</div>
-								<div class="progress memberprogress" style="width: 20%; height: 10px;">
-									<div class="progress-bar" role="progressbar"
+								<div class="progress memberprogress no-dark" style="width: 20%; height: 10px;">
+									<div class="progress-bar" role="progressbar no-dark"
 										style="width: ' . (($usersProgress[$currentUserID][0] / $usersProgress[$currentUserID][1]) * 100) . '%;"
 										aria-valuenow="' . (($usersProgress[$currentUserID][0] / $usersProgress[$currentUserID][1]) * 100) . '"
 										aria-valuemin="0" aria-valuemax="100"></div>
@@ -229,9 +300,7 @@ foreach ($taskArray as $task) {
 				?>
 	</div> <?php //closes div id="page-content" 
 			?>
-
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<?php include "./footer.php"; ?>
 	<script>
 		function toggleAccordion(collapseNum) {
 			if (!$("#collapse" + collapseNum).hasClass("collapsing")) {
