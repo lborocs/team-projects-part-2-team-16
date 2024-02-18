@@ -1,7 +1,7 @@
 <?php 
 session_start();
 
-
+// validates input and creates the new post
 function createPost() {
     try {
         include "db_connection.php";
@@ -127,6 +127,8 @@ function createPost() {
         return true;
     }
 }
+
+// gets the post the user wants to edit from the DB
 function get_edit_post() {
     try {
         include "db_connection.php";
@@ -144,6 +146,7 @@ function get_edit_post() {
     return $getPostQuery->fetch(PDO::FETCH_ASSOC);
 }
 
+// validates and then commits changes to the post
 function editPost() {
     try {
         include "db_connection.php";
@@ -291,7 +294,7 @@ if (isset($_POST["submitButton"])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post</title>
+    <title><?php if (isset($editingTask)) {echo "Edit";} else {echo "Create";}?> Post</title>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
@@ -314,6 +317,7 @@ if (isset($_POST["submitButton"])) {
     <link rel="stylesheet" href="./searchable_dropdown.css">
 </head>
 
+<!-- applies dark mode classes to all elements if dark mode is enabled -->
 <script>
     <?php
     if($_SESSION["lightmode"] == 1){
@@ -335,15 +339,7 @@ if (isset($_POST["submitButton"])) {
 </script>
 
 <body>
-    <script>
-		function settings() {
-			window.location.href = "./settings_m.html";
-		};
-		function logout() {
-			window.location.href = "./login.html";
-		};
-	</script>
-	
+    <!-- loads the header -->
     <?php 
         if(!isset($_SESSION["role"])){
             echo "<script>window.location.href='./login.php'</script>";
@@ -370,6 +366,7 @@ if (isset($_POST["submitButton"])) {
         <h1 class="my-5"><?php if (isset($editingPost)) {echo "Edit Post";} else {echo "Create Post";}?></h1>
         <div class="d-flex flex-wrap">
             <form class="col-md-8" autocomplete="off" method="post" action="#" enctype="multipart/form-data">
+                <!-- title input -->
                 <div class="form-group row">
                     <label for="postTitle" class="col-auto-2 col-form-label" style="margin-left: 0px; margin-right: 0px;">Title</label>
                     <div class="col-auto-10">
@@ -378,6 +375,7 @@ if (isset($_POST["submitButton"])) {
                     </div>
                 </div>
 
+                <!-- post body input -->
                 <div class="form-group row" style="margin-left: 0px; margin-right: 0px;">
                     <label for="postBody" style="padding-left: 0px;">Body</label>
                     <textarea name="postBody" class="form-control" id="postBody" rows="10" placeholder="..." required><?php if (isset($editingPost)) {echo $editPostcontent;} else {echo null;} ?></textarea>
@@ -385,12 +383,14 @@ if (isset($_POST["submitButton"])) {
 
                 <br>
 
+                <!-- file select input for including an image -->
                 <div class="form-group">
                     <label for="imageInput">Include a picture? (Optional)</label>
                     <input name="imageInput" type="file" class="form-control" id="imageInput" accept=".png,.jpg,.jpeg,.ico" onchange=displayImage(this)>
                     <input type="hidden" name="imageChanged" id="imageChanged" value=0>
                 </div>
 
+                <!-- image preview, if a file has been selected -->
                 <div id="imageContainer" style="margin: 10px auto; display: <?php if (isset($editingPost) && $editingPost["img_url"] != "null") {echo "block";} else {echo "none";} ?>; width: 50%">
                     <p style="margin: 5px;"><b><u>Image Preview</u></b></p>
                     <div style="border: 10px solid #797676; border-radius: 17px; text-align: center;">
@@ -398,10 +398,10 @@ if (isset($_POST["submitButton"])) {
                             src="<?php if (isset($editingPost)) {echo $editPostUrl;} else {echo "#";} ?>">
                     </div>
                 </div>
-                    
 
                 <br>
 
+                <!-- selecting a topic the post is related to -->
                 <label class="mr-sm-2" for="topicSelect">Select Post Topic</label>
                 <div style="margin: 5px 0px">
                     <div class="form-row align-items-center row">
@@ -411,22 +411,27 @@ if (isset($_POST["submitButton"])) {
                             <?php
                             include "db_connection.php";
                             $conn = mysqli_connect($servername, $username, $password, $dbname);
-                            $sql = 'SELECT title, topic_ID FROM topics';
+                            $user_ID = $_SESSION['user_ID'];
+                            $sql = "select * from topics where project_ID is null or project_ID in (select project_ID from tasks where user_ID = $user_ID) or project_ID in (select project_ID from project where team_leader = $user_ID);";
                             $result = mysqli_query($conn, $sql);
                             if (!$result) {
                                 echo "Connection Error.";
                                 exit;
                             }
-                            $topicArray = mysqli_fetch_all($result);
+                            $topicArray = mysqli_fetch_all($result, MYSQLI_ASSOC);
                             ?>
                             <div id="topicDropdown" class="dropdown-content" style="width: 250px;">
                                 <?php
                                 $i = 0;
                                 foreach ($topicArray as $topic) {
-                                    echo "<li id='topic_li_$i' onmousedown='setSearch(\"topic\", \"topic_li_$i\")'>$topic[0]</li>";
-                                    echo "<input type='hidden' id='id_topic_li_$i' value='$topic[1]'>";
+                                    echo "<li id='topic_li_$i' onmousedown='setSearch(\"topic\", \"topic_li_$i\")'>".$topic['title']."</li>";
+                                    echo "<input type='hidden' id='id_topic_li_$i' value='".$topic["topic_ID"]."'>";
                                     if (isset($editingPost)) {
-                                        if ($editingPost["topic_ID"] == $topic[1]) {
+                                        if ($editingPost["topic_ID"] == $topic["topic_ID"]) {
+                                            $setTopicTo = $i;
+                                        }
+                                    } else if (isset($_GET['topic_ID'])) {
+                                        if ($_GET["topic_ID"] == $topic["topic_ID"]) {
                                             $setTopicTo = $i;
                                         }
                                     }
@@ -435,6 +440,7 @@ if (isset($_POST["submitButton"])) {
                                 ?>
                             </div>
                         </div>
+                        <!-- the toggle button for creating a new topic, toggles the text input below it -->
                         <div class="col-auto">or</div>
                         <div class="col-auto">
                             <button type="button" class="btn btn-outline-secondary" onclick="toggleNewTopic()">Create New Topic</button>
@@ -445,7 +451,7 @@ if (isset($_POST["submitButton"])) {
 
                 </div>
 
-                
+                <!-- submit buttons -->
                 <div class="form-group row">
                     <div class="col-sm-10">
                         <?php
@@ -523,12 +529,14 @@ if (isset($_POST["submitButton"])) {
     }
 
     function setSearch(dropdown, id) {
-        document.getElementById('hidden' + dropdown + 'search').value = document.getElementById('id_' + id).value;
-        document.getElementById(dropdown + 'search').value = document.getElementById(id).innerHTML;
-        document.getElementById(dropdown + 'search').classList.add("is-valid");
-        document.getElementById(dropdown + 'search').classList.remove("is-invalid");
-        document.getElementById(dropdown + 'Dropdown').classList.remove("show");
-        document.getElementById("submitButton").classList.remove("disabled");
+        if (document.getElementById('id_' + id)) {
+            document.getElementById('hidden' + dropdown + 'search').value = document.getElementById('id_' + id).value;
+            document.getElementById(dropdown + 'search').value = document.getElementById(id).innerHTML;
+            document.getElementById(dropdown + 'search').classList.add("is-valid");
+            document.getElementById(dropdown + 'search').classList.remove("is-invalid");
+            document.getElementById(dropdown + 'Dropdown').classList.remove("show");
+            document.getElementById("submitButton").classList.remove("disabled");
+        }
     }
 
     function toggleNewTopic() {
@@ -547,6 +555,7 @@ if (isset($_POST["submitButton"])) {
         }
     }
 
-    <?php if (isset($editingPost)) {echo "setSearch('topic', 'topic_li_$setTopicTo')";}?>
+    <?php if(isset($editingPost)) {echo "setSearch('topic', 'topic_li_$setTopicTo')";}?>
+    <?php if(isset($_GET["topic_ID"])) {echo "setSearch('topic', 'topic_li_$setTopicTo')";} ?>
     
 </script>
