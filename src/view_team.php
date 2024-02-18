@@ -1,4 +1,8 @@
 <?php
+<<<<<<< HEAD
+//gets the information of the projects that the user leads
+$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM project where team_leader =" . $_SESSION["user_ID"]);
+=======
 session_start();
 if ($_SESSION["role"] == "TL") {
 	if (isset($_GET["project_ID"])) {		//TL leads many teams, a team was selected
@@ -58,6 +62,7 @@ if ($_SESSION["role"] == "TL") {
 
 //gets the information of the selected project
 $result = $conn->query("SELECT project_title, due_date, description FROM project where project_ID = $currentProjectID");
+>>>>>>> 3fdcd2e445e6112ee2d6c28f5e24f894116b727d
 if (!$result) {
 	echo "<script>alert('Failed to connect to database');</script>";
 	exit;

@@ -8,7 +8,6 @@ function handleError($errno, $errstr)
     echo "<b>Error:</b> [$errno] $errstr";
     die();
 }
-
 ?>
 <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -39,11 +38,14 @@ function handleError($errno, $errstr)
 
 <script>
     function getTasks() {
-        $.post("get_tasks.php", {
+        $.post("get_tasks", {
             user_ID: <?php echo $_SESSION["user_ID"] ?>
         }, function(response) {
-            response = JSON.parse(response);
-
+            try {
+                response = JSON.parse(response);
+            } catch (error) {
+                alert(response);
+            }
             var incompleteTasks = response["incompleteTasks"];
             if (incompleteTasks.length == 0) {
                 $("#incomplete").html("<h3>All tasks complete. Well done!</h3>");
