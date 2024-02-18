@@ -220,7 +220,7 @@ if (isset($_POST['deleteRplyID'])) {
 
 	<div class="container" style="border-left: 1px solid #dee2e6;border-right: 1px solid #dee2e6;padding: 10px 20px;">
 		<!-- back to posts button -->
-		<button type="button" style="margin-top: 10px"class="btn btn-dark" onclick="window.location.href='view_posts.php?Post_topic_ID=<?php echo $post['topic_ID'];?>;'">Back</button>
+		<button type="button" style="margin-top: 10px"class="btn btn-dark" onclick="window.location.href='view_posts.php?Post_topic_ID=<?php echo $post['topic_ID'];?>'">Back</button>
 		<div class="container">
 			<!-- post container -->
 			<div class="row entry-box my-4">

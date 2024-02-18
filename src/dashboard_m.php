@@ -17,7 +17,7 @@ if (!$conn) {
 
 // Select all projects and count the total number of tasks vs completed tasks. 
 // Get around one line of description to avoid overflow.
-$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 33) as description, COUNT(CASE WHEN progress = 1 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID ORDER BY project.due_date ASC;";
+$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 33) as description, COUNT(CASE WHEN progress = 2 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID ORDER BY project.due_date ASC;";
 $result = mysqli_execute_query($conn, $sql);
 if (mysqli_num_rows($result) == 0) {
     echo "No projects found.";

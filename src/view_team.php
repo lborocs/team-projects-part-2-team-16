@@ -1,6 +1,6 @@
 <?php
 //gets the information of the projects that the user leads
-$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM  project where team_leader =" . $_SESSION["user_ID"]);
+$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM project where team_leader =" . $_SESSION["user_ID"]);
 if (!$result) {
 	echo "<script>alert('Failed to connect to database');</script>";
 	exit;
