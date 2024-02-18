@@ -48,8 +48,8 @@ if (isset($_POST['search'])) {
   $searchInput = $_POST['search'];
   $Topic_search = '%' . $searchInput . '%';
 
-  $sql = "SELECT title, content, img_url, post_ID, topic_ID  FROM posts WHERE (topic_ID = $INT_ID) AND (LOWER(title) LIKE '$Topic_search') ORDER BY title ASC";
-  $Result = mysqli_query($conn, $sql);
+  $sql = "SELECT title, content, img_url, post_ID, topic_ID  FROM posts WHERE (topic_ID = $INT_ID) AND (LOWER(title) LIKE ?) ORDER BY title ASC";
+  $Result = mysqli_execute_query($conn, $sql, array($Topic_search));
   
   if(mysqli_num_rows($Result) > 0){
     while($resultA = mysqli_fetch_array($Result)){
