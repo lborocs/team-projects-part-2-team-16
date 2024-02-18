@@ -24,36 +24,43 @@ session_start();
 $Current_Topic = $_GET['Post_topic_ID'];
 $INT_ID = (int)$Current_Topic;
 
-function TopicChecker($resultA, $conn)
-{
-    if ($resultA['project_ID'] !== null) {
+function TopicChecker($topicID,$topicProjectID, $conn) {
+	//if user has permission to view post, returns
+	//if user does not have permission, redirects to view_topics
+	
+	//if topic does not exist
+	if ($topicID == null) {
+		header("Location: view_topics.php");
+		exit();
+	}
+    if ($topicProjectID !== null) {				//if topic has a project assigned to it
 		if ($_SESSION["role"] == "Manager") {
 			return;
 		}
-        $prjTEST = $resultA['project_ID'];
-        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST AND user_ID = ".$_SESSION["user_ID"];
+		//checks if user has a task in the given project
+        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $topicProjectID AND user_ID = ".$_SESSION["user_ID"];
         $resultProject = mysqli_query($conn, $sqlProject);
         if (mysqli_fetch_assoc($resultProject)) {
 			return;
-		} elseif ($_SESSION["role"] == "TL") {
-			$sqlProject = "SELECT team_leader FROM project WHERE project_id = $prjTEST";
-			$projectLeader = mysqli_query($conn, $sqlProject);
+		} elseif ($_SESSION["role"] == "TL") {		//checks if team leader leads project
+			$sql = "SELECT team_leader FROM project WHERE project_id = $topicProjectID";
+			$projectLeader = mysqli_fetch_array(mysqli_query($conn, $sql))[0];
 			if ($projectLeader == $_SESSION["user_ID"]) {
 				return;
 			}
+			header("Location: view_topics.php");
+			exit();
 		} else {
 			header("Location: view_topics.php");
 			exit();
 		}
     }
-
-$sqlTopics = "SELECT project_ID FROM topics WHERE topic_ID = $INT_ID";
-$resultTopics = mysqli_query($conn, $sqlTopics);
-
-while ($resultA = mysqli_fetch_array($resultTopics)) {
-    TopicChecker($resultA, $conn);
 }
 
+$sqlTopics = "SELECT topic_ID, project_ID FROM topics WHERE topic_ID = $INT_ID";
+$result = mysqli_query($conn, $sqlTopics);
+$topicIdProj = mysqli_fetch_array($result);
+TopicChecker($topicIdProj[0],$topicIdProj[1],$conn);
 
 // Obtain topic name to Display topic name at the top of the page
 $sqlTopicName = "SELECT title FROM topics WHERE topic_ID = $INT_ID";
