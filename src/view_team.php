@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-//gets the information of the projects that the user leads
-$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM project where team_leader =" . $_SESSION["user_ID"]);
-=======
 session_start();
 if ($_SESSION["role"] == "TL") {
 	if (isset($_GET["project_ID"])) {		//TL leads many teams, a team was selected
@@ -29,6 +25,9 @@ if ($_SESSION["role"] == "TL") {
 			echo "<script>alert('You do not have permission to view this project');</script>";
 			exit();
 		}
+		$taskcreate = "link-dark";
+		$topicview = "link-dark";
+		$dashview = "link-dark";
 		include "./navbar_tl.php";
 	} elseif (isset($numOfProjectLeads)) {	//has been called from dashboard.php, TL leads 1 team
 		$result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"]);
@@ -54,6 +53,9 @@ if ($_SESSION["role"] == "TL") {
 		echo "<script>alert('Project not found');</script>";
 		exit();
 	}
+	$taskcreate = "link-dark";
+	$topicview = "link-dark";
+	$dashview = "link-dark";
 	include "./navbar_m.php";
 } else {
 	echo "<script>alert('Invalid page access');</script>";
@@ -62,7 +64,6 @@ if ($_SESSION["role"] == "TL") {
 
 //gets the information of the selected project
 $result = $conn->query("SELECT project_title, due_date, description FROM project where project_ID = $currentProjectID");
->>>>>>> 3fdcd2e445e6112ee2d6c28f5e24f894116b727d
 if (!$result) {
 	echo "<script>alert('Failed to connect to database');</script>";
 	exit;
@@ -102,6 +103,11 @@ foreach ($taskArray as $task) {
 		$teamCompletedTasks++;
 		$usersProgress[$currentUserID][0]++;
 	}
+}
+if ($totalTeamTasks == 0) {
+	$teamProgress = 0;
+} else {
+	$teamProgress = (($teamCompletedTasks / $totalTeamTasks) * 100);
 }
 ?>
 <html>
@@ -197,7 +203,7 @@ foreach ($taskArray as $task) {
 				</div>
 				<div class="flex-grow-1 p-2">
 					<div class="progress no-dark" style="width: 28%; height: 10px; float:right;">
-						<div class="progress-bar no-dark" role="progressbar" <?php echo 'style="width: ' . (($teamCompletedTasks / $totalTeamTasks) * 100) . '%;" aria-valuenow="' . (($teamCompletedTasks / $totalTeamTasks) * 100) . '"';
+						<div class="progress-bar no-dark" role="progressbar" <?php echo 'style="width: '.$teamProgress.'%;" aria-valuenow="'.$teamProgress.'"';
 																		//progress bar for team
 																		?> aria-valuemin="0" aria-valuemax="100"></div>
 					</div>
@@ -208,13 +214,16 @@ foreach ($taskArray as $task) {
 			</div>
 		</div>
 		<div id="project-date">
-			<?php echo $projectData["due_date"]; ?>
+			<?php echo "Due: ".$projectData["due_date"]; ?>
 		</div>
 		<div class="mb-5" id="project-desc">
 			<?php echo $projectData["description"]; ?>
 		</div>
 		<div class="accordion">
 			<?php
+			if ($totalTeamTasks == 0) {
+				echo "<p style='text-align:center;margin: 5rem 2rem'>This project does not have any tasks.</p>";
+			}
 			$numOfUsersAdded = 0;
 			$currentUserID = 0;
 			foreach ($taskArray as $task) {
