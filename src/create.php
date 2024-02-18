@@ -116,6 +116,7 @@ A user must have a password which meets requiremetns, as well as an invite code 
                   nameStatus.className = 'valid-feedback';
                   nameField.className = 'form-control is-valid';
                 } else {
+                  //n is used to determine whether we are accessing a first or lastname
                   if (n){
                     nameStatus.textContent = 'Please provide a valid name. (no non-alphabet characters)';
                   }else{
