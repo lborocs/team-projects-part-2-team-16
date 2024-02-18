@@ -9,6 +9,7 @@
 		$dashview = "border-bottom border-primary link-primary";
 		include "./navbar_m.php";
 		include "./dashboard_m.php";
+		include "./footer.php";
 		
 	} else if ($_SESSION["role"] == "TL") {
 		$topicview = "link-dark";
@@ -41,5 +42,6 @@
 		$dashview = "border-bottom border-primary link-primary";
 		include "./navbar_e.php";
 		include "./dashboard_e.php";
+		include "./footer.php";
 	}
 ?>
