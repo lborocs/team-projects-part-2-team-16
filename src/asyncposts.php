@@ -46,12 +46,17 @@ if (isset($_POST['search'])) {
   $sql = "SELECT title, content, img_url, post_ID, topic_ID  FROM posts WHERE (topic_ID = $INT_ID) AND (LOWER(title) LIKE '$Topic_search') ORDER BY title ASC";
   $Result = mysqli_query($conn, $sql);
   
-  while($resultA = mysqli_fetch_array($Result)){
+  if(mysqli_num_rows($Result) > 0){
+    while($resultA = mysqli_fetch_array($Result)){
+      echo PostList($resultA);
+    }
+    } else {
 
-    echo PostList($resultA);    
+      echo "<div style='text-align: center;'>";
+      echo "Sorry no available results for: " . $searchInput;
+      echo "</div>";
 
-  
-}
+    }
 
 }
 
@@ -134,8 +139,8 @@ switch($PHPID){
     $(document).ready(function() {
         if ("<?php echo $colour ?>" == "text-light bg-dark") {
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
-                    $(this).addClass("text-light bg-dark border-light");
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
+                    $(this).addClass("text-light bg-dark");
                 }
             });
         }

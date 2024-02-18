@@ -14,7 +14,7 @@
 
   <body> -->
 
-  <?php
+<?php
 include "db_connection.php";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
@@ -151,7 +151,7 @@ if (!isset($_SESSION["role"])) {
       } else {
       ?>
 
-        <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton no-dark" onclick="window.location.href='./create_post.php?topic_ID=<?php echo $Current_Topic ?>';">Create Post</button>
+        <button type="button" class="btn btn-primary input-group no-dark" onclick="window.location.href='./create_post.php?topic_ID=<?php echo $Current_Topic ?>';">Create Post</button>
 
       <?php
       }
@@ -234,27 +234,33 @@ if (!isset($_SESSION["role"])) {
       $sql = "SELECT title, content, img_url, post_ID  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
       $Result = mysqli_query($conn, $sql);
 
-      while ($resultA = mysqli_fetch_array($Result)) {
-
-        if ($resultA["img_url"] == 'null') {
-          $PIC = "grey.png";
-        } else {
-          $PIC = $resultA["img_url"];
+      if(mysqli_num_rows($Result) > 0){
+        while($resultA = mysqli_fetch_array($Result)){
+          if ($resultA["img_url"] == 'null') {
+            $PIC = "grey.png";
+          } else {
+            $PIC = $resultA["img_url"];
+          }
+  
+          echo '
+  <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
+  <div class="card mx-auto">
+      <img src="' . $PIC . '"
+        class="card_img" alt="...">
+      <div class="card-body" style="height: 68px; overflow: hidden;">
+        <p class="card-text mb-0">' . $resultA["title"] . '</p>
+        <a class="stretched-link" href="./get_ind_post.php?POST_ID=' . $resultA["post_ID"] . '"></a>
+        </div>
+        </div>
+  </div>';
         }
-
-        echo '
-<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 ">
-<div class="card mx-auto">
-    <img src="' . $PIC . '"
-      class="card_img" alt="...">
-    <div class="card-body" style="height: 68px; overflow: hidden;">
-      <p class="card-text mb-0">' . $resultA["title"] . '</p>
-      <a class="stretched-link" href="./get_ind_post.php?POST_ID=' . $resultA["post_ID"] . '"></a>
-      </div>
-      </div>
-</div>';
-      }
-
+        } else {
+    
+          echo "<div style='text-align: center;'>";
+          echo "Sorry no available results";
+          echo "</div>";
+    
+        }
 
       ?>
     </div>

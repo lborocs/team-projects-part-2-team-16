@@ -147,8 +147,8 @@
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
             <div style="height: 20px;position: relative;">
-                <span style="display: inline-block; font-size: 17px;position: absolute; left: -15px;width: 220px;bottom: 15px;">
-                    Specific Project Topic
+                <span style="display: inline-block; font-size: 17px;position: absolute; left: -70px;width: 220px;bottom: 15px;">
+                    Project
                 </span>
                 <span style="display: inline-block; font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
                     <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
@@ -223,10 +223,14 @@
                     $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE '$Topic_search' GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
                     $Result = mysqli_query($conn, $sql);
 
-                    while ($resultA = mysqli_fetch_array($Result)) {
-
-                        TopicChecker($resultA, $conn);
+                    if(mysqli_num_rows($Result) > 0){
+                        while($resultA = mysqli_fetch_array($Result)){
+                            TopicChecker($resultA, $conn);
+                        }
+                    } else {
+                        echo "Sorry no avalible results for: " . $searchInput;
                     }
+
                 } else {
                     $sqlTopics = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
                     $resultTopics = mysqli_query($conn, $sqlTopics);
