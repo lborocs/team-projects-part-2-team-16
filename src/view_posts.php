@@ -254,7 +254,7 @@ if (!isset($_SESSION["role"])) {
 
       ?>
     </div>
-</div>
+
 </div>
 
 <!-- Display the footer at the bottom of the page -->
