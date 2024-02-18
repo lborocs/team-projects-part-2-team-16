@@ -1,9 +1,10 @@
 <?php 
-
+// Obtain the light/dark mode choice
 if (isset($_POST['asyncCOLOR'])) {
   $COLOR = $_POST['asyncCOLOR'];
 }
 
+// PostList displays the posts in the topic they get as cards contianing the photo and post title.
 function PostList($resultA) {
 
   $PIC = setpic($resultA["img_url"]);
@@ -21,16 +22,19 @@ function PostList($resultA) {
 
 }
 
+//Connect to Database
 include "db_connection.php";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
   echo "Connection Error." ;
 }
 
+// Obtain topic ID on the page to handle the async
 if (isset($_POST['asyncINT_ID'])) {
     $INT_ID = $_POST['asyncINT_ID'];
 }
 
+// If no photo was selected then a neutral user icon is displayed
 function setpic($img_url) {
   if ($img_url == 'null') {
       return "grey.png";
@@ -39,6 +43,7 @@ function setpic($img_url) {
   }
 }
 
+// Displays posts avalible asynchronusly when using the search bar
 if (isset($_POST['search'])) {
   $searchInput = $_POST['search'];
   $Topic_search = '%' . $searchInput . '%';
@@ -60,10 +65,11 @@ if (isset($_POST['search'])) {
 
 }
 
-
+// Obtains the name of the button pressed in sort by dropdown
 elseif (isset($_POST['sortby'])){
   $PHPID = $_POST['sortby'];
 
+// A switch case is used to display the posts avalible in which ever order selected.
 switch($PHPID){
   
   case "ABC":
@@ -127,6 +133,7 @@ switch($PHPID){
 
 ?>
 
+<!-- Applies dark mode classes to nessasery elements if dark mode is enabled -->
 <script>
     <?php
     if($COLOR == 1){
