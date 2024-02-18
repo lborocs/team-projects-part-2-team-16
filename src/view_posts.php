@@ -23,6 +23,42 @@ if (!$conn) {
 $Current_Topic = $_GET['Post_topic_ID'];
 $INT_ID = (int)$Current_Topic;
 
+function TopicChecker($resultA, $conn)
+{
+    if ($resultA['project_ID'] !== null) {
+        $prjTEST = $resultA['project_ID'];
+        $sqlProject = "SELECT user_ID FROM tasks WHERE project_id = $prjTEST";
+        $resultProject = mysqli_query($conn, $sqlProject);
+        while ($UserID_LIST = mysqli_fetch_assoc($resultProject)) {
+            if ($_SESSION["role"] == "TL") {
+                $sqlTL = "SELECT team_leader FROM project WHERE project_ID = $prjTEST";
+                $resultTL = mysqli_query($conn, $sqlTL);
+                while ($TLID_LIST = mysqli_fetch_assoc($resultTL)) {
+                    // If they are the team leader in charge then they will be able to view that topic relating to the project
+                    if ($_SESSION["user_ID"] != $TLID_LIST["team_leader"]) {
+                        header("Location: view_topics.php");
+                        break 2;
+                    }
+                }
+            } else {
+                // If they are an employee on the project then they will be able to view that topic relating to the project
+                if ($UserID_LIST['user_ID'] != $_SESSION["user_ID"]) {
+                    header("Location: view_topics.php");
+                    break;
+                }
+            }
+        }
+    }
+}
+
+$sqlTopics = "SELECT project_ID FROM topics WHERE topic_ID = $INT_ID";
+$resultTopics = mysqli_query($conn, $sqlTopics);
+
+while ($resultA = mysqli_fetch_array($resultTopics)) {
+    TopicChecker($resultA, $conn);
+}
+
+
 // Obtain topic name to Display topic name at the top of the page
 $sqlTopicName = "SELECT title FROM topics WHERE topic_ID = $INT_ID";
 $resultTN = mysqli_query($conn, $sqlTopicName);
