@@ -411,8 +411,12 @@ if (isset($_POST["submitButton"])) {
                             <?php
                             include "db_connection.php";
                             $conn = mysqli_connect($servername, $username, $password, $dbname);
-                            $user_ID = $_SESSION['user_ID'];
-                            $sql = "select * from topics where project_ID is null or project_ID in (select project_ID from tasks where user_ID = $user_ID) or project_ID in (select project_ID from project where team_leader = $user_ID);";
+                            if ($_SESSION['role'] != "Manager") {
+                                $user_ID = $_SESSION['user_ID'];
+                                $sql = "select * from topics where project_ID is null or project_ID in (select project_ID from tasks where user_ID = $user_ID) or project_ID in (select project_ID from project where team_leader = $user_ID);";
+                            } else {
+                                $sql = "select * from topics;";
+                            }
                             $result = mysqli_query($conn, $sql);
                             if (!$result) {
                                 echo "Connection Error.";
