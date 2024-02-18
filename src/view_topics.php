@@ -13,11 +13,6 @@
             }
         }
 
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-
         .HeightShown {
             flex: 1;
             min-height: 80vh;
@@ -282,4 +277,3 @@
             <?php } ?>
         })
     </script>
-    </body>

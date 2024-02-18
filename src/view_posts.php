@@ -10,9 +10,7 @@ body {
   min-height: 80vh;
   }
 </style>
-<body> 
 
-<div class="HeightShown">
 <?php
 //Connect to Database
 include "db_connection.php";
@@ -255,7 +253,6 @@ if (!isset($_SESSION["role"])) {
       ?>
     </div>
 </div>
-</div>
 
 <!-- Display the footer at the bottom of the page -->
 <?php include "./footer.php"; ?>
@@ -280,4 +277,3 @@ if (!isset($_SESSION["role"])) {
     <?php } ?>
   })
 </script>
-</body>
