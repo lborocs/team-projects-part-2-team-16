@@ -14,7 +14,7 @@
 
   <body> -->
 
-<?php
+  <?php
 include "db_connection.php";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
@@ -124,7 +124,7 @@ if (!isset($_SESSION["role"])) {
 
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <button class="dropdown-item" type="button" onclick="window.location.href='./create_post.php';">Create Post</button>
+              <button class="dropdown-item" type="button" onclick="window.location.href='./create_post.php?topic_ID=<?php echo $Current_Topic ?>';">Create Post</button>
             </li>
             <li>
               <button class="dropdown-item" type="button" onclick="deletetopic()">Delete Topic</button>
@@ -151,7 +151,7 @@ if (!isset($_SESSION["role"])) {
       } else {
       ?>
 
-        <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton no-dark" onclick="window.location.href='./create_post.php';">Create Post</button>
+        <button type="button" class="btn btn-primary input-group mb-3 createTopic conButton no-dark" onclick="window.location.href='./create_post.php?topic_ID=<?php echo $Current_Topic ?>';">Create Post</button>
 
       <?php
       }
