@@ -113,8 +113,8 @@ if (isset($_POST['search'])) {
     $searchInput = $_POST['search'];
     $Topic_search = '%' . $searchInput . '%';
 
-    $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE '$Topic_search' GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
-    $Result = mysqli_query($conn, $sql);
+    $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE ? GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
+    $Result = mysqli_execute_query($conn, $sql, array($Topic_search));
     
     if(mysqli_num_rows($Result) > 0){
         while($resultA = mysqli_fetch_array($Result)){
