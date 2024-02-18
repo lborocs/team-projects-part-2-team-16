@@ -18,7 +18,6 @@
 	<link rel="manifest" href="/docs/5.0/assets/img/favicons/manifest.json">
 	<link rel="mask-icon" href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
 	<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon.ico">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<meta name="theme-color" content="#7952b3">
 
 
@@ -45,7 +44,7 @@
 </head>
 <!-- This is the employee navigation bar displayed at the top of the majority of pages.
 		The settingsCSS class is used to allow the settingsAsync page to change navbar css without needing to reload the page. -->
-<body class="d-flex flex-column min-vh-100">
+<body>
 	<?php session_start();
 	// collects session data and checks session expiry time
 	if($_SESSION["expiry"] >= date('m-d-Y')){
