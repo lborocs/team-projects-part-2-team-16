@@ -1,14 +1,66 @@
 <?php
-//gets the information of the projects that the user leads
-$result = $conn->query("SELECT project_ID, project_title, due_date, description FROM  project where team_leader =" . $_SESSION["user_ID"]);
+
+if ($_SESSION["role"] == "TL") {
+	if ($_SERVER["REQUEST_METHOD"] == "GET") {		//TL leads many teams, a team was selected
+		//connect to database
+		try {
+			include "db_connection.php";
+			$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+		} catch (PDOException $e) {
+			echo "<script>alert('Failed to connect to database');</script>";
+			exit();
+		}
+		//check if the user leads the given team
+		$currentProjectID = = $_GET["project_ID"];
+		$result = $conn->query("SELECT team_leader FROM project WHERE project_ID = $currentProjectID;");
+		$queryResult = $result->fetch(PDO::FETCH_NUM);
+		if (!$queryResult) {
+			echo "<script>alert('Project not found');</script>";
+			exit();
+		}
+		$selectedTL = $queryResult[0];
+		if (!$selectedTL == $_SESSION["user_ID"]) {
+			echo "<script>alert('You do not have permission to view this project');</script>";
+			exit();
+		}
+	} elseif (isset($numOfProjectLeads)) {	//has been called from dashboard.php, TL leads 1 team
+		$result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"]);
+		$currentProjectID = $result->fetch(PDO::FETCH_NUM)[0];
+	} else {	//user removed GET data from URL
+		echo "<script>alert('No project was specified');</script>";
+		exit();
+	}
+} elseif ($_SESSION["role"] == "Manager" and $_SERVER["REQUEST_METHOD"] == "GET") {
+	//connect to database
+	try {
+		include "db_connection.php";
+		$conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
+	} catch (PDOException $e) {
+		echo "<script>alert('Failed to connect to database');</script>";
+		exit();
+	}
+	$currentProjectID = = $_GET["project_ID"];
+	//check if the given project exists
+	$result = $conn->query("SELECT team_leader FROM project WHERE project_ID = $currentProjectID;");
+	$queryResult = $result->fetch(PDO::FETCH_NUM);
+	if (!$queryResult) {
+		echo "<script>alert('Project not found');</script>";
+		exit();
+	}
+} else {
+	echo "<script>alert('Invalid page access');</script>";
+	exit();
+}
+
+//gets the information of the selected project
+$result = $conn->query("SELECT project_title, due_date, description FROM project where project_ID = $currentProjectID");
 if (!$result) {
 	echo "<script>alert('Failed to connect to database');</script>";
 	exit;
 }
 $projectData = $result->fetch(PDO::FETCH_ASSOC);
-$currentProjectID = $projectData["project_ID"];
 
-//adds task to database
+//adds task to database if assign task was used using this page
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	include "add_task.php";
 	$projectID = intval($currentProjectID);
