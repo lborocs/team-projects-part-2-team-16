@@ -6,15 +6,15 @@ if (isset($_POST['asyncCOLOR'])) {
 
 function TopicList($resultA) {
 
-    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl lightB"
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
             <div style="height: 20px;position: relative;">
-                <span style="display: inline-block; font-size: 17px;position: absolute; left: -15px;width: 220px;bottom: 15px;">
-                    Specific Project Topic
+                <span style="display: inline-block; font-size: 17px;position: absolute; left: -70px;width: 220px;bottom: 15px;">
+                    Project
                 </span>
-                <span style="display: inline-block; font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
+                <span style="display: inline-block; font-size: 17px;position: absolute;right: 0px;width: 220px;bottom: 15px;">
                     <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
                     <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
                 </span>
@@ -26,7 +26,7 @@ function TopicList($resultA) {
 }
 
 function NonProject($resultA) {
-    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl"
+    return '<div type="button" style="top: 495px; overflow: hidden;" class="topic1 col-xl lightB"
         onclick="window.location.href=\'./view_posts.php?Post_topic_ID=' . $resultA["topic_ID"] . '\';">            
         <div style="display: inline-block; width: 100%">
             <p>' . $resultA["title"] . '</p>
@@ -101,12 +101,14 @@ if (isset($_POST['search'])) {
 
     $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE LOWER(topic.title) LIKE '$Topic_search' GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
     $Result = mysqli_query($conn, $sql);
-        
-    while($resultA = mysqli_fetch_array($Result)){
     
-        TopicChecker($resultA, $conn);    
+    if(mysqli_num_rows($Result) > 0){
+        while($resultA = mysqli_fetch_array($Result)){
+            TopicChecker($resultA, $conn);
+        }
+    } else {
+        echo "Sorry no available results for: " . $searchInput;
     }
-    
     
 }
 
@@ -164,9 +166,12 @@ switch($PHPID){
         $sql = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID WHERE topic.project_ID IS NOT NULL GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.project_ID";
         $Result = mysqli_query($conn, $sql);
         
-        while($resultA = mysqli_fetch_array($Result)){
-        
-            TopicChecker($resultA, $conn);     
+        if(mysqli_num_rows($Result) > 0){
+            while($resultA = mysqli_fetch_array($Result)){
+                TopicChecker($resultA, $conn);
+            }
+        } else {
+            echo "Sorry no available results";
         }
     
         break;
@@ -197,10 +202,11 @@ switch($PHPID){
     $(document).ready(function() {
         if ("<?php echo $colour ?>" == "text-light bg-dark") {
             $("*").each(function() {
-                if ($(this).hasClass("no-dark") == false) {
-                    $(this).addClass("text-light bg-dark border-light");
+                if ($(this).hasClass("no-dark") == false && $(this).parents("header").length == 0) {
+                    $(this).addClass("text-light bg-dark");
                 }
             });
+            $(".lightB").addClass("border-light");
         }
     })
 </script>

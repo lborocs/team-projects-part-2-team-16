@@ -228,7 +228,7 @@
                             TopicChecker($resultA, $conn);
                         }
                     } else {
-                        echo "Sorry no avalible results for: " . $searchInput;
+                        echo "Sorry no available results for: " . $searchInput;
                     }
 
                 } else {
