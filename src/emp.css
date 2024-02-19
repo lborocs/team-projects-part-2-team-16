@@ -1,0 +1,20 @@
+.employee{
+	padding:10px 0px 10px 0px;
+	border-radius:10px;
+	background-color:#d0def5;
+	margin: 10px 0px 10px 0px;
+	vertical-align:center;
+	
+}
+.empname{
+	font-size:20;
+}
+
+.btn-group{
+	float:right;
+	width:100%;
+	vertical-align:center;
+}
+.rights{
+	width:100%;
+}
