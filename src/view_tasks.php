@@ -22,4 +22,5 @@
 		include "./navbar_e.php";
 		include "./dashboard_e.php";
 	}
+	include "./footer.php";
 ?>
