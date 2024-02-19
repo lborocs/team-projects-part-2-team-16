@@ -9,7 +9,7 @@ asynchronously return errors.-->
   integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 <head>
-  <link rel="icon" type="image/x-icon" href="./logo.ico">
+  <link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">

@@ -19,7 +19,7 @@
         }
     </style>
     <link rel="stylesheet" type="text/css" href="topics.css">
-    <link rel="icon" type="image/x-icon" href="./logo.ico">
+    <link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
 
 
 
