@@ -297,5 +297,5 @@ to allow a user to make customisationsa nd changes to their account without the 
 			}';
 		}
 		// used to change icon upon change
-		echo 'document.getElementById("pageIcon").src = "./'.$_SESSION["icon"].'.png";';
+		echo 'document.getElementById("pageIcon").src = "./imgs/'.$_SESSION["icon"].'.png";';
 	?></script>
