@@ -255,7 +255,7 @@ if (!isset($_SESSION["role"])) {
       }
 
       // Obtains all the posts and content to display for that topic
-      $sql = "SELECT title, content, img_url, post_ID  FROM posts WHERE topic_ID = $INT_ID ORDER BY title ASC";
+      $sql = "SELECT title, content, img_url, post_ID, icon FROM posts, users WHERE topic_ID = $INT_ID and posts.user_ID = users.user_ID ORDER BY title ASC";
       $Result = mysqli_query($conn, $sql);
 
       
@@ -263,7 +263,7 @@ if (!isset($_SESSION["role"])) {
         while($resultA = mysqli_fetch_array($Result)){
           // If no photo was selected then a neutral user icon is displayed
           if ($resultA["img_url"] == 'null') {
-            $PIC = "grey.png";
+            $PIC = "./imgs/" . $resultA['icon'] . ".png";
           } else {
             $PIC = $resultA["img_url"];
           }
