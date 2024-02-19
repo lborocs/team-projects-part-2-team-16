@@ -480,7 +480,7 @@ if (isset($_POST["submitButton"])) {
 
         <a href="/"
             class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <img src="./logo.png" alt="mdo" width="200" height="50">
+            <img src="./imgs/logo.png" alt="mdo" width="200" height="50">
             </svg>
         </a>
 
