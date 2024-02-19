@@ -8,7 +8,7 @@
 	crossorigin="anonymous"></script>
 
 <head>
-	<link rel="icon" type="image/x-icon" href="./logo.ico">
+	<link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Team Leaders Dash</title>

@@ -59,7 +59,7 @@ to join the system-->
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" type="image/x-icon" href="./logo.ico">
+	<link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
 	<title>Settings</title>
 </head>
 

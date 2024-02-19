@@ -95,7 +95,7 @@ if (!isset($_SESSION["role"])) {
 ?>
 
 <link rel="stylesheet" type="text/css" href="./posts.css">
-<link rel="icon" type="image/x-icon" href="./logo.ico">
+<link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
 <style>
   .card_img {
     height: 175px;

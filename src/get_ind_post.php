@@ -78,7 +78,7 @@ if (isset($_POST['deleteRplyID'])) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Post</title>
-	<link rel="icon" type="image/x-icon" href="./logo.ico">
+	<link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
 	<meta name="theme-color" content="#7952b3">
 	
 	<style>

@@ -40,13 +40,7 @@
         if (isset($_POST["taskBuffer"])) {
             $tasksJson = json_decode($_POST["taskBuffer"], true);
         } 
-
-        // include "db_connection.php";
-        // $conn = mysqli_connect($servername, $username, $password, $dbname);
-        // if (!$conn) {
-        //     echo "Connection Error.";
-        //     exit;
-        // }
+        
         try {
             include "db_connection.php";
 
@@ -128,62 +122,6 @@
             }
             $empID = intval($task["empID"]);
 
-
-            // if (isset($task["title"])){
-            //     $title = $task["title"];
-            //     if (strlen($title) > 255) {
-            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //         continue;
-            //     }
-            // } else {
-            //     echo "<script type='text/javascript'>alert('Failed to create a task, invalid data entered');</script>";
-            //     continue;
-            // }
-            // if (isset($task["empID"])){
-            //     $empID = $task["empID"];
-            //     if (!is_numeric($empID)) {
-            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //         continue;
-            //     } else {
-            //         $empID = intval($empID);
-            //     }
-            // } else {
-            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //     continue;
-            // }
-            // if (isset($task["description"])) {
-            //     $description = $task["description"];
-            //     if (strlen($description) > 1000) {
-            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //         continue;
-            //     }
-            // } else {
-            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //     continue;
-            // }
-            // if (isset($task["duedate"])) {
-            //     $date = $task["duedate"];
-            //     if (!date_create_from_format("Y-m-d", $date)) {
-            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //         continue;
-            //     }
-            // } else {
-            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //     continue; 
-            // }
-            // if (isset($task["hours"])) {
-            //     $hours = $task["hours"];
-            //     if (!is_numeric($hours)) {
-            //         echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //         continue;
-            //     }else {
-            //         $hours = intval($hours);
-            //     }
-            // } else {
-            //     echo "<script type='text/javascript'>alert('Failed to create task: $title, invalid data entered');</script>";
-            //     continue;
-            // }
-
             $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
                                         VALUES (:taskID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
             $stmt->bindParam(':taskID', $taskID, PDO::PARAM_INT);
@@ -218,7 +156,7 @@
 <html lang="en">
 
 <head>
-    <link rel="icon" type="image/x-icon" href="./logo.ico">
+    <link rel="icon" type="image/x-icon" href="./imgs/logo.ico">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
