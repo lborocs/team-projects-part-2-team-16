@@ -82,7 +82,7 @@ asynchronously return errors.-->
     <main class="form-signin">
       <!-- Login form is used to check both fields have been entered. There is no submit action dedicated here-->
       <form id = "loginForm">
-        <img class="mb-4" src="./logo.png" alt="" width="300" height="70" style="display: block;margin-left: auto;margin-right: auto;border-radius:4px;border:solid black 1px;">
+        <img class="mb-4" src="./imgs/logo.png" alt="" width="300" height="70" style="display: block;margin-left: auto;margin-right: auto;border-radius:4px;border:solid black 1px;">
 
         <h1 class="h3 mb-3 fw-normal">Please Sign-In</h1>
 
