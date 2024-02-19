@@ -1,13 +1,4 @@
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-set_error_handler("handleError");
-function handleError($errno, $errstr)
-{
-    echo "<b>Error:</b> [$errno] $errstr";
-    die();
-}
 include "db_connection.php";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
