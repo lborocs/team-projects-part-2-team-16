@@ -3,108 +3,6 @@ session_start();
 include "db_connection.php";
 include "add_task.php";
 
-// this function now in seperate file
-
-// function create_task() {
-//     if (isset($_POST["employee"])){
-//         $empID = $_POST["employee"];
-//         if (!is_numeric($empID)) {
-//             return false;
-//         } else {
-//             $empID = intval($empID);
-//         }
-//     } else {
-//         return false;
-//     }
-//     if (isset($_POST["project"])) {
-//         $projectID = $_POST["project"];
-//         if (!is_numeric($projectID)) {
-//             return false;
-//         } else {
-//             $projectID = intval($projectID);
-//         }
-//     } else {
-//         return false;
-//     }
-//     if (isset($_POST["title"])){
-//         $title = $_POST["title"];
-//         if (strlen($title) > 255) {
-//             return false;
-//         }
-//     } else {
-//         return false;
-//     }
-//     if (isset($_POST["description"])) {
-//         $description = $_POST["description"];
-//         if (strlen($description) > 1000) {
-//             return false;
-//         }
-//     } else {
-//         return false;
-//     }
-//     if (isset($_POST["date"])) {
-//         $date = $_POST["date"];
-//         if (!date_create_from_format("Y-m-d", $date)) {
-//             return false;
-//         }
-//     } else {
-//         return false; 
-//     }
-//     if (isset($_POST["manhours"])) {
-//         $hours = $_POST["manhours"];
-//         if (!is_numeric($hours)) {
-//             return false;
-//         }else {
-//             $hours = intval($hours);
-//         }
-//     } else {
-//         return false;
-//     }
-
-
-//     // $conn = mysqli_connect($servername, $username, $password, $dbname);
-//     // if (!$conn) {
-//     //     echo "Connection Error.";
-//     //     exit;
-//     // }
-//     try {
-//         include "db_connection.php";
-
-//         $conn = new PDO("mysql:host=localhost;dbname=make_it_all", $username, $password);
-//     } catch (PDOException $e) {
-//         echo "<script type='text/javascript'>alert('Failed to connect to database');</script>";
-//         return false;
-//     }
-
-//     $result = $conn->query("SELECT max(task_ID) FROM tasks");
-//     $maxID = $result->fetchAll(PDO::FETCH_NUM)[0];
-//     if ($maxID == null) {
-//         $ID = 1;
-//     } else {
-//         $ID = $maxID[0] + 1;
-//     }
-
-//     // $stmt = $conn->prepare("insert into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours)
-//     //                          values ($ID, $empID, $projectID, '$title', '$description', DATE '$date', $hours);");
-//     $create_task_stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) 
-//                                     VALUES (:ID, :empID, :projectID, :title, :description, DATE :date, :hours, 0)");
-//     // $stmt = $conn->prepare("INSERT into tasks (task_ID, user_ID, project_ID, title, description, due_date, est_hours, progress) VALUES (10, 2, 3, 'adfsgdf', 'dsfgdfg', DATE '3000-12-12', 1, 0)");
-//     $create_task_stmt->bindParam(':ID', $ID, PDO::PARAM_INT);
-//     $create_task_stmt->bindParam(':empID', $empID, PDO::PARAM_INT);
-//     $create_task_stmt->bindParam(':projectID', $projectID, PDO::PARAM_INT);
-//     $create_task_stmt->bindParam(':title', $title, PDO::PARAM_STR);
-//     $create_task_stmt->bindParam(':description', $description, PDO::PARAM_STR);
-//     $create_task_stmt->bindParam(':date', $date, PDO::PARAM_STR);
-//     $create_task_stmt->bindParam(':hours', $hours, PDO::PARAM_INT);
-
-//     if ($create_task_stmt->execute())  {
-//         header("location: dashboard.php");
-//         die();
-//     } else {
-//         echo "<script type='text/javascript'>alert('request unsucesfull');</script>";
-//     }
-// }
-
 // gets the task to be edited from the DB
 function get_edit_task()
 {
@@ -459,7 +357,7 @@ if (isset($_POST["submitButton"])) {
                         echo '<button id="submitButton" name="submitButton" type="submit" class="btn btn-primary disabled">Assign Task</button>';
                     } else {
                         echo "<input type='hidden' name='edit_ID' value=$_GET[edit_ID]>";
-                        echo '<button id="submitButton" name="confirmEditButton" type="submit" class="btn btn-primary disabled">Confirm Edit</button>';
+                        echo '<button id="submitButton" name="confirmEditButton" type="submit" class="btn btn-primary">Confirm Edit</button>';
                         echo '<button id="deleteButton" name="deleteButton" type="submit" class="btn btn-danger" style="margin-left: 15px;">Delete Task</button>';
                     }
                     ?>

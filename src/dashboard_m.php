@@ -10,9 +10,9 @@ if (!$conn) {
 // Get around one line of description to avoid overflow.
 $sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 33) as description, COUNT(CASE WHEN progress = 2 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID GROUP BY project.project_ID ORDER BY project.due_date ASC;";
 $result = mysqli_execute_query($conn, $sql);
+$projects = true;
 if (mysqli_num_rows($result) == 0) {
-    echo "No projects found.";
-    die();
+    $projects = false;
 }
 $array = array();
 while ($row = mysqli_fetch_assoc($result)) {
@@ -72,7 +72,10 @@ while ($row = mysqli_fetch_assoc($result)) {
         </div>
 
         <div class="row flex-column flex-md-row">
-            <?php foreach ($array as $project) { ?>
+            <?php if ($projects == false) {
+                echo "<h4>No Projects Found.</h4>";
+            }
+            foreach ($array as $project) { ?>
                 <div class="col col-md-3 mb-3">
                     <div class="card">
                         <div class="card-body">

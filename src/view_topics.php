@@ -241,10 +241,12 @@
                 } else {
                     $sqlTopics = "SELECT topic.topic_ID, topic.title, topic.views, topic.project_ID, COUNT(post.topic_ID) FROM topics topic LEFT JOIN posts post ON topic.topic_ID = post.topic_ID GROUP BY topic.topic_ID, topic.title, topic.views ORDER BY topic.title";
                     $resultTopics = mysqli_query($conn, $sqlTopics);
-
-                    while ($resultA = mysqli_fetch_array($resultTopics)) {
-
-                        TopicChecker($resultA, $conn);
+                    if (mysqli_num_rows($resultTopics) > 0) {
+                        while ($resultA = mysqli_fetch_array($resultTopics)) {
+                            TopicChecker($resultA, $conn);
+                        }
+                    } else {
+                        echo "No topics available";
                     }
                 }
                 ?>
