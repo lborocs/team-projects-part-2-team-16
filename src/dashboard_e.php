@@ -1,14 +1,3 @@
-<?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-set_error_handler("handleError");
-function handleError($errno, $errstr)
-{
-    echo "<b>Error:</b> [$errno] $errstr";
-    die();
-}
-?>
 <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <style>

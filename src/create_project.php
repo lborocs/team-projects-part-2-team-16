@@ -161,12 +161,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Project</title>
-
-    <!-- <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 
 
@@ -488,15 +482,6 @@ $(document).ready(function() {
     }
 
     function CreateTaskCard(task) {
-        //<div class="col-12 col-md-4 col-lg-3 mb-3 mb-md-0">
-        //    <div class="card card-body taskcard task-in-progress">
-        //        <h5 class="card-title">${task.title}</h5>
-        //        <h6 class="card-text"><b>${task.empName}</b></h6>
-        //        <p class="card-text">${task.description}</p>
-        //        <p class="card-text"><small class="text-muted">${task.dueDate}</small>
-        //        </p>
-        //    </div>
-        //</div>;
 
         let CreatedTaskDiv = document.getElementById("CreatedTasksDiv");
 
