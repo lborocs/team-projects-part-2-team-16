@@ -8,7 +8,7 @@ if (!$conn) {
 
 // Select all projects and count the total number of tasks vs completed tasks. 
 // Get around one line of description to avoid overflow.
-$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 15) as description,
+$sql = "SELECT project.project_ID, project_title, project.due_date, LEFT(project.description, 33) as description,
 		COUNT(CASE WHEN progress = 1 THEN 1 END) as completed_tasks, COUNT(progress) as total_tasks
 		FROM project LEFT JOIN tasks ON tasks.project_ID = project.project_ID
 		WHERE project.team_leader = ".$_SESSION["user_ID"]." GROUP BY project.project_ID ORDER BY project.due_date ASC;";

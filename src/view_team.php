@@ -28,6 +28,7 @@ if ($_SESSION["role"] == "TL") {
 		$taskcreate = "link-dark";
 		$topicview = "link-dark";
 		$dashview = "link-dark";
+		$taskview = "link-dark";
 		include "./navbar_tl.php";
 	} elseif (isset($numOfProjectLeads)) {	//has been called from dashboard.php, TL leads 1 team
 		$result = $conn->query("SELECT project_ID FROM project WHERE team_leader = ".$_SESSION["user_ID"]);
