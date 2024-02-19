@@ -18,7 +18,7 @@ function TopicList($resultA) {
                 <span style="display: inline-block; font-size: 17px;position: absolute; left: -70px;width: 220px;bottom: 15px;">
                     Project
                 </span>
-                <span style="display: inline-block; font-size: 17px;position: absolute;right: 0px;width: 220px;bottom: 15px;">
+                <span style="display: inline-block; font-size: 17px;position: absolute;right: 5px;width: 220px;bottom: 15px;">
                     <img src="posts-icon.png" alt="" style="height: 20px; width: 20px;"> posts: ' . $resultA["COUNT(post.topic_ID)"] . '
                     <img src="view-icon.png" alt="" style="height: 20px; width: 20px;margin-left: 15px;"> views: ' . $resultA["views"] . '
                 </span>
