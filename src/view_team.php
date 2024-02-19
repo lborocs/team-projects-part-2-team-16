@@ -64,7 +64,7 @@ if ($_SESSION["role"] == "TL") {
 }
 
 //gets the information of the selected project
-$result = $conn->query("SELECT project_title, due_date, description FROM project where project_ID = $currentProjectID");
+$result = $conn->query("SELECT project_title, due_date, description, forename, surname FROM project, users where project_ID = $currentProjectID and users.user_ID = project.team_leader");
 if (!$result) {
 	echo "<script>alert('Failed to connect to database');</script>";
 	exit;
@@ -124,9 +124,9 @@ if ($totalTeamTasks == 0) {
 			margin-bottom: 1rem;
 		}
 
-		#project-desc, #project-date {
-			padding: 0rem 1.5rem;
-		}
+		/* #project-desc, #project-date {
+			
+		} */
 
 		.accordion-button:not(.collapsed) {
 			background-color: white;
@@ -214,12 +214,17 @@ if ($totalTeamTasks == 0) {
 				</div>
 			</div>
 		</div>
-		<div id="project-date">
-			<?php echo "Due: ".$projectData["due_date"]; ?>
+		<div style="display: none; padding: 0rem 1.5rem;" id="project_details">
+			<div><?php echo "Due: ".$projectData["due_date"]; ?></div>
+			<div><?php echo "Team Leader: ".$projectData["forename"] . " " . $projectData["surname"]; ?></div>
+			<hr>
+			<div class="mb-5" id="project-desc">
+				<?php echo $projectData["description"]; ?>
+			</div>
+			<hr>
 		</div>
-		<div class="mb-5" id="project-desc">
-			<?php echo $projectData["description"]; ?>
-		</div>
+		<p id="showDetails" style="color: #636b74; padding: 0rem 1.5rem;" type="button" onclick="showdetails()">show project details...</p>
+
 		<div class="accordion">
 			<?php
 			if ($totalTeamTasks == 0) {
@@ -234,7 +239,7 @@ if ($totalTeamTasks == 0) {
 						$numOfUsersAdded++;
 						echo '</div></div></div></div></div>';		//ends accordion item for previous team member
 					}
-					//creates the accordion header for the current user
+					//creates the accordion header for the current user	
 					echo '<div class="accordion-item">
 						<h2 class="accordion-header">
 							<div class="accordion-button" id="accordion-button-' . $numOfUsersAdded . '" onclick="toggleAccordion(' . $numOfUsersAdded . ')">
@@ -326,6 +331,17 @@ if ($totalTeamTasks == 0) {
 
 		function stopProp(event) {
 			event.stopPropagation();
+		}
+
+		function showdetails() {
+			showButton = document.getElementById("showDetails");
+			if (showButton.innerHTML == "show project details...") {
+				document.getElementById("project_details").style.display = "block";
+				showButton.innerHTML = "hide project details...";
+			} else if (showButton.innerHTML == "hide project details...") {
+				document.getElementById("project_details").style.display = "none";
+				showButton.innerHTML = "show project details...";
+			}
 		}
 	</script>
 </body>
