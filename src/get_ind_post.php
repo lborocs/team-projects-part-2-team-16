@@ -181,6 +181,7 @@ if (isset($_POST['deleteRplyID'])) {
 		$taskcreate = "link-dark";
 		$topicview = "link-dark";
 		$dashview = "link-dark";
+		$taskview = "link-dark";
 		include "./navbar_tl.php";
 	} else if ($_SESSION["role"] == "Employee") {
 		$taskcreate = "link-dark";
